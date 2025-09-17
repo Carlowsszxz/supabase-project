@@ -1,0 +1,34 @@
+User-agent: *
+Disallow: /Frame_6.html
+Disallow: /Frame_7.html
+Disallow: /Frame_9.html
+Disallow: /Frame_10.html
+Disallow: /Frame_15.html
+Disallow: /firebase.js
+Disallow: /security.js
+Disallow: /firestore.rules
+Disallow: /firestore.indexes.json
+Disallow: /vercel.json
+Disallow: /package.json
+Disallow: /package-lock.json
+Disallow: /node_modules/
+Disallow: /functions/
+Disallow: /dataconnect/
+Disallow: /src/
+
+# Allow public pages
+Allow: /index.html
+Allow: /Frame_4.html
+Allow: /Frame_5.html
+Allow: /Frame_8.html
+Allow: /Frame_11.html
+Allow: /Frame_12.html
+Allow: /Frame_13.html
+Allow: /Frame_14.html
+Allow: /frames-index.html
+Allow: /theme.css
+Allow: /theme.js
+Allow: /UMak_Logo_Registered.png
+Allow: /assets/
+
+Sitemap: https://your-domain.vercel.app/sitemap.xml
