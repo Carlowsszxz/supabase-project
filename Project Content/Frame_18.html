@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://*.supabase.co wss://*.supabase.co;" />
+  <title>Frame 18 - Reports</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="theme.css" />
+  <script defer src="theme.js"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+  <header class="site-header">
+    <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
+      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
+      <a href="Frame_6.html" class="brand-title text-2xl font-semibold mr-auto">UMak Noise Monitor - Admin</a>
+      <nav class="hidden md:flex items-center gap-4 text-sm">
+        <a href="Frame_6.html" class="nav-link">Dashboard</a>
+        <a href="Frame_7.html" class="nav-link">Log</a>
+        <a href="Frame_9.html" class="nav-link">Alerts</a>
+        <a href="Frame_18.html" class="nav-link active">Reports</a>
+        <a href="Frame_15.html" class="nav-link">Users</a>
+        <button onclick="logout()" id="logoutBtn" class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition" style="color: black !important;">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 py-8 px-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold mb-2">Student Reports</h1>
+        <p class="text-slate-600">View and handle submitted noise reports</p>
+        <div id="supabase-status" class="mt-2 text-xs text-slate-500"></div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+          <div class="flex items-center gap-2 text-sm">
+            <label class="text-slate-600">Filter:</label>
+            <select id="filterType" class="px-3 py-2 rounded-lg border border-slate-300">
+              <option value="all">All</option>
+              <option value="critical">Critical</option>
+              <option value="warning">Warning</option>
+              <option value="info">Info</option>
+              <option value="unresolved">Unresolved</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-2 text-sm">
+            <button id="refreshBtn" class="px-3 py-2 rounded-lg btn-outline">Refresh</button>
+          </div>
+        </div>
+
+        <div class="overflow-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-slate-500 border-b">
+                <th class="py-2 pr-3">When</th>
+                <th class="py-2 pr-3">Details</th>
+                <th class="py-2 pr-3">Notes</th>
+                <th class="py-2 pr-3">Action</th>
+              </tr>
+            </thead>
+            <tbody id="reportRows">
+              <tr><td colspan="4" class="py-6 text-center text-slate-400">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+
+  <script>
+    (function(){
+      var supabaseInitialized = false;
+      var rowsEl = document.getElementById('reportRows');
+      var filterSel = document.getElementById('filterType');
+      var refreshBtn = document.getElementById('refreshBtn');
+
+      function showStatus(text, ok){
+        var el = document.getElementById('supabase-status');
+        if (!el) return;
+        el.textContent = text || '';
+        el.className = 'mt-2 text-xs ' + (ok ? 'text-green-600' : 'text-red-600');
+      }
+
+      function fmtTime(ts){
+        try { return new Date(ts).toLocaleString(); } catch(_) { return '—'; }
+      }
+
+      function severityOf(level){
+        if (level >= 4.5) return 'critical';
+        if (level >= 3) return 'warning';
+        return 'info';
+      }
+
+      function renderRows(items){
+        if (!rowsEl) return;
+        if (!items || items.length === 0) {
+          rowsEl.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-slate-400">No reports</td></tr>';
+          return;
+        }
+        rowsEl.innerHTML = '';
+        items.forEach(function(r){
+          var tr = document.createElement('tr');
+          tr.className = 'border-b last:border-0';
+          var sev = severityOf(parseFloat(r.noise_level || 0));
+          var badgeCls = sev === 'critical' ? 'bg-red-100 text-red-800' : (sev === 'warning' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800');
+          var statusChip = r.canceled_at ? '<span class="px-2 py-0.5 text-xs rounded bg-slate-200 text-slate-700">Canceled</span>' : (r.resolved_at ? '<span class="px-2 py-0.5 text-xs rounded bg-blue-600 text-white">Resolved</span>' : '');
+          var icon = sev === 'critical' ? '🔴' : (sev === 'warning' ? '🟡' : '🟢');
+          tr.innerHTML = `
+            <td class="py-2 pr-3">${fmtTime(r.created_at)}</td>
+            <td class="py-2 pr-3">
+              <div class="flex items-center gap-2">
+                <span class="text-base">${icon}</span>
+                <span class="font-medium">Level ${r.noise_level != null ? r.noise_level : '—'} • ${r.table_id || r.location || '—'}</span>
+                <span class="text-xs px-2 py-0.5 rounded ${badgeCls}">${sev}</span>
+                ${statusChip}
+              </div>
+            </td>
+            <td class="py-2 pr-3 max-w-[420px] truncate" title="${r.notes || ''}">${r.notes || '—'}</td>
+            <td class="py-2 pr-3">
+              <div class="flex items-center gap-2">
+                ${r.canceled_at ? '<button disabled class="px-3 py-1 text-xs rounded bg-slate-200">Canceled</button>' : (r.resolved_at ? '<button disabled class="px-3 py-1 text-xs rounded bg-blue-600 text-white">Resolved</button>' : `<button class=\"px-3 py-1 text-xs rounded bg-green-600 hover:bg-green-700 text-white\" data-action=\"resolve\" data-id=\"${r.id}\" data-uid=\"${r.user_id}\">Mark Resolved</button>`)}
+                <button class="px-3 py-1 text-xs rounded bg-red-600 hover:bg-red-700 text-white" data-action="delete" data-id="${r.id}">Delete</button>
+              </div>
+            </td>`;
+          rowsEl.appendChild(tr);
+        });
+      }
+
+      function applyFilter(list){
+        var type = filterSel ? filterSel.value : 'all';
+        if (type === 'all') return list;
+        if (type === 'unresolved') return list.filter(function(r){ return !r.resolved_at; });
+        return list.filter(function(r){ return severityOf(parseFloat(r.noise_level || 0)) === type; });
+      }
+
+      function fetchReports(){
+        if (!supabaseInitialized) return;
+        // Use noise_logs as source of student reports
+        window.supabaseDB.getNoiseLogs('*', 200).then(function(result){
+          var data = Array.isArray(result.data) ? result.data : [];
+          // Sort newest first
+          data.sort(function(a,b){ return new Date(b.created_at) - new Date(a.created_at); });
+          renderRows(applyFilter(data));
+        }).catch(function(err){
+          console.error('Failed to fetch reports:', err);
+          showStatus('Failed to load reports', false);
+        });
+      }
+
+      async function resolveReport(id, userId){
+        if (!supabaseInitialized) return;
+        try {
+          // Mark as resolved (kept for audit until deleted explicitly)
+          await window.supabaseDB.resolveNoiseLog(parseInt(id, 10));
+          const cur = await window.supabaseAuth.getCurrentUser();
+          const adminUser = cur && cur.data ? cur.data.user : null;
+          if (adminUser && adminUser.id) {
+            try { await window.supabaseDB.addAlert(adminUser.id, 'info', 'Report ' + id + ' resolved'); } catch(_) {}
+            // Notify the student their report was resolved
+            if (userId) {
+              try { await window.supabaseDB.adminAddUserAlert(userId, 'info', 'Your report #' + id + ' has been resolved.'); } catch(_) {}
+            }
+          }
+        } catch (e) {
+          console.error('Failed to resolve report:', e);
+        } finally {
+          fetchReports();
+        }
+      }
+
+      async function deleteReport(id){
+        if (!supabaseInitialized) return;
+        try {
+          await window.supabaseDB.deleteNoiseLog(parseInt(id, 10));
+        } catch (e) {
+          console.error('Failed to delete report:', e);
+        } finally {
+          fetchReports();
+        }
+      }
+
+      function wireEvents(){
+        if (filterSel) filterSel.addEventListener('change', fetchReports);
+        if (refreshBtn) refreshBtn.addEventListener('click', fetchReports);
+        if (rowsEl) rowsEl.addEventListener('click', function(e){
+          var t = e.target;
+          if (t && t.getAttribute('data-action') === 'resolve') {
+            var id = t.getAttribute('data-id');
+            var uid = t.getAttribute('data-uid');
+            t.disabled = true;
+            resolveReport(id, uid);
+          }
+          if (t && t.getAttribute('data-action') === 'delete') {
+            var delId = t.getAttribute('data-id');
+            t.disabled = true;
+            deleteReport(delId);
+          }
+        });
+      }
+
+      async function checkAdminAccess(){
+        try {
+          const userResult = await window.supabaseAuth.getCurrentUser();
+          if (userResult.error || !userResult.data || !userResult.data.user) {
+            // Not logged in, go to login without bouncing back
+            window.location.replace('index.html?from=reports');
+            return false;
+          }
+          const user = userResult.data.user;
+          const email = user.email ? user.email.toLowerCase() : '';
+          if (email === 'adminlibrarian@umak.edu.ph') return true;
+          const adminResult = await window.supabaseDB.isAdmin(user.id);
+          return !!(adminResult && adminResult.data);
+        } catch(_) { return false; }
+      }
+
+      function logout(){
+        try { 
+          if (window.supabaseAuth) {
+            window.supabaseAuth.signOut().then(function(){ window.location.href='index.html'; }).catch(function(){ window.location.href='index.html'; });
+          } else { window.location.href='index.html'; }
+        } catch(_){ window.location.href='index.html'; }
+      }
+      window.logout = logout;
+
+      // Initialize
+      (async function init(){
+        try {
+          var ok = await initSupabaseWithRetry();
+          supabaseInitialized = !!ok;
+          showStatus(ok ? 'Connected to Supabase' : 'Supabase not available', !!ok);
+          var allowed = await checkAdminAccess();
+          if (!allowed) { window.location.replace('index.html?from=reports'); return; }
+          wireEvents();
+          fetchReports();
+          // Poll every 5 seconds
+          setInterval(fetchReports, 5000);
+        } catch (e) {
+          console.error(e);
+          showStatus('Initialization error', false);
+        }
+      })();
+    })();
+  </script>
+</body>
+</html>
+
+

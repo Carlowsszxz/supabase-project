@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.firebaseio.com https://*.googleapis.com https://www.gstatic.com wss://*.firebaseio.com;" />
+  <title>Frame 8 - Seat Map</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="theme.css" />
+  <script defer src="theme.js"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+  <header class="site-header">
+    <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
+      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
+      <a href="index.html" class="brand-title text-2xl font-semibold mr-auto">University of Makati Library</a>
+      <nav class="hidden md:flex items-center gap-4 text-sm">
+        <a href="Frame_11.html" class="nav-link">Profile</a>
+        <a href="Frame_8.html" class="nav-link active">Map</a>
+        <a href="Frame_16.html" class="nav-link">Report</a>
+      </nav>
+      <button id="logoutBtn" class="hidden md:inline px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 transition">Logout</button>
+    </div>
+  </header>
+  <main class="flex-1 flex items-start justify-center py-12 px-6">
+    <div class="w-full max-w-4xl">
+
+<div class="bg-white rounded-xl border border-slate-200 p-6">
+  <div class="mb-6">
+    <h1 class="text-2xl font-semibold mb-2">Library Table Map</h1>
+    <p class="text-sm text-slate-500 mb-4">Choose a table to view its seats</p>
+    
+    <div class="flex items-center gap-4">
+      <label for="table-select" class="text-sm font-medium text-slate-700">Choose Table:</label>
+      <select id="table-select" class="px-3 py-2 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+        <option value="">Select a table...</option>
+        <option value="table-1">Table 1 - Loading...</option>
+        <option value="table-2">Table 2 - Loading...</option>
+        <option value="table-3">Table 3 - Loading...</option>
+        <option value="table-4">Table 4 - Loading...</option>
+        <option value="table-5">Table 5 - Loading...</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-6">
+    <div class="md:col-span-2">
+      <div id="table-area" class="relative h-72 rounded-lg border border-slate-200 bg-white flex items-center justify-center">
+        
+        <!-- Table 1 -->
+        <div id="table-1" class="table-wrapper relative w-40 h-40 rounded-full bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+          Table 1
+          <button data-seat="1" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="2" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="3" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="4" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="5" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+        </div>
+
+        <!-- Table 2 -->
+        <div id="table-2" class="table-wrapper relative w-40 h-40 rounded-full bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+          Table 2
+          <button data-seat="1" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="2" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="3" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="4" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="5" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+        </div>
+
+        <!-- Table 3 -->
+        <div id="table-3" class="table-wrapper relative w-40 h-40 rounded-full bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+          Table 3
+          <button data-seat="1" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="2" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="3" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="4" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="5" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+        </div>
+
+        <!-- Table 4 -->
+        <div id="table-4" class="table-wrapper relative w-40 h-40 rounded-full bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+          Table 4
+          <button data-seat="1" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="2" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="3" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="4" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="5" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+        </div>
+
+        <!-- Table 5 -->
+        <div id="table-5" class="table-wrapper relative w-40 h-40 rounded-full bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+          Table 5
+          <button data-seat="1" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="2" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="3" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="4" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+          <button data-seat="5" class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"></button>
+        </div>
+
+        <!-- Default message when no table is selected -->
+        <div id="no-selection" class="text-center">
+          <div class="text-sm text-slate-500">Select a table from the dropdown to view details</div>
+        </div>
+      </div>
+    </div>
+  <aside class="space-y-4">
+    <div class="p-4 rounded-lg border border-slate-200 bg-white">
+      <div class="text-sm text-slate-500">Selected table</div>
+      <div class="font-medium mt-1"><span id="seat-title">—</span> · Seats: <span id="seat-count">0</span>/5 occupied</div>
+      <div id="seat-list" class="mt-3 grid grid-cols-5 gap-2 text-xs text-center"></div>
+    </div>
+    <div class="p-4 rounded-lg border border-slate-200 bg-white">
+      <div class="text-sm text-slate-500">Legend</div>
+      <div class="flex items-center gap-6 mt-2 text-sm">
+        <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full bg-green-300"></span><span class="text-slate-600">Free</span></div>
+        <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full bg-red-500"></span><span class="text-slate-600">Occupied</span></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+    </div>
+  </main>
+  <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+  <div id="supabase-status" style="position:fixed;right:12px;bottom:12px" class="px-2 py-1 rounded-md text-xs bg-slate-200 text-slate-700 hidden"></div>
+  
+  <script>
+    (function() {
+      // Simple state management
+      var TABLE_IDS = ['table-1','table-2','table-3','table-4','table-5'];
+      var SEATS_PER_TABLE = 5;
+      var occupancyState = {};
+      var supabaseInitialized = false;
+      var currentTable = null;
+      var logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(){
+          try { 
+            if (window.supabaseAuth) {
+              window.supabaseAuth.signOut().then(function(){ 
+                window.location.href='index.html'; 
+              }).catch(function(err){ 
+                console.error('Logout error:', err);
+                window.location.href='index.html'; 
+              }); 
+            } else {
+              window.location.href='index.html';
+            }
+          } catch(_){ window.location.href='index.html'; }
+        });
+      }
+      
+      // Initialize state
+      TABLE_IDS.forEach(function(id) { 
+        occupancyState[id] = { seats: {} };
+        for (var i = 1; i <= SEATS_PER_TABLE; i++) {
+          occupancyState[id].seats[i] = false;
+        }
+      });
+
+      // Status display
+      function showStatus(text, ok) {
+        var el = document.getElementById('supabase-status');
+        if (!el) return;
+        el.textContent = text;
+        el.classList.remove('hidden');
+        el.classList.remove('bg-red-100','text-red-700','bg-green-100','text-green-700');
+        if (ok) { 
+          el.classList.add('bg-green-100','text-green-700'); 
+        } else { 
+          el.classList.add('bg-red-100','text-red-700'); 
+        }
+      }
+
+      // Initialize Supabase
+      function initSupabaseConnection() {
+        try {
+          if (initSupabase()) {
+            supabaseInitialized = true;
+            showStatus('Supabase connected', true);
+            console.log('Supabase initialized successfully');
+            loadInitialData();
+            subscribeToChanges();
+          } else {
+            showStatus('Supabase initialization failed', false);
+            console.error('Supabase initialization failed');
+          }
+        } catch (e) {
+          showStatus('Supabase init error: ' + (e && e.message ? e.message : 'unknown'), false);
+          console.error('Supabase init error:', e);
+        }
+      }
+
+      // Load initial data
+      function loadInitialData() {
+        if (!supabaseInitialized) return;
+        
+        window.supabaseDB.getOccupancyData().then(function(result) {
+          if (result.data) {
+            console.log('Loading initial data:', result.data);
+            
+            // Clear existing state
+            TABLE_IDS.forEach(function(id) { 
+              occupancyState[id] = { seats: {} };
+              for (var i = 1; i <= SEATS_PER_TABLE; i++) {
+                occupancyState[id].seats[i] = false;
+              }
+            });
+            
+            // Load data from Supabase
+            result.data.forEach(function(record) {
+              if (occupancyState[record.table_id]) {
+                occupancyState[record.table_id].seats[record.seat_number] = record.is_occupied;
+              }
+            });
+            
+            // Update UI
+            updateAllSeats();
+            updateDropdownOptions();
+            if (currentTable) updateSidebar(currentTable);
+          }
+        }).catch(function(err) {
+          console.error('Failed to load initial data:', err);
+        });
+      }
+
+      // Use polling instead of real-time due to CSP issues
+      function subscribeToChanges() {
+        if (!supabaseInitialized) {
+          console.error('Supabase not initialized, cannot start polling');
+          return;
+        }
+        
+        console.log('Setting up polling for real-time updates...');
+        
+        // Poll every 2 seconds for changes
+        setInterval(function() {
+          if (supabaseInitialized) {
+            loadInitialData();
+          }
+        }, 2000);
+        
+        console.log('Polling started - checking for updates every 2 seconds');
+      }
+
+
+      // Update a single seat (scoped to the specific table container)
+      function updateSeat(tableId, seatNum, isOccupied) {
+        var tableEl = document.getElementById(tableId);
+        if (!tableEl) return;
+        var btn = tableEl.querySelector('[data-seat="' + seatNum + '"]');
+        if (!btn) return;
+        if (isOccupied) {
+          btn.classList.remove('bg-green-300');
+          btn.classList.add('bg-red-500');
+        } else {
+          btn.classList.remove('bg-red-500');
+          btn.classList.add('bg-green-300');
+        }
+      }
+
+      // Update all seats
+      function updateAllSeats() {
+        TABLE_IDS.forEach(function(tableId) {
+          var seats = occupancyState[tableId].seats || {};
+          Object.keys(seats).forEach(function(seatNum) {
+            updateSeat(tableId, parseInt(seatNum, 10), !!seats[seatNum]);
+          });
+        });
+      }
+
+      // Update dropdown options
+      function updateDropdownOptions() {
+        var options = Array.from(document.getElementById('table-select').options);
+        options.forEach(function(option, index) {
+          if (index === 0) return; // Skip the first "Select a table..." option
+          
+          var tableId = option.value;
+          var seats = occupancyState[tableId] && occupancyState[tableId].seats || {};
+          var occupied = Object.keys(seats).filter(function(k) { return !!seats[k]; }).length;
+          
+          if (occupied >= SEATS_PER_TABLE) {
+            option.disabled = true;
+            option.textContent = tableId.replace('table-', 'Table ') + ' - Fully Occupied';
+            option.style.color = '#9ca3af';
+          } else {
+            option.disabled = false;
+            option.textContent = tableId.replace('table-', 'Table ') + ' - Available (' + occupied + '/' + SEATS_PER_TABLE + ' occupied)';
+            option.style.color = '';
+          }
+        });
+      }
+
+      // Update sidebar
+      function updateSidebar(tableId) {
+        if (!tableId || !occupancyState[tableId]) {
+          document.getElementById('seat-count').textContent = '0';
+          var st = document.getElementById('seat-title');
+          if (st) st.textContent = '—';
+          document.getElementById('seat-list').innerHTML = '<div class="col-span-5 text-slate-400 text-center py-2">No table selected</div>';
+          return;
+        }
+        
+        var seats = occupancyState[tableId].seats || {};
+        var occupied = Object.keys(seats).filter(function(k) { return !!seats[k]; }).length;
+        
+        var seatTitle = document.getElementById('seat-title');
+        if (seatTitle) seatTitle.textContent = tableId.replace('table-','Table ');
+        document.getElementById('seat-count').textContent = String(occupied);
+        
+        var seatList = document.getElementById('seat-list');
+        seatList.innerHTML = '';
+        
+        for (var i = 1; i <= SEATS_PER_TABLE; i++) {
+          var isOcc = !!seats[i];
+          var chip = document.createElement('div');
+          chip.className = 'px-2 py-1 rounded-lg border text-xs ' + (isOcc ? 'border-red-100 bg-red-50 text-red-700' : 'border-slate-200 bg-slate-50');
+          chip.textContent = 'S' + i + (isOcc ? ' • Occ.' : ' • Free');
+          seatList.appendChild(chip);
+        }
+      }
+      
+      // Show table
+      function showTable(tableId) {
+        // Hide all tables
+        var allTables = document.querySelectorAll('.table-wrapper');
+        allTables.forEach(function(table) {
+          table.classList.add('hidden');
+        });
+        
+        // Hide no-selection message
+        document.getElementById('no-selection').classList.add('hidden');
+        
+        // Show selected table
+        if (tableId && occupancyState[tableId]) {
+          var selectedTable = document.getElementById(tableId);
+          if (selectedTable) {
+            selectedTable.classList.remove('hidden');
+            currentTable = tableId;
+            positionSeatsEvenly(selectedTable);
+            updateSidebar(tableId);
+            // Refresh seat colors for the shown table
+            var seats = occupancyState[tableId].seats || {};
+            Object.keys(seats).forEach(function(seatNum){
+              updateSeat(tableId, parseInt(seatNum, 10), !!seats[seatNum]);
+            });
+          }
+        }
+      }
+      
+      // Show no selection
+      function showNoSelection() {
+        var allTables = document.querySelectorAll('.table-wrapper');
+        allTables.forEach(function(table) {
+          table.classList.add('hidden');
+        });
+        
+        document.getElementById('no-selection').classList.remove('hidden');
+        currentTable = null;
+        updateSidebar(null);
+      }
+
+      // Position seats evenly around table
+      function positionSeatsEvenly(tableElement) {
+        if (!tableElement) return;
+        var seats = Array.from(tableElement.querySelectorAll('.seat'));
+        var rect = tableElement.getBoundingClientRect();
+        var radius = Math.min(rect.width, rect.height) / 2 + 24;
+        var centerX = rect.width / 2;
+        var centerY = rect.height / 2;
+        var count = seats.length;
+        for (var i = 0; i < count; i++) {
+          var angle = (2 * Math.PI * i) / count - Math.PI / 2;
+          var x = centerX + radius * Math.cos(angle);
+          var y = centerY + radius * Math.sin(angle);
+          var seat = seats[i];
+          seat.style.left = x + 'px';
+          seat.style.top = y + 'px';
+        }
+      }
+      
+      // Dropdown change handler
+      document.getElementById('table-select').addEventListener('change', function() {
+        var selectedValue = this.value;
+        if (selectedValue) {
+          showTable(selectedValue);
+        } else {
+          showNoSelection();
+        }
+      });
+      
+      // Initialize with no selection
+      showNoSelection();
+      
+      // Polling fallback (in case real-time doesn't work)
+      function startPolling() {
+        console.log('Starting polling fallback...');
+        setInterval(function() {
+          if (supabaseInitialized) {
+            loadInitialData();
+          }
+        }, 3000); // Poll every 3 seconds
+      }
+
+
+      // Initialize
+      initSupabaseConnection();
+      
+      // Start polling as fallback
+      setTimeout(startPolling, 10000); // Start polling after 10 seconds
+    })();
+  </script>
+</body>
+</html>
