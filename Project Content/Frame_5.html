@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -10,7 +11,7 @@
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script>
     // Ensure Supabase is loaded before our script
-    window.addEventListener('load', function() {
+    window.addEventListener('load', function () {
       if (typeof window.supabase === 'undefined') {
         console.error('Supabase library failed to load');
       } else {
@@ -19,113 +20,148 @@
     });
   </script>
   <script src="supabase.js"></script>
+  <script src="auth-guard.js"></script>
   <script src="password-toggle.js"></script>
 </head>
+
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
   <header class="site-header">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
       <a href="index.html" class="brand-title text-2xl font-semibold mr-auto">University of Makati Library</a>
+      <button id="mobile-menu-btn"
+        class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+        aria-label="Open main menu" aria-expanded="false">
+        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
       <nav class="hidden md:flex items-center gap-4 text-sm">
         <a href="index.html" class="nav-link">Login</a>
       </nav>
     </div>
+    <nav id="mobile-menu" class="md:hidden hidden px-6 pb-3">
+      <a href="index.html" class="block py-2 text-sm nav-link">Login</a>
+    </nav>
+    </div>
   </header>
-  
+
   <main class="flex-1 flex items-start justify-center py-12 px-6">
     <div class="w-full max-w-4xl">
       <div class="bg-white rounded-2xl shadow p-8 card-hover fade-in-up">
         <h1 class="text-2xl font-bold mb-2 slide-in-left">Create Account</h1>
         <p class="text-sm text-slate-500 mb-6 slide-in-right">Register to access the library dashboard</p>
-        
+
         <!-- Status Messages -->
-        <div id="register-error" class="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg p-3 hidden"></div>
-        <div id="register-success" class="mb-4 text-sm text-green-600 bg-green-50 border border-green-100 rounded-lg p-4 hidden">
+        <div id="register-error"
+          class="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg p-3 hidden"></div>
+        <div id="register-success"
+          class="mb-4 text-sm text-green-600 bg-green-50 border border-green-100 rounded-lg p-4 hidden">
           <div class="flex items-start">
             <div class="flex-1">
               <div id="success-message"></div>
             </div>
-            <button id="close-success" class="ml-2 text-green-500 hover:text-green-700 text-lg font-bold hidden">&times;</button>
+            <button id="close-success"
+              class="ml-2 text-green-500 hover:text-green-700 text-lg font-bold hidden">&times;</button>
           </div>
           <!-- Resend verification controls (shown after signup) -->
           <div id="resend-wrap" class="mt-3 hidden">
             <div class="flex items-center gap-3">
-              <button id="resend-btn" class="px-3 py-2 rounded bg-green-600 text-white text-sm hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">Resend verification email</button>
+              <button id="resend-btn"
+                class="px-3 py-2 rounded bg-green-600 text-white text-sm hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">Resend
+                verification email</button>
               <span id="resend-timer" class="text-xs text-green-700"></span>
             </div>
             <p class="text-xs text-green-700 mt-2">For security, you can resend once every 2 minutes.</p>
           </div>
         </div>
-        <div id="register-loading" class="mb-4 text-sm text-blue-600 bg-blue-50 border border-blue-100 rounded-lg p-3 hidden">
+        <div id="register-loading"
+          class="mb-4 text-sm text-blue-600 bg-blue-50 border border-blue-100 rounded-lg p-3 hidden">
           <div class="flex items-center">
             <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
             Processing registration...
           </div>
         </div>
-        
+
         <form id="register-form" class="space-y-4">
           <div class="grid grid-cols-2 gap-4 fade-in-up stagger-1">
             <div>
               <label class="block text-sm text-slate-700 mb-1">First Name</label>
-              <input id="reg-first" type="text" class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" placeholder="Enter first name" required />
+              <input id="reg-first" type="text"
+                class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+                placeholder="Enter first name" required />
             </div>
             <div>
               <label class="block text-sm text-slate-700 mb-1">Last Name</label>
-              <input id="reg-last" type="text" class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" placeholder="Enter last name" required />
+              <input id="reg-last" type="text"
+                class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+                placeholder="Enter last name" required />
             </div>
           </div>
-          
+
           <div class="fade-in-up stagger-2">
             <label class="block text-sm text-slate-700 mb-1">Email Address</label>
-            <input id="reg-email" type="email" class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" placeholder="your.email@umak.edu.ph" required />
+            <input id="reg-email" type="email"
+              class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+              placeholder="your.email@umak.edu.ph" required />
             <p class="text-xs text-slate-500 mt-1">Must be a University of Makati email address</p>
           </div>
-          
+
           <div class="fade-in-up stagger-3">
             <label class="block text-sm text-slate-700 mb-1">Password</label>
-            <input id="reg-pass" type="password" class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" placeholder="Create a strong password" required minlength="6" />
+            <input id="reg-pass" type="password"
+              class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+              placeholder="Create a strong password" required minlength="6" />
             <p class="text-xs text-slate-500 mt-1">Minimum 6 characters</p>
           </div>
-          
+
           <div class="fade-in-up stagger-3">
             <label class="block text-sm text-slate-700 mb-1">Confirm Password</label>
-            <input id="reg-pass-confirm" type="password" class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" placeholder="Re-enter your password" required minlength="6" />
+            <input id="reg-pass-confirm" type="password"
+              class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+              placeholder="Re-enter your password" required minlength="6" />
           </div>
-          
+
           <div class="fade-in-up stagger-4">
             <label class="block text-sm text-slate-700 mb-1">Student ID <span class="text-red-600">*</span></label>
-            <input id="reg-student-id" type="text" required class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" placeholder="Enter student ID" />
+            <input id="reg-student-id" type="text" required
+              class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+              placeholder="Enter student ID" />
           </div>
-          
+
           <div class="fade-in-up stagger-5">
             <label class="block text-sm text-slate-700 mb-1">Program <span class="text-red-600">*</span></label>
-            <input id="reg-program" type="text" required class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" placeholder="Enter your program" />
+            <input id="reg-program" type="text" required
+              class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+              placeholder="Enter your program" />
           </div>
-          
+
           <div class="fade-in-up stagger-6">
-            <button type="submit" class="w-full py-3 rounded-lg bg-indigo-600 text-white font-semibold btn-press hover-lift transition disabled:opacity-50 disabled:cursor-not-allowed">
+            <button type="submit"
+              class="w-full py-3 rounded-lg bg-indigo-600 text-white font-semibold btn-press hover-lift transition disabled:opacity-50 disabled:cursor-not-allowed">
               Create Account
             </button>
           </div>
         </form>
-        
+
         <div class="mt-6 text-center fade-in-up stagger-7">
           <p class="text-sm text-slate-500">
-            Already have an account? 
+            Already have an account?
             <a href="index.html" class="text-indigo-600 hover:text-indigo-700 font-medium">Sign in here</a>
           </p>
         </div>
       </div>
     </div>
   </main>
-  
+
   <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
 
   <script>
-    (function(){
+    (function () {
       // Initialize Supabase with retry mechanism
       let supabaseInitialized = false;
-      
+
       async function initializeSupabase() {
         try {
           // Try immediate initialization first
@@ -134,21 +170,21 @@
             console.log('Supabase initialized successfully');
             return;
           }
-          
+
           // If immediate initialization fails, try with retry mechanism
           console.log('Immediate initialization failed, trying with retry...');
           supabaseInitialized = await initSupabaseWithRetry();
-          
+
           if (supabaseInitialized) {
             console.log('Supabase initialized successfully with retry');
           } else {
             console.error('Supabase initialization failed after retries');
           }
-        } catch(err) {
+        } catch (err) {
           console.error('Supabase error:', err);
         }
       }
-      
+
       // Initialize Supabase
       initializeSupabase();
 
@@ -167,11 +203,11 @@
         const el = document.getElementById('register-success');
         const messageEl = document.getElementById('success-message');
         const closeBtn = document.getElementById('close-success');
-        
+
         if (el && messageEl) {
           messageEl.textContent = message;
           el.classList.remove('hidden');
-          
+
           if (showCloseButton && closeBtn) {
             closeBtn.classList.remove('hidden');
           } else if (closeBtn) {
@@ -264,7 +300,7 @@
       // Registration Handler
       async function handleRegistration(event) {
         event.preventDefault();
-        
+
         // Check rate limiting
         const now = Date.now();
         if (now - lastRegistrationAttempt < REGISTRATION_COOLDOWN) {
@@ -273,14 +309,14 @@
           return;
         }
         lastRegistrationAttempt = now;
-        
+
         // Wait for Supabase to initialize if not ready
         if (!supabaseInitialized) {
           showError('System is initializing. Please wait a moment and try again.');
-          
+
           // Try to initialize again
           await initializeSupabase();
-          
+
           if (!supabaseInitialized) {
             showError('System not initialized. Please refresh the page and try again.');
             return;
@@ -319,12 +355,12 @@
             const resendWrapEarly = document.getElementById('resend-wrap');
             if (resendWrapEarly) resendWrapEarly.classList.remove('hidden');
             startOrUpdateResendCooldown(email);
-          } catch(_) {}
+          } catch (_) { }
 
           // Register user with Supabase and send email verification
           const redirectUrl = window.location.origin + '/index.html';
           const result = await window.supabaseAuth.signUpWithEmailVerification(email, password, userData, redirectUrl);
-          
+
           if (result.error) {
             throw result.error;
           }
@@ -341,8 +377,33 @@
 
         } catch (error) {
           console.error('Registration error:', error);
-          
-          if (error.message.includes('User already registered')) {
+
+          if (error.message && error.message.includes('User already registered')) {
+            // Check if it's just unverified or truly existing and verified
+            try {
+              const signInAttempt = await window.supabaseAuth.signIn(email, password);
+              if (signInAttempt && signInAttempt.data && signInAttempt.data.user) {
+                // Credentials are correct and account exists — sign the user in and redirect
+                showSuccess('Account already exists. Signing you in...');
+                setTimeout(function () { window.location.href = 'Frame_11.html'; }, 1200);
+                return;
+              }
+            } catch (signinErr) {
+              const msg = (signinErr && signinErr.message) ? signinErr.message : '';
+              if (msg.toLowerCase().includes('email not confirmed')) {
+                // Not verified yet – show verification guidance and enable resend
+                showSuccess('Your account exists but is not verified yet. Please check your email or resend the verification.', true);
+                const resendWrap2 = document.getElementById('resend-wrap');
+                if (resendWrap2) resendWrap2.classList.remove('hidden');
+                startOrUpdateResendCooldown(email);
+                return;
+              }
+              if (msg.toLowerCase().includes('invalid login credentials')) {
+                showError('This email is already registered. Please use Sign In with your password.');
+                return;
+              }
+            }
+            // Fallback generic message
             showError('This email is already registered. Please sign in instead.');
           } else if (error.message.includes('Password should be at least 6 characters')) {
             showError('Password must be at least 6 characters long.');
@@ -372,7 +433,7 @@
       // Close success message button
       const closeSuccessBtn = document.getElementById('close-success');
       if (closeSuccessBtn) {
-        closeSuccessBtn.addEventListener('click', function() {
+        closeSuccessBtn.addEventListener('click', function () {
           const successEl = document.getElementById('register-success');
           if (successEl) {
             successEl.classList.add('hidden');
@@ -403,7 +464,7 @@
 
       const resendBtn = document.getElementById('resend-btn');
       if (resendBtn) {
-        resendBtn.addEventListener('click', async function() {
+        resendBtn.addEventListener('click', async function () {
           const email = document.getElementById('reg-email').value.trim();
           if (!email) return;
           try {
@@ -426,7 +487,7 @@
       // Real-time validation
       const emailInput = document.getElementById('reg-email');
       if (emailInput) {
-        emailInput.addEventListener('blur', function() {
+        emailInput.addEventListener('blur', function () {
           const email = this.value.trim();
           if (email && !email.toLowerCase().endsWith('@umak.edu.ph')) {
             showError('Please use a University of Makati email address (@umak.edu.ph)');
@@ -438,7 +499,7 @@
 
       const passwordInput = document.getElementById('reg-pass');
       if (passwordInput) {
-        passwordInput.addEventListener('input', function() {
+        passwordInput.addEventListener('input', function () {
           const password = this.value;
           if (password.length > 0 && password.length < 6) {
             showError('Password must be at least 6 characters long');
@@ -450,7 +511,7 @@
 
       const confirmPasswordInput = document.getElementById('reg-pass-confirm');
       if (confirmPasswordInput) {
-        confirmPasswordInput.addEventListener('input', function() {
+        confirmPasswordInput.addEventListener('input', function () {
           const password = document.getElementById('reg-pass').value;
           const confirm = this.value;
           if (confirm.length > 0 && password !== confirm) {
@@ -461,7 +522,31 @@
         });
       }
 
+      // Mobile menu toggle for Frame 5
+      (function () {
+        try {
+          var mobileBtn = document.getElementById('mobile-menu-btn');
+          var mobileMenu = document.getElementById('mobile-menu');
+          var header = document.querySelector('header.site-header');
+          if (mobileBtn && mobileMenu && header) {
+            mobileBtn.addEventListener('click', function () {
+              var isHidden = mobileMenu.classList.contains('hidden');
+              if (isHidden) {
+                header.classList.add('menu-open');
+                mobileMenu.classList.remove('hidden');
+                mobileBtn.setAttribute('aria-expanded', 'true');
+              } else {
+                header.classList.remove('menu-open');
+                mobileMenu.classList.add('hidden');
+                mobileBtn.setAttribute('aria-expanded', 'false');
+              }
+            });
+          }
+        } catch (_) { }
+      })();
+
     })();
   </script>
 </body>
+
 </html>
