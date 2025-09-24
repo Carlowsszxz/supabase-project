@@ -1,18 +1,19 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>University of Makati Library - Login</title>
   <script>
-    (function(){
+    (function () {
       var originalWarn = console.warn;
-      console.warn = function(){
+      console.warn = function () {
         try {
           if (arguments && typeof arguments[0] === 'string' && arguments[0].indexOf('cdn.tailwindcss.com should not be used in production') !== -1) {
             return; // suppress only Tailwind CDN production warning
           }
-        } catch (e) {}
+        } catch (e) { }
         return originalWarn.apply(console, arguments);
       };
     })();
@@ -20,11 +21,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
   <script defer src="theme.js"></script>
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="config.js"></script>
   <script>
     // Ensure Supabase is loaded before our script
-    window.addEventListener('load', function() {
+    window.addEventListener('load', function () {
       if (typeof window.supabase === 'undefined') {
         console.error('Supabase library failed to load');
       } else {
@@ -36,18 +37,32 @@
   <script src="auth.js"></script>
   <script src="password-toggle.js"></script>
 </head>
+
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
   <header class="site-header">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
-      <a href="index.html" class="brand-title text-2xl font-semibold mr-auto">University of Makati Library</a>
+      <a href="index.html" class="brand-title text-xl md:text-2xl font-semibold mr-auto">University of Makati
+        Library</a>
+      <button id="mobile-menu-btn"
+        class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+        aria-label="Open main menu" aria-expanded="false">
+        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
       <nav class="hidden md:flex items-center gap-4 text-sm">
         <a href="Frame_5.html" class="nav-link">Register</a>
         <a href="how-to.html" class="nav-link">How To</a>
       </nav>
     </div>
+    <nav id="mobile-menu" class="md:hidden hidden px-6 pb-3">
+      <a href="Frame_5.html" class="block py-2 text-sm nav-link">Register</a>
+      <a href="how-to.html" class="block py-2 text-sm nav-link">How To</a>
+    </nav>
   </header>
-  
+
   <main class="flex-1 flex items-start justify-center py-12 px-6">
     <div class="w-full max-w-6xl">
       <div class="bg-white rounded-2xl shadow overflow-hidden">
@@ -58,9 +73,12 @@
             <p class="text-sm text-slate-500 mb-6">Sign in to access the library dashboard</p>
 
             <!-- Status Messages -->
-            <div id="login-error" class="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg p-3 hidden"></div>
-            <div id="login-success" class="mb-4 text-sm text-green-600 bg-green-50 border border-green-100 rounded-lg p-3 hidden"></div>
-            <div id="login-loading" class="mb-4 text-sm text-blue-600 bg-blue-50 border border-blue-100 rounded-lg p-3 hidden">
+            <div id="login-error"
+              class="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg p-3 hidden"></div>
+            <div id="login-success"
+              class="mb-4 text-sm text-green-600 bg-green-50 border border-green-100 rounded-lg p-3 hidden"></div>
+            <div id="login-loading"
+              class="mb-4 text-sm text-blue-600 bg-blue-50 border border-blue-100 rounded-lg p-3 hidden">
               <div class="flex items-center">
                 <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
                 Signing you in...
@@ -70,18 +88,24 @@
             <form id="login-form" class="space-y-4">
               <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
-                <input id="login-email" type="email" class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" placeholder="your.email@umak.edu.ph" required />
+                <input id="login-email" type="email"
+                  class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+                  placeholder="your.email@umak.edu.ph" required />
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
-                <input id="login-password" type="password" class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" placeholder="Enter your password" required />
+                <input id="login-password" type="password"
+                  class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+                  placeholder="Enter your password" required />
               </div>
 
               <!-- Admin Code Section (Hidden by default) -->
               <div id="admin-secret" class="hidden">
                 <label class="block text-sm font-medium text-slate-700 mb-1">Admin Code (Optional)</label>
-                <input id="admin-code" type="password" class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition" placeholder="Enter admin code" />
+                <input id="admin-code" type="password"
+                  class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+                  placeholder="Enter admin code" />
                 <p class="mt-1 text-xs text-slate-500">Press Alt+A or click the title 3 times to show/hide</p>
               </div>
 
@@ -94,7 +118,8 @@
               </div>
 
               <div>
-                <button type="submit" class="w-full py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                <button type="submit"
+                  class="w-full py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
                   Sign In
                 </button>
               </div>
@@ -109,7 +134,8 @@
           </div>
 
           <!-- Right: UMak info panel -->
-          <div class="info-panel bg-gradient-to-br from-[#052865] via-[#003566] to-[#001d3d] text-white p-8 flex flex-col">
+          <div
+            class="info-panel bg-gradient-to-br from-[#052865] via-[#003566] to-[#001d3d] text-white p-8 flex flex-col">
             <div class="flex items-center gap-3 mb-6">
               <img src="UMak_Logo_Registered.png" alt="UMak" class="h-10 w-10 rounded bg-white p-1" />
               <div>
@@ -121,7 +147,8 @@
             <div class="space-y-4 text-white">
               <div>
                 <h3 class="font-semibold !text-white">About</h3>
-                <p class="text-sm opacity-90 info-muted">The UMak Library provides collaborative study spaces, quiet zones, and access to digital resources to support student success.</p>
+                <p class="text-sm opacity-90 info-muted">The UMak Library provides collaborative study spaces, quiet
+                  zones, and access to digital resources to support student success.</p>
               </div>
               <div>
                 <h3 class="font-semibold !text-white">Features</h3>
@@ -140,8 +167,15 @@
 
             <!-- Link to How-To page -->
             <div class="mt-6">
-              <a href="how-to.html" class="howto-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 border border-white/10 text-white transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H19"/><path d="M20 12v6"/><path d="M20 18l-8-5v-5l8 5"/><path d="M4 4h16v6H4z"/></svg>
+              <a href="how-to.html"
+                class="howto-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 border border-white/10 text-white transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H19" />
+                  <path d="M20 12v6" />
+                  <path d="M20 18l-8-5v-5l8 5" />
+                  <path d="M4 4h16v6H4z" />
+                </svg>
                 Read: How to use the UMak Library App
               </a>
             </div>
@@ -156,16 +190,16 @@
       </div>
     </div>
   </main>
-  
+
   <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
 
   <script>
-    (function(){
+    (function () {
       // Prevent auto-redirects when coming from a logout
       var skipAutoRedirect = false;
       // Initialize Supabase with retry mechanism
       let supabaseInitialized = false;
-      
+
       async function initializeSupabase() {
         try {
           // Try immediate initialization first
@@ -174,21 +208,21 @@
             console.log('Supabase initialized successfully');
             return;
           }
-          
+
           // If immediate initialization fails, try with retry mechanism
           console.log('Immediate initialization failed, trying with retry...');
           supabaseInitialized = await initSupabaseWithRetry();
-          
+
           if (supabaseInitialized) {
             console.log('Supabase initialized successfully with retry');
           } else {
             console.error('Supabase initialization failed after retries');
           }
-        } catch(err) {
+        } catch (err) {
           console.error('Supabase error:', err);
         }
       }
-      
+
       // Initialize Supabase
       initializeSupabase();
 
@@ -243,30 +277,30 @@
         const wrap = document.getElementById('admin-secret');
         if (!wrap) return;
         const willShow = typeof force === 'boolean' ? force : wrap.classList.contains('hidden');
-        if (willShow) { 
-          wrap.classList.remove('hidden'); 
-        } else { 
-          wrap.classList.add('hidden'); 
+        if (willShow) {
+          wrap.classList.remove('hidden');
+        } else {
+          wrap.classList.add('hidden');
         }
       }
 
       // Event Listeners for Admin Code
       const title = document.querySelector('.brand-title');
       if (title) {
-        title.addEventListener('click', function(){ 
-          tapCount++; 
-          if (tapCount >= 3) { 
-            toggleAdminSecret(); 
-            tapCount = 0; 
-          } 
-          setTimeout(function(){ tapCount = 0; }, 1200); 
+        title.addEventListener('click', function () {
+          tapCount++;
+          if (tapCount >= 3) {
+            toggleAdminSecret();
+            tapCount = 0;
+          }
+          setTimeout(function () { tapCount = 0; }, 1200);
         });
       }
-      
-      document.addEventListener('keydown', function(e){ 
-        if ((e.altKey || e.metaKey) && (e.key === 'a' || e.key === 'A')) { 
-          toggleAdminSecret(); 
-        } 
+
+      document.addEventListener('keydown', function (e) {
+        if ((e.altKey || e.metaKey) && (e.key === 'a' || e.key === 'A')) {
+          toggleAdminSecret();
+        }
       });
 
       // URL Parameter Handling
@@ -275,7 +309,7 @@
       const logoutFlag = urlParams.get('logout');
       if (logoutFlag) {
         skipAutoRedirect = true;
-        try { window.supabaseAuth && window.supabaseAuth.signOut && window.supabaseAuth.signOut(); } catch(_) {}
+        try { window.supabaseAuth && window.supabaseAuth.signOut && window.supabaseAuth.signOut(); } catch (_) { }
         // Clean the URL so refreshes don't keep the flag
         window.history.replaceState({}, document.title, window.location.pathname);
       }
@@ -340,13 +374,13 @@
         try {
           // Check if user exists in users table
           const profileResult = await window.supabaseDB.getUser(user.id);
-          
+
           if (profileResult.data) {
             console.log('User profile found:', profileResult.data);
             return true;
           } else {
             console.log('User profile not found, creating...');
-            
+
             // Create user profile with metadata
             const userData = {
               first_name: user.user_metadata?.first_name || '',
@@ -356,7 +390,7 @@
             };
 
             const createResult = await window.supabaseDB.insertUser(user.id, userData);
-            
+
             if (createResult.error) {
               console.error('Failed to create user profile:', createResult.error);
               if (createResult.error.code === 'PGRST205') {
@@ -381,7 +415,7 @@
           if (window.authManager) {
             return await window.authManager.getDestinationAfterLogin(user);
           }
-          
+
           // Fallback to default destination
           return 'Frame_11.html';
         } catch (error) {
@@ -393,14 +427,14 @@
       // Login Handler
       async function handleLogin(event) {
         event.preventDefault();
-        
+
         // Wait for Supabase to initialize if not ready
         if (!supabaseInitialized) {
           showError('System is initializing. Please wait a moment and try again.');
-          
+
           // Try to initialize again
           await initializeSupabase();
-          
+
           if (!supabaseInitialized) {
             showError('System not initialized. Please refresh the page and try again.');
             return;
@@ -441,7 +475,7 @@
 
           // Check and create user profile
           const profileExists = await checkAndCreateUserProfile(result.data.user);
-          
+
           if (!profileExists) {
             // Sign out the user if profile creation failed
             await window.supabaseAuth.signOut();
@@ -449,11 +483,28 @@
             return;
           }
 
+          // Log login activity (best-effort)
+          try {
+            const userEmail = (result?.data?.user?.email) || null;
+            const userId = (result?.data?.user?.id) || null;
+            if (window.supabaseDB && userId) {
+              window.supabaseDB.addActivityLog({
+                userId: userId,
+                userName: userEmail,
+                type: 'login',
+                title: 'User Login',
+                description: (userEmail || 'A user') + ' logged in successfully',
+                severity: 'success',
+                details: null
+              });
+            }
+          } catch (_) { }
+
           // Determine destination
           const destination = await getDestinationAfterLogin(email, password, result.data.user);
-          
+
           showSuccess('Login successful! Redirecting...');
-          
+
           // Redirect to appropriate page
           const redirectDelay = window.APP_CONFIG?.ui?.redirectDelay || 1000;
           setTimeout(() => {
@@ -462,7 +513,7 @@
 
         } catch (error) {
           console.error('Login error:', error);
-          
+
           // Enhanced error handling
           if (error.message.includes('Invalid login credentials')) {
             showError('Invalid email or password. Please check your credentials and try again.');
@@ -488,10 +539,26 @@
         form.addEventListener('submit', handleLogin);
       }
 
+      // Mobile menu toggle
+      const mobileBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (mobileBtn && mobileMenu) {
+        mobileBtn.addEventListener('click', function () {
+          const isHidden = mobileMenu.classList.contains('hidden');
+          if (isHidden) {
+            mobileMenu.classList.remove('hidden');
+            mobileBtn.setAttribute('aria-expanded', 'true');
+          } else {
+            mobileMenu.classList.add('hidden');
+            mobileBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
       // Real-time validation
       const emailInput = document.getElementById('login-email');
       if (emailInput) {
-        emailInput.addEventListener('blur', function() {
+        emailInput.addEventListener('blur', function () {
           const email = this.value.trim();
           if (email) {
             if (window.authManager) {
@@ -507,7 +574,7 @@
                 showError('Please use a University of Makati email address (@umak.edu.ph)');
               } else {
                 hideAllMessages();
-              }
+     }
             }
           }
         });
@@ -530,4 +597,5 @@
     })();
   </script>
 </body>
+
 </html>

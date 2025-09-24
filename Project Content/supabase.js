@@ -8,9 +8,10 @@ let supabase = null;
 // Initialize Supabase
 function initSupabase() {
   if (typeof window !== 'undefined') {
-    // Check if Supabase is available
-    if (window.supabase) {
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Check if Supabase is available (UMD may export as window.supabase or window.Supabase)
+    var Supa = window.supabase || window.Supabase || null;
+    if (Supa && typeof Supa.createClient === 'function') {
+      supabase = Supa.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       console.log('Supabase initialized successfully');
       return true;
     } else {
@@ -27,13 +28,18 @@ function initSupabaseWithRetry() {
   return new Promise((resolve) => {
     const maxRetries = 10;
     let retries = 0;
-    
+
     const checkSupabase = () => {
-      if (typeof window !== 'undefined' && window.supabase) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log('Supabase initialized successfully');
-        resolve(true);
-      } else if (retries < maxRetries) {
+      if (typeof window !== 'undefined') {
+        var Supa = window.supabase || window.Supabase || null;
+        if (Supa && typeof Supa.createClient === 'function') {
+          supabase = Supa.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+          console.log('Supabase initialized successfully');
+          resolve(true);
+          return;
+        }
+      }
+      if (retries < maxRetries) {
         retries++;
         console.log(`Waiting for Supabase... attempt ${retries}/${maxRetries}`);
         setTimeout(checkSupabase, 500);
@@ -42,7 +48,7 @@ function initSupabaseWithRetry() {
         resolve(false);
       }
     };
-    
+
     checkSupabase();
   });
 }
@@ -52,7 +58,7 @@ const auth = {
   // Sign up with email and password
   async signUp(email, password, userData = {}) {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
+
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -61,7 +67,7 @@ const auth = {
           data: userData
         }
       });
-      
+
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
@@ -92,13 +98,13 @@ const auth = {
   // Sign in with email and password
   async signIn(email, password) {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
-      
+
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
@@ -149,7 +155,7 @@ const auth = {
   // Sign out
   async signOut() {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
+
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -178,12 +184,12 @@ const auth = {
   // Reset password
   async resetPassword(email) {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
+
     try {
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: window.location.origin + '/index.html'
       });
-      
+
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
@@ -194,7 +200,7 @@ const auth = {
   // Sign up with custom redirect URL
   async signUpWithRedirect(email, password, userData = {}, redirectTo = null) {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
+
     try {
       const redirectUrl = redirectTo || window.location.origin + '/index.html';
       const { data, error } = await supabase.auth.signUp({
@@ -205,7 +211,7 @@ const auth = {
           emailRedirectTo: redirectUrl
         }
       });
-      
+
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
@@ -219,12 +225,12 @@ const db = {
   // Insert user profile
   async insertUser(uid, profile) {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
+
     try {
       const { data, error } = await supabase
         .from('users')
         .insert([{ id: uid, ...profile }]);
-      
+
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
@@ -235,13 +241,13 @@ const db = {
   // Update user profile
   async updateUser(uid, updates) {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
+
     try {
       const { data, error } = await supabase
         .from('users')
         .update(updates)
         .eq('id', uid);
-      
+
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
@@ -252,14 +258,14 @@ const db = {
   // Get user profile
   async getUser(uid) {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
+
     try {
       const { data, error } = await supabase
         .from('users')
         .select('*')
         .eq('id', uid)
         .single();
-      
+
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
@@ -270,7 +276,7 @@ const db = {
   // Occupancy management
   async updateSeatOccupancy(tableId, seatNumber, isOccupied, userId = null) {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
+
     try {
       // Use upsert with onConflict to handle conflicts properly
       const { data, error } = await supabase
@@ -285,7 +291,7 @@ const db = {
         }, {
           onConflict: 'table_id,seat_number'
         });
-      
+
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
@@ -296,14 +302,14 @@ const db = {
 
   async getOccupancyData() {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
+
     try {
       const { data, error } = await supabase
         .from('occupancy')
         .select('*')
         .order('table_id', { ascending: true })
         .order('seat_number', { ascending: true });
-      
+
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
@@ -314,11 +320,11 @@ const db = {
   // Real-time subscription for occupancy
   subscribeToOccupancy(callback) {
     if (!supabase) return null;
-    
+
     return supabase
       .channel('occupancy_changes')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'occupancy' }, 
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'occupancy' },
         callback
       )
       .subscribe();
@@ -327,7 +333,7 @@ const db = {
   // Noise logs
   async addNoiseLog(userId, tableId, noiseLevel, activityType, notes = '') {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
+
     try {
       const { data, error } = await supabase
         .from('noise_logs')
@@ -338,7 +344,7 @@ const db = {
           activity_type: activityType,
           notes: notes
         }]);
-      
+
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
@@ -348,7 +354,7 @@ const db = {
 
   async getNoiseLogs(userId, limit = 50) {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
+
     try {
       // Admin request for all logs
       if (userId === '*') {
@@ -381,7 +387,7 @@ const db = {
   // Alerts
   async addAlert(userId, alertType, message) {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
+
     try {
       const { data, error } = await supabase
         .from('alerts')
@@ -390,7 +396,7 @@ const db = {
           alert_type: alertType,
           message: message
         }]);
-      
+
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
@@ -400,20 +406,20 @@ const db = {
 
   async getAlerts(userId, unreadOnly = false) {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
+
     try {
       let query = supabase
         .from('alerts')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
-      
+
       if (unreadOnly) {
         query = query.eq('is_read', false);
       }
-      
+
       const { data, error } = await query;
-      
+
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
@@ -423,13 +429,13 @@ const db = {
 
   async markAlertAsRead(alertId) {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
+
     try {
       const { data, error } = await supabase
         .from('alerts')
         .update({ is_read: true })
         .eq('id', alertId);
-      
+
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
@@ -493,21 +499,56 @@ const db = {
   // Admin functions
   async isAdmin(userId) {
     if (!supabase) return { error: 'Supabase not initialized' };
-    
     try {
       const { data, error } = await supabase
         .from('admin_users')
         .select('*')
         .eq('id', userId)
         .single();
-      
       if (error && error.code !== 'PGRST116') throw error;
       return { data: !!data, error: null };
     } catch (error) {
       return { data: false, error };
     }
-  }
-  ,
+  },
+
+  // Activity logs
+  async addActivityLog({ userId = null, userName = null, type, title, description = '', severity = 'info', details = null }) {
+    if (!supabase) return { error: 'Supabase not initialized' };
+    try {
+      const { data, error } = await supabase
+        .from('activity_logs')
+        .insert([{
+          user_id: userId || null,
+          user_name: userName || null,
+          type,
+          title,
+          description,
+          severity,
+          details
+        }]);
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
+  },
+
+  async getActivityLogs(limit = 200) {
+    if (!supabase) return { error: 'Supabase not initialized' };
+    try {
+      const { data, error } = await supabase
+        .from('activity_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
+  },
+
   // Admin: list users with admin flag
   async adminListUsers(search = '', limit = 200) {
     if (!supabase) return { error: 'Supabase not initialized' };
@@ -518,8 +559,8 @@ const db = {
     } catch (error) {
       return { data: null, error };
     }
-  }
-  ,
+  },
+
   // Admin: set/unset admin role
   async adminSetUserAdmin(userId, makeAdmin) {
     if (!supabase) return { error: 'Supabase not initialized' };
@@ -530,8 +571,8 @@ const db = {
     } catch (error) {
       return { error };
     }
-  }
-  ,
+  },
+
   // Admin: delete a non-admin user's profile (not auth account)
   async adminDeleteUser(userId) {
     if (!supabase) return { error: 'Supabase not initialized' };
@@ -542,6 +583,52 @@ const db = {
     } catch (error) {
       return { error };
     }
+  },
+
+  // Admin layout management
+  async updateAdminLayout(layoutData) {
+    if (!supabase) return { error: 'Supabase not initialized' };
+    try {
+      const { data, error } = await supabase.rpc('update_admin_layout', { p_layout_data: layoutData });
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
+  },
+
+  async getAdminLayout() {
+    if (!supabase) return { error: 'Supabase not initialized' };
+    try {
+      const { data, error } = await supabase
+        .from('admin_layout')
+        .select('*')
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .single();
+      if (error && error.code !== 'PGRST116') throw error;
+      return { data: data?.layout_data || null, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
+  },
+
+  // Real-time subscription for admin layout changes
+  subscribeToAdminLayout(callback) {
+    if (!supabase) return null;
+    return supabase
+      .channel('admin_layout_changes')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'admin_layout' },
+        callback
+      )
+      .subscribe();
+  },
+
+  // Simple table position update (for future use)
+  async updateTablePosition(tableId, left, top) {
+    console.log('Table position updated:', tableId, 'left:', left, 'top:', top);
+    return { data: { tableId, left, top }, error: null };
   }
 };
 
