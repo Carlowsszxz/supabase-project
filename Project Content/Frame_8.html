@@ -20,6 +20,14 @@
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
       <a href="index.html" class="brand-title text-2xl font-semibold mr-auto">University of Makati Library</a>
+      <button id="mobile-menu-btn"
+        class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+        aria-label="Open main menu" aria-expanded="false">
+        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
       <nav class="hidden md:flex items-center gap-4 text-sm">
         <a href="Frame_11.html" class="nav-link">Profile</a>
         <a href="Frame_8.html" class="nav-link active">Map</a>
@@ -28,6 +36,13 @@
       <button id="logoutBtn"
         class="hidden md:inline px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 transition">Logout</button>
     </div>
+    <nav id="mobile-menu" class="md:hidden hidden px-6 pb-3">
+      <a href="Frame_11.html" class="block py-2 text-sm nav-link">Profile</a>
+      <a href="Frame_8.html" class="block py-2 text-sm nav-link active">Map</a>
+      <a href="Frame_16.html" class="block py-2 text-sm nav-link">Report</a>
+      <button id="logoutBtnMobile"
+        class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition text-left">Logout</button>
+    </nav>
   </header>
   <main class="flex-1 flex items-start justify-center py-12 px-6">
     <div class="w-full max-w-4xl">
@@ -321,14 +336,8 @@
           if (index === 0) return; // Skip the first "Select a table..." option
 
           var tableId = option.value;
-          var tableEl = document.getElementById(tableId);
-          // Prefer DOM-derived count (matches visible state); fallback to state
-          var occupied = tableEl
-            ? tableEl.querySelectorAll('.seat.bg-red-500').length
-            : (function () {
-              var seats = occupancyState[tableId] && occupancyState[tableId].seats || {};
-              return Object.keys(seats).filter(function (k) { return !!seats[k]; }).length;
-            })();
+          var seats = occupancyState[tableId] && occupancyState[tableId].seats || {};
+          var occupied = Object.keys(seats).filter(function (k) { return !!seats[k]; }).length;
 
           if (occupied >= SEATS_PER_TABLE) {
             option.disabled = true;
@@ -352,12 +361,8 @@
           return;
         }
 
-        var tableEl = document.getElementById(tableId);
         var seats = occupancyState[tableId].seats || {};
-        // Prefer DOM-derived count (matches visible state) for the shown table
-        var occupied = tableEl
-          ? tableEl.querySelectorAll('.seat.bg-red-500').length
-          : Object.keys(seats).filter(function (k) { return !!seats[k]; }).length;
+        var occupied = Object.keys(seats).filter(function (k) { return !!seats[k]; }).length;
 
         var seatTitle = document.getElementById('seat-title');
         if (seatTitle) seatTitle.textContent = tableId.replace('table-', 'Table ');
@@ -463,6 +468,44 @@
 
       // Start polling as fallback
       setTimeout(startPolling, 10000); // Start polling after 10 seconds
+    })();
+  </script>
+  <script>
+    // Hamburger menu toggle for mobile
+    (function () {
+      var btn = document.getElementById('mobile-menu-btn');
+      var menu = document.getElementById('mobile-menu');
+      if (btn && menu) {
+        btn.addEventListener('click', function () {
+          var isOpen = menu.classList.contains('hidden') === false;
+          if (isOpen) {
+            menu.classList.add('hidden');
+            btn.setAttribute('aria-expanded', 'false');
+          } else {
+            menu.classList.remove('hidden');
+            btn.setAttribute('aria-expanded', 'true');
+          }
+        });
+      }
+      // Mobile logout
+      var logoutBtnMobile = document.getElementById('logoutBtnMobile');
+      var logoutBtn = document.getElementById('logoutBtn');
+      function handleLogout() {
+        try {
+          if (window.supabaseAuth) {
+            window.supabaseAuth.signOut().then(function () {
+              window.location.href = 'index.html';
+            }).catch(function (err) {
+              console.error('Logout error:', err);
+              window.location.href = 'index.html';
+            });
+          } else {
+            window.location.href = 'index.html';
+          }
+        } catch (_) { window.location.href = 'index.html'; }
+      }
+      if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', handleLogout);
+      if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
     })();
   </script>
 </body>
