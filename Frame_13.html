@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gallery</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="theme.css" />
+  <script defer src="theme.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+  <header class="site-header">
+    <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
+      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
+      <a href="index.html" class="brand-title text-2xl font-semibold mr-auto">University of Makati Library</a>
+      <nav class="hidden md:flex items-center gap-4 text-sm">
+        <a href="Frame_6.html" class="nav-link">Dashboard</a>
+        <a href="Frame_7.html" class="nav-link">Log</a>
+        <a href="Frame_9.html" class="nav-link">Alerts</a>
+      </nav>
+      <button id="logoutBtn" class="hidden md:inline px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 transition">Logout</button>
+    </div>
+  </header>
+  <main class="flex-1 flex items-start justify-center py-12 px-6">
+    <div class="w-full max-w-5xl">
+      
+      <!-- Section Header -->
+      <div class="mb-6">
+        <h2 class="text-2xl font-semibold text-slate-800">Screenshots / Exports</h2>
+        <p class="text-sm text-slate-500 mt-1">Browse recent captures and exported frames.</p>
+      </div>
+
+      <!-- Gallery Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="group rounded-xl overflow-hidden bg-white shadow-sm border border-slate-100 hover:shadow-md hover:scale-[1.02] transition">
+          <img src="assets/Frame 7.png" alt="Screenshot 1" class="w-full h-40 object-cover group-hover:opacity-95 transition" />
+        </div>
+        <div class="group rounded-xl overflow-hidden bg-white shadow-sm border border-slate-100 hover:shadow-md hover:scale-[1.02] transition">
+          <img src="assets/Frame 3.png" alt="Screenshot 2" class="w-full h-40 object-cover group-hover:opacity-95 transition" />
+        </div>
+        <div class="group rounded-xl overflow-hidden bg-white shadow-sm border border-slate-100 hover:shadow-md hover:scale-[1.02] transition">
+          <img src="assets/Frame 10.png" alt="Screenshot 3" class="w-full h-40 object-cover group-hover:opacity-95 transition" />
+        </div>
+        <div class="group rounded-xl overflow-hidden bg-white shadow-sm border border-slate-100 hover:shadow-md hover:scale-[1.02] transition">
+          <img src="assets/Frame 11.png" alt="Screenshot 4" class="w-full h-40 object-cover group-hover:opacity-95 transition" />
+        </div>
+      </div>
+
+    </div>
+  </main>
+  <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>`n  <script src="auth-guard.js"></script>
+  <script>
+    (function(){
+      var logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(){
+          try { 
+            if (window.supabaseAuth) {
+              window.supabaseAuth.signOut().then(function(){ 
+                window.location.href='index.html'; 
+              }).catch(function(err){ 
+                console.error('Logout error:', err);
+                window.location.href='index.html'; 
+              }); 
+            } else {
+              window.location.href='index.html';
+            }
+          } catch(_){ window.location.href='index.html'; }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+# Security Headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; img-src 'self' data:; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
+</IfModule>
+
+# Prevent access to sensitive files
+<Files "firebase.js">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+<Files "security.js">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+<Files "firestore.rules">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+<Files "vercel.json">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+<Files "package.json">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Block common attack patterns
+RewriteEngine On
+RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2}) [OR]
+RewriteCond %{QUERY_STRING} proc/self/environ [OR]
+RewriteCond %{QUERY_STRING} mosConfig_[a-zA-Z_]{1,21}(=|\%3D) [OR]
+RewriteCond %{QUERY_STRING} base64_(en|de)code[^(]*\([^)]*\) [OR]
+RewriteCond %{QUERY_STRING} (<|%3C)([^s]*s)+cript.*(>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} (\<|%3C).*iframe.*(\>|%3E) [NC]
+RewriteRule .* - [F]
+
+# Rate limiting (if mod_evasive is available)
+<IfModule mod_evasive24.c>
+    DOSHashTableSize    2048
+    DOSPageCount        3
+    DOSSiteCount        50
+    DOSPageInterval     1
+    DOSSiteInterval     1
+    DOSBlockingPeriod   600
+</IfModule>

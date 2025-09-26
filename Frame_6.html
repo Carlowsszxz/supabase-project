@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy"
+    content="connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.firebaseio.com https://*.googleapis.com https://www.gstatic.com wss://*.firebaseio.com;" />
+  <title>Frame 6 - Admin Dashboard</title>
+  <script>
+    (function () {
+      var originalWarn = console.warn;
+      console.warn = function () {
+        try {
+          if (arguments && typeof arguments[0] === 'string' && arguments[0].indexOf('cdn.tailwindcss.com should not be used in production') !== -1) {
+            return;
+          }
+        } catch (e) { }
+        return originalWarn.apply(console, arguments);
+      };
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="theme.css" />
+  <script defer src="theme.js"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+</head>
+</head>
+
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+  <header class="site-header">
+    <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
+      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
+      <a href="Frame_6.html" class="brand-title text-2xl font-semibold mr-auto">UMak Noise Monitor - Admin</a>
+      <button id="mobile-menu-btn"
+        class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+        aria-label="Open main menu" aria-expanded="false">
+        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <nav class="hidden md:flex items-center gap-4 text-sm">
+        <a href="Frame_6.html" class="nav-link active">Dashboard</a>
+        <a href="Frame_7.html" class="nav-link">Log</a>
+        <a href="Frame_9.html" class="nav-link">Alerts</a>
+        <a href="Frame_18.html" class="nav-link">Reports</a>
+        <a href="Frame_15.html" class="nav-link">Users</a>
+        <button onclick="logout()" class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
+          style="color: black !important;">Logout</button>
+      </nav>
+    </div>
+    <nav id="mobile-menu" class="md:hidden hidden px-6 pb-3">
+      <a href="Frame_6.html" class="block py-2 text-sm nav-link active">Dashboard</a>
+      <a href="Frame_7.html" class="block py-2 text-sm nav-link">Log</a>
+      <a href="Frame_9.html" class="block py-2 text-sm nav-link">Alerts</a>
+      <a href="Frame_18.html" class="block py-2 text-sm nav-link">Reports</a>
+      <a href="Frame_15.html" class="block py-2 text-sm nav-link">Users</a>
+      <button id="logoutBtnMobile"
+        class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition text-left">Logout</button>
+    </nav>
+  </header>
+
+  <main class="flex-1 py-8 px-6">
+    <div class="max-w-7xl mx-auto">
+
+      <!-- Header Section -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold mb-2">Admin Dashboard</h1>
+        <p class="text-slate-600">Manage table and seat occupancy for the library</p>
+        <div id="status" class="mt-2 text-sm"></div>
+        <div class="mt-4 flex flex-wrap items-center gap-3">
+          <label for="tableFilter" class="text-sm text-slate-600">Show table:</label>
+          <select id="tableFilter" class="px-3 py-2 rounded-lg border border-slate-300 w-56">
+            <option value="all">All Tables</option>
+            <option value="table-1">Table 1</option>
+            <option value="table-2">Table 2</option>
+            <option value="table-3">Table 3</option>
+            <option value="table-4">Table 4</option>
+            <option value="table-5">Table 5</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div class="text-2xl font-bold text-indigo-600" id="total-seats">25</div>
+          <div class="text-sm text-slate-500">Total Seats</div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div class="text-2xl font-bold text-green-600" id="available-seats">25</div>
+          <div class="text-sm text-slate-500">Available</div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div class="text-2xl font-bold text-red-600" id="occupied-seats">0</div>
+          <div class="text-sm text-slate-500">Occupied</div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div class="text-2xl font-bold text-slate-600" id="occupancy-rate">0%</div>
+          <div class="text-sm text-slate-500">Occupancy Rate</div>
+        </div>
+      </div>
+
+      <!-- Tables Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+
+        <!-- Table 1 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-1">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 1</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-1')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-1')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-5 gap-2 mb-4">
+            <button data-table="table-1" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-1" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-1" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-1" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-1" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-1-count">0</span>/5 seats</div>
+        </div>
+
+        <!-- Table 2 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-2">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 2</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-2')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-2')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-5 gap-2 mb-4">
+            <button data-table="table-2" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-2" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-2" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-2" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-2" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-2-count">0</span>/5 seats</div>
+        </div>
+
+        <!-- Table 3 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-3">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 3</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-3')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-3')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-5 gap-2 mb-4">
+            <button data-table="table-3" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-3" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-3" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-3" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-3" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-3-count">0</span>/5 seats</div>
+        </div>
+
+        <!-- Table 4 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-4">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 4</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-4')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-4')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-5 gap-2 mb-4">
+            <button data-table="table-4" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-4" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-4" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-4" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-4" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-4-count">0</span>/5 seats</div>
+        </div>
+
+        <!-- Table 5 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 5</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-5')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-5')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-5 gap-2 mb-4">
+            <button data-table="table-5" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-5" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-5" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-5" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-5" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-5-count">0</span>/5 seats</div>
+        </div>
+
+        <!-- Global Actions -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <h3 class="text-lg font-semibold mb-4">Global Actions</h3>
+          <div class="space-y-3">
+            <button onclick="clearAllTables()"
+              class="w-full px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition font-medium">
+              Clear All Tables
+            </button>
+            <button onclick="occupyAllTables()"
+              class="w-full px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition font-medium">
+              Fill All Tables
+            </button>
+            <button onclick="resetToDefault()"
+              class="w-full px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition font-medium">
+              Reset to Default
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+  <div id="supabase-status" style="position:fixed;right:12px;bottom:12px"
+    class="px-2 py-1 rounded-md text-xs bg-slate-200 text-slate-700 hidden"></div>
+
+  <script>
+    (function () {
+      // Simple state management
+      var TABLE_IDS = ['table-1', 'table-2', 'table-3', 'table-4', 'table-5'];
+      var SEATS_PER_TABLE = 5;
+      var occupancyState = {};
+      var supabaseInitialized = false;
+
+      // Initialize state
+      TABLE_IDS.forEach(function (id) {
+        occupancyState[id] = { seats: {} };
+        for (var i = 1; i <= SEATS_PER_TABLE; i++) {
+          occupancyState[id].seats[i] = false;
+        }
+      });
+
+      // Status display
+      function showStatus(text, ok) {
+        var el = document.getElementById('supabase-status');
+        if (!el) return;
+        el.textContent = text;
+        el.classList.remove('hidden');
+        el.classList.remove('bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+        if (ok) {
+          el.classList.add('bg-green-100', 'text-green-700');
+        } else {
+          el.classList.add('bg-red-100', 'text-red-700');
+        }
+      }
+
+      // Initialize Supabase (without recreating client)
+      function initSupabaseConnection() {
+        try {
+          if (supabaseInitialized) {
+            supabaseInitialized = true;
+            showStatus('Supabase connected', true);
+            console.log('Supabase connection ready');
+            loadInitialData();
+            subscribeToChanges();
+          } else {
+            showStatus('Supabase initialization failed', false);
+            console.error('Supabase initialization failed');
+          }
+        } catch (e) {
+          showStatus('Supabase init error: ' + (e && e.message ? e.message : 'unknown'), false);
+          console.error('Supabase init error:', e);
+        }
+      }
+
+      // Load initial data
+      function loadInitialData() {
+        if (!supabaseInitialized) return;
+
+        window.supabaseDB.getOccupancyData().then(function (result) {
+          if (result.data) {
+            console.log('Loading initial data:', result.data);
+
+            // Clear existing state
+            TABLE_IDS.forEach(function (id) {
+              occupancyState[id] = { seats: {} };
+              for (var i = 1; i <= SEATS_PER_TABLE; i++) {
+                occupancyState[id].seats[i] = false;
+              }
+            });
+
+            // Load data from Supabase
+            result.data.forEach(function (record) {
+              if (occupancyState[record.table_id]) {
+                occupancyState[record.table_id].seats[record.seat_number] = record.is_occupied;
+              }
+            });
+
+            // Update UI
+            updateAllSeats();
+            updateStats();
+          }
+        }).catch(function (err) {
+          console.error('Failed to load initial data:', err);
+        });
+      }
+
+      // Use polling instead of real-time due to CSP issues
+      function subscribeToChanges() {
+        if (!supabaseInitialized) return;
+
+        console.log('Setting up polling for real-time updates...');
+
+        // Poll every 2 seconds for changes
+        setInterval(function () {
+          if (supabaseInitialized) {
+            loadInitialData();
+          }
+        }, 2000);
+
+        console.log('Polling started - checking for updates every 2 seconds');
+      }
+
+      // Update a single seat
+      function updateSeat(tableId, seatNum, isOccupied) {
+        var btn = document.querySelector('[data-table="' + tableId + '"][data-seat="' + seatNum + '"]');
+        if (!btn) return;
+
+        if (isOccupied) {
+          btn.classList.remove('bg-green-300');
+          btn.classList.add('bg-red-500');
+        } else {
+          btn.classList.remove('bg-red-500');
+          btn.classList.add('bg-green-300');
+        }
+      }
+
+      // Update all seats
+      function updateAllSeats() {
+        TABLE_IDS.forEach(function (tableId) {
+          var seats = occupancyState[tableId].seats || {};
+          Object.keys(seats).forEach(function (seatNum) {
+            updateSeat(tableId, parseInt(seatNum), seats[seatNum]);
+          });
+          updateTableCount(tableId);
+        });
+      }
+
+      // Table filter visibility
+      function applyTableFilter(value) {
+        var cards = document.querySelectorAll('[data-table-card]');
+        cards.forEach(function (card) {
+          var id = card.getAttribute('data-table-card');
+          if (!value || value === 'all' || value === id) {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+      }
+
+      // Update table count
+      function updateTableCount(tableId) {
+        // Derive from DOM to reflect actual visuals (red = occupied)
+        var occupied = document.querySelectorAll('.seat-btn.bg-red-500[data-table="' + tableId + '"]').length;
+        var el = document.getElementById(tableId + '-count');
+        if (el) el.textContent = occupied;
+      }
+
+      // Update global stats
+      function updateStats() {
+        var totalSeats = TABLE_IDS.length * SEATS_PER_TABLE;
+        // Derive occupied from DOM to match visible state (red buttons)
+        var occupiedSeats = document.querySelectorAll('.seat-btn.bg-red-500').length;
+
+        var availableSeats = totalSeats - occupiedSeats;
+        var occupancyRate = totalSeats ? Math.round((occupiedSeats / totalSeats) * 100) : 0;
+
+        document.getElementById('total-seats').textContent = totalSeats;
+        document.getElementById('available-seats').textContent = availableSeats;
+        document.getElementById('occupied-seats').textContent = occupiedSeats;
+        document.getElementById('occupancy-rate').textContent = occupancyRate + '%';
+      }
+
+      // Toggle seat
+      function toggleSeat(button) {
+        var tableId = button.getAttribute('data-table');
+        var seatNum = parseInt(button.getAttribute('data-seat'));
+        var willOccupy = button.classList.contains('bg-green-300');
+
+        console.log('Toggling seat:', tableId, seatNum, willOccupy);
+
+        // Update state
+        occupancyState[tableId].seats[seatNum] = willOccupy;
+
+        // Update UI immediately
+        updateSeat(tableId, seatNum, willOccupy);
+        updateTableCount(tableId);
+        updateStats();
+
+        // Update Supabase
+        if (supabaseInitialized) {
+          window.supabaseDB.updateSeatOccupancy(tableId, seatNum, willOccupy, null).then(function (result) {
+            if (result.error) {
+              console.error('Supabase update failed:', result.error);
+              // Revert the UI change if Supabase update failed
+              occupancyState[tableId].seats[seatNum] = !willOccupy;
+              updateSeat(tableId, seatNum, !willOccupy);
+              updateTableCount(tableId);
+              updateStats();
+            } else {
+              console.log('Seat updated successfully in Supabase');
+            }
+          }).catch(function (err) {
+            console.error('toggleSeat failed', err);
+            // Revert the UI change if Supabase update failed
+            occupancyState[tableId].seats[seatNum] = !willOccupy;
+            updateSeat(tableId, seatNum, !willOccupy);
+            updateTableCount(tableId);
+            updateStats();
+          });
+        }
+      }
+
+      // Clear all seats for a table
+      function clearAllSeats(tableId) {
+        console.log('Clearing all seats for table:', tableId);
+        for (var i = 1; i <= SEATS_PER_TABLE; i++) {
+          occupancyState[tableId].seats[i] = false;
+          updateSeat(tableId, i, false);
+
+          if (supabaseInitialized) {
+            window.supabaseDB.updateSeatOccupancy(tableId, i, false, null).catch(function (err) {
+              console.error('clearAllSeats failed', err);
+            });
+          }
+        }
+        updateTableCount(tableId);
+        updateStats();
+      }
+
+      // Occupy all seats for a table
+      function occupyAllSeats(tableId) {
+        console.log('Occupying all seats for table:', tableId);
+        for (var i = 1; i <= SEATS_PER_TABLE; i++) {
+          occupancyState[tableId].seats[i] = true;
+          updateSeat(tableId, i, true);
+
+          if (supabaseInitialized) {
+            window.supabaseDB.updateSeatOccupancy(tableId, i, true, null).catch(function (err) {
+              console.error('occupyAllSeats failed', err);
+            });
+          }
+        }
+        updateTableCount(tableId);
+        updateStats();
+      }
+
+      // Global actions
+      function clearAllTables() {
+        console.log('Clearing all tables');
+        TABLE_IDS.forEach(function (t) { clearAllSeats(t); });
+      }
+
+      function occupyAllTables() {
+        console.log('Occupying all tables');
+        TABLE_IDS.forEach(function (t) { occupyAllSeats(t); });
+      }
+
+      function resetToDefault() {
+        console.log('Resetting to default');
+        clearAllTables();
+      }
+
+
+      // Logout
+      function logout() {
+        try {
+          if (supabaseInitialized) {
+            window.supabaseAuth.signOut().then(function () {
+              window.location.href = 'index.html';
+            }).catch(function (e) {
+              console.error('Logout error:', e);
+              window.location.href = 'index.html';
+            });
+          } else {
+            window.location.href = 'index.html';
+          }
+        } catch (e) {
+          console.error('Logout error:', e);
+          window.location.href = 'index.html';
+        }
+      }
+
+      // Expose functions globally
+      window.toggleSeat = toggleSeat;
+      window.clearAllSeats = clearAllSeats;
+      window.occupyAllSeats = occupyAllSeats;
+      window.clearAllTables = clearAllTables;
+      window.occupyAllTables = occupyAllTables;
+      window.resetToDefault = resetToDefault;
+      window.logout = logout;
+
+      // Admin access control
+      async function checkAdminAccess() {
+        try {
+          // Check if user is authenticated
+          const userResult = await window.supabaseAuth.getCurrentUser();
+
+          if (userResult.error || !userResult.data || !userResult.data.user) {
+            console.log('User not authenticated, redirecting to login');
+            window.location.href = 'index.html';
+            return false;
+          }
+
+          const user = userResult.data.user;
+
+          // Check for legacy admin credentials first
+          const email = user.email ? user.email.toLowerCase() : '';
+          if (email === 'adminlibrarian@umak.edu.ph') {
+            console.log('Legacy admin user detected, granting access');
+            return true;
+          }
+
+          // Check if user is admin in database
+          const adminResult = await window.supabaseDB.isAdmin(user.id);
+
+          if (adminResult.error) {
+            console.error('Error checking admin status:', adminResult.error);
+            showAccessDenied();
+            return false;
+          }
+
+          if (!adminResult.data) {
+            console.log('User is not an admin, redirecting to student dashboard');
+            window.location.href = 'Frame_4.html'; // Redirect to student dashboard
+            return false;
+          }
+
+          return true;
+        } catch (error) {
+          console.error('Error in admin access check:', error);
+          showAccessDenied();
+          return false;
+        }
+      }
+
+      // Show access denied message
+      function showAccessDenied() {
+        document.body.innerHTML = `
+          <div class="min-h-screen bg-slate-50 flex items-center justify-center">
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-md mx-4 text-center">
+              <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
+              </div>
+              <h1 class="text-2xl font-bold text-slate-900 mb-2">Access Denied</h1>
+              <p class="text-slate-600 mb-6">You don't have permission to access the admin panel. Only administrators can view this page.</p>
+              <div class="space-y-3">
+                <a href="Frame_4.html" class="block w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 hover:text-white transition">
+                  Go to Student Dashboard
+                </a>
+                <a href="index.html" class="block w-full px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">
+                  Back to Login
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Show loading state
+      function showLoadingState() {
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.id = 'loading-overlay';
+        loadingOverlay.className = 'fixed inset-0 bg-slate-50 flex items-center justify-center z-50';
+        loadingOverlay.innerHTML = `
+          <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+            <p class="text-slate-600">Verifying admin access...</p>
+          </div>
+        `;
+        document.body.appendChild(loadingOverlay);
+      }
+
+      // Hide loading state
+      function hideLoadingState() {
+        const loadingOverlay = document.getElementById('loading-overlay');
+        if (loadingOverlay) {
+          loadingOverlay.remove();
+        }
+      }
+
+      // Initialize with admin check
+      async function initialize() {
+        showLoadingState();
+
+        // Wait for Supabase to initialize once
+        if (!supabaseInitialized) {
+          var ok = await initSupabaseWithRetry();
+          if (ok) {
+            supabaseInitialized = true;
+            showStatus('Supabase initialized successfully', true);
+          } else {
+            showStatus('Supabase initialization failed', false);
+          }
+        }
+
+        // Check admin access
+        const hasAccess = await checkAdminAccess();
+        if (hasAccess) {
+          // Hide loading state and initialize admin content
+          hideLoadingState();
+          initSupabaseConnection();
+          // Hook up table filter
+          var filter = document.getElementById('tableFilter');
+          if (filter) {
+            filter.addEventListener('change', function () { applyTableFilter(filter.value); });
+            applyTableFilter(filter.value);
+          }
+        }
+      }
+
+      // Hamburger menu toggle for mobile
+      (function () {
+        var btn = document.getElementById('mobile-menu-btn');
+        var menu = document.getElementById('mobile-menu');
+        if (btn && menu) {
+          btn.addEventListener('click', function () {
+            var isOpen = menu.classList.contains('hidden') === false;
+            if (isOpen) {
+              menu.classList.add('hidden');
+              btn.setAttribute('aria-expanded', 'false');
+            } else {
+              menu.classList.remove('hidden');
+              btn.setAttribute('aria-expanded', 'true');
+            }
+          });
+        }
+        // Mobile logout
+        var logoutBtnMobile = document.getElementById('logoutBtnMobile');
+        function handleLogout() {
+          try {
+            if (window.supabaseAuth) {
+              window.supabaseAuth.signOut().then(function () {
+                window.location.href = 'index.html';
+              }).catch(function (err) {
+                console.error('Logout error:', err);
+                window.location.href = 'index.html';
+              });
+            } else {
+              window.location.href = 'index.html';
+            }
+          } catch (_) { window.location.href = 'index.html'; }
+        }
+        if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', handleLogout);
+      })();
+
+      // Initialize
+      initialize();
+    })();
+  </script>
+</body>
+
+</html>

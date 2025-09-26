@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Frame 16 - Report Noise</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="theme.css" />
+  <script defer src="theme.js"></script>
+</head>
+
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+  <header class="site-header">
+    <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
+      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
+      <a href="Frame_11.html" class="brand-title text-xl md:text-2xl font-semibold mr-auto">University of Makati
+        Library</a>
+      <button id="mobile-menu-btn"
+        class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+        aria-label="Open main menu" aria-expanded="false">
+        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <nav class="hidden md:flex items-center gap-4 text-sm">
+        <a href="Frame_11.html" class="nav-link">Profile</a>
+        <a href="Frame_8.html" class="nav-link">Map</a>
+        <a href="Frame_16.html" class="nav-link active">Report</a>
+      </nav>
+      <button id="logoutBtn"
+        class="hidden md:inline px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 transition">Logout</button>
+    </div>
+    <nav id="mobile-menu" class="md:hidden hidden px-6 pb-3">
+      <a href="Frame_11.html" class="block py-2 text-sm nav-link">Profile</a>
+      <a href="Frame_8.html" class="block py-2 text-sm nav-link">Map</a>
+      <a href="Frame_16.html" class="block py-2 text-sm nav-link active">Report</a>
+      <button id="logoutBtnMobile"
+        class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition text-left">Logout</button>
+    </nav>
+  </header>
+
+  <main class="flex-1 flex items-start justify-center py-12 px-6">
+    <div class="w-full max-w-4xl">
+
+      <!-- Report Header -->
+      <section class="bg-white rounded-2xl shadow p-4 sm:p-6 mb-6">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center order-1 ml-[5px]">
+            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z">
+              </path>
+            </svg>
+          </div>
+          <div class="flex-1 order-2">
+            <h1 class="text-2xl font-semibold mb-2">Report Noise Disturbance</h1>
+            <p class="text-slate-600">Help maintain a quiet study environment by reporting noise issues. Your reports
+              help librarians take appropriate action.</p>
+            <p class="text-xs text-slate-500 mt-1">Note: Once a librarian resolves your complaint, it will be removed
+              from your recent reports list.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Noise Report Form -->
+      <section class="bg-white rounded-2xl shadow p-4 sm:p-6 mb-6">
+        <form id="noiseReportForm" class="space-y-6">
+          <!-- Noise Level -->
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-3">Noise Level</label>
+            <div class="grid grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3">
+              <label class="relative cursor-pointer">
+                <input type="radio" name="noiseLevel" value="1" class="sr-only" />
+                <div
+                  class="noise-level-option p-3 rounded-lg border-2 border-slate-200 text-center hover:border-green-300 transition">
+                  <div class="text-lg mb-1">🔇</div>
+                  <div class="text-xs font-medium">Quiet</div>
+                  <div class="text-xs text-slate-500">Level 1</div>
+                </div>
+              </label>
+              <label class="relative cursor-pointer">
+                <input type="radio" name="noiseLevel" value="2" class="sr-only" />
+                <div
+                  class="noise-level-option p-3 rounded-lg border-2 border-slate-200 text-center hover:border-green-300 transition">
+                  <div class="text-lg mb-1">🔉</div>
+                  <div class="text-xs font-medium">Low</div>
+                  <div class="text-xs text-slate-500">Level 2</div>
+                </div>
+              </label>
+              <label class="relative cursor-pointer">
+                <input type="radio" name="noiseLevel" value="3" class="sr-only" />
+                <div
+                  class="noise-level-option p-3 rounded-lg border-2 border-slate-200 text-center hover:border-yellow-300 transition">
+                  <div class="text-lg mb-1">🔊</div>
+                  <div class="text-xs font-medium">Moderate</div>
+                  <div class="text-xs text-slate-500">Level 3</div>
+                </div>
+              </label>
+              <label class="relative cursor-pointer">
+                <input type="radio" name="noiseLevel" value="4" class="sr-only" />
+                <div
+                  class="noise-level-option p-3 rounded-lg border-2 border-slate-200 text-center hover:border-orange-300 transition">
+                  <div class="text-lg mb-1">📢</div>
+                  <div class="text-xs font-medium">Loud</div>
+                  <div class="text-xs text-slate-500">Level 4</div>
+                </div>
+              </label>
+              <label class="relative cursor-pointer">
+                <input type="radio" name="noiseLevel" value="5" class="sr-only" />
+                <div
+                  class="noise-level-option p-3 rounded-lg border-2 border-slate-200 text-center hover:border-red-300 transition">
+                  <div class="text-lg mb-1">🚨</div>
+                  <div class="text-xs font-medium">Very Loud</div>
+                  <div class="text-xs text-slate-500">Level 5</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div>
+            <label for="location" class="block text-sm font-medium text-slate-700 mb-2">Location</label>
+            <select id="location" name="location"
+              class="w-full rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none p-3">
+              <option value="">Select location...</option>
+              <option value="table-1">Table 1 Area</option>
+              <option value="table-2">Table 2 Area</option>
+              <option value="table-3">Table 3 Area</option>
+              <option value="table-4">Table 4 Area</option>
+              <option value="table-5">Table 5 Area</option>
+              <option value="entrance">Entrance Area</option>
+              <option value="computer-section">Computer Section</option>
+              <option value="reference-section">Reference Section</option>
+              <option value="group-study">Group Study Area</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <!-- Noise Type -->
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-3">Type of Noise</label>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" name="noiseType" value="talking"
+                  class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                <span class="text-sm">Talking</span>
+              </label>
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" name="noiseType" value="music"
+                  class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                <span class="text-sm">Music</span>
+              </label>
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" name="noiseType" value="phone-call"
+                  class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                <span class="text-sm">Phone Call</span>
+              </label>
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" name="noiseType" value="keyboard"
+                  class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                <span class="text-sm">Keyboard Typing</span>
+              </label>
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" name="noiseType" value="footsteps"
+                  class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                <span class="text-sm">Footsteps</span>
+              </label>
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" name="noiseType" value="equipment"
+                  class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                <span class="text-sm">Equipment</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Duration -->
+          <div>
+            <label for="duration" class="block text-sm font-medium text-slate-700 mb-2">Duration</label>
+            <select id="duration" name="duration"
+              class="w-full rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none p-3">
+              <option value="">Select duration...</option>
+              <option value="less-than-5">Less than 5 minutes</option>
+              <option value="5-15">5-15 minutes</option>
+              <option value="15-30">15-30 minutes</option>
+              <option value="30-60">30-60 minutes</option>
+              <option value="more-than-60">More than 1 hour</option>
+              <option value="ongoing">Ongoing</option>
+            </select>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Additional Details</label>
+            <textarea id="description" rows="4"
+              class="w-full rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none p-3"
+              placeholder="Describe the noise disturbance in detail..."></textarea>
+          </div>
+
+          <!-- Urgency -->
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-3">Urgency Level</label>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
+              <label class="relative cursor-pointer">
+                <input type="radio" name="urgency" value="low" class="sr-only" />
+                <div
+                  class="urgency-option p-3 rounded-lg border-2 border-slate-200 text-center hover:border-green-300 transition">
+                  <div class="text-lg mb-1">🟢</div>
+                  <div class="text-sm font-medium">Low</div>
+                  <div class="text-xs text-slate-500">Minor issue</div>
+                </div>
+              </label>
+              <label class="relative cursor-pointer">
+                <input type="radio" name="urgency" value="medium" class="sr-only" />
+                <div
+                  class="urgency-option p-3 rounded-lg border-2 border-slate-200 text-center hover:border-yellow-300 transition">
+                  <div class="text-lg mb-1">🟡</div>
+                  <div class="text-sm font-medium">Medium</div>
+                  <div class="text-xs text-slate-500">Needs attention</div>
+                </div>
+              </label>
+              <label class="relative cursor-pointer">
+                <input type="radio" name="urgency" value="high" class="sr-only" />
+                <div
+                  class="urgency-option p-3 rounded-lg border-2 border-slate-200 text-center hover:border-red-300 transition">
+                  <div class="text-lg mb-1">🔴</div>
+                  <div class="text-sm font-medium">High</div>
+                  <div class="text-xs text-slate-500">Immediate action</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+            <button type="button" id="cancelBtn" class="px-4 py-2 rounded-lg btn-outline">Cancel</button>
+            <button type="submit" id="submitBtn"
+              class="px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium">Submit Report</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Community Reports -->
+      <section class="bg-white rounded-2xl shadow p-4 sm:p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold">Community Reports</h2>
+          <div class="flex items-center gap-2">
+            <label for="communityLimit" class="sr-only">Community report count</label>
+            <select id="communityLimit" name="communityLimit"
+              class="px-2 py-1.5 text-xs rounded-lg border border-slate-300">
+              <option value="10">Last 10</option>
+              <option value="25" selected>Last 25</option>
+              <option value="50">Last 50</option>
+            </select>
+            <button id="refreshCommunity" class="px-3 py-1.5 text-xs rounded-lg btn-outline">Refresh</button>
+          </div>
+        </div>
+        <div id="communityReports" class="space-y-3">
+          <div class="text-center text-slate-500 py-8">
+            <p>No community reports yet</p>
+            <p class="text-sm">New reports from students will appear here</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+  <div id="supabase-status" class="px-2 py-1 rounded-md text-xs bg-slate-200 text-slate-700 hidden"></div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+      <div class="text-center">
+        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold mb-2">Report Submitted</h3>
+        <p class="text-slate-600 mb-4">Thank you for helping maintain a quiet study environment. Librarians will review
+          your report.</p>
+        <button id="closeSuccessModal"
+          class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="auth-guard.js"></script>
+  <script src="security.js"></script>
+
+  <script>
+    (function () {
+      // Supabase init with status
+      function showStatus(text, ok) {
+        var el = document.getElementById('supabase-status');
+        if (!el) return;
+        el.textContent = text || '';
+        if (text) {
+          el.classList.remove('hidden');
+          el.classList.remove('bg-red-200', 'text-red-700');
+          el.classList.remove('bg-green-200', 'text-green-700');
+          if (ok) {
+            el.classList.add('bg-green-200', 'text-green-700');
+          } else {
+            el.classList.add('bg-red-200', 'text-red-700');
+          }
+        } else {
+          el.classList.add('hidden');
+        }
+      }
+
+      // Initialize Supabase
+      var supabaseInitialized = false;
+      try {
+        if (initSupabase()) {
+          supabaseInitialized = true;
+          showStatus('Supabase: Connected', true);
+        } else {
+          showStatus('Supabase: Error', false);
+        }
+      } catch (err) {
+        showStatus('Supabase: Error', false);
+      }
+
+      // Form elements
+      var form = document.getElementById('noiseReportForm');
+      var cancelBtn = document.getElementById('cancelBtn');
+      var submitBtn = document.getElementById('submitBtn');
+      var successModal = document.getElementById('successModal');
+      var closeSuccessModal = document.getElementById('closeSuccessModal');
+      var logoutBtn = document.getElementById('logoutBtn');
+      var logoutBtnMobile = document.getElementById('logoutBtnMobile');
+
+      // Logout functionality
+      function handleLogout() {
+        try {
+          if (window.supabaseAuth) {
+            window.supabaseAuth.signOut().then(function () {
+              window.location.href = 'index.html';
+            }).catch(function (err) {
+              console.error('Logout error:', err);
+              window.location.href = 'index.html';
+            });
+          } else {
+            window.location.href = 'index.html';
+          }
+        } catch (_) { window.location.href = 'index.html'; }
+      }
+      if (logoutBtn) { logoutBtn.addEventListener('click', handleLogout); }
+      if (logoutBtnMobile) { logoutBtnMobile.addEventListener('click', handleLogout); }
+
+      // Cancel button
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', function () {
+          window.location.href = 'Frame_11.html';
+        });
+      }
+
+      // Close success modal (stay on this page)
+      if (closeSuccessModal) {
+        closeSuccessModal.addEventListener('click', function () {
+          successModal.classList.add('hidden');
+          successModal.classList.remove('flex');
+          try {
+            if (form) { form.reset(); }
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Report'; }
+            loadRecentReports();
+          } catch (_) { }
+        });
+      }
+
+      // Form submission via Supabase (send to admins)
+      if (form) {
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          // Get form data
+          var noiseLevel = document.querySelector('input[name="noiseLevel"]:checked');
+          var location = document.getElementById('location').value;
+          var noiseTypes = Array.from(document.querySelectorAll('input[name="noiseType"]:checked')).map(function (cb) { return cb.value; });
+          var duration = document.getElementById('duration').value;
+          var description = document.getElementById('description').value;
+          var urgency = document.querySelector('input[name="urgency"]:checked');
+
+          // Validation
+          if (!noiseLevel) { alert('Please select a noise level'); return; }
+          if (!location) { alert('Please select a location'); return; }
+          if (noiseTypes.length === 0) { alert('Please select at least one noise type'); return; }
+          if (!duration) { alert('Please select duration'); return; }
+          if (!urgency) { alert('Please select urgency level'); return; }
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Submitting...';
+
+          try {
+            var userResult = await window.supabaseAuth.getCurrentUser();
+            var user = userResult && userResult.data ? userResult.data.user : null;
+            if (!user) { window.location.href = 'index.html'; return; }
+
+            var tableId = location.indexOf('table-') === 0 ? location : null;
+            var notes = '[Types] ' + noiseTypes.join(', ') + ' | [Duration] ' + duration + ' | [Urgency] ' + urgency.value + (description ? (' | [Notes] ' + description) : '');
+
+            // Persist report in noise_logs for admin visibility
+            var addRes = await window.supabaseDB.addNoiseLog(user.id, tableId || location, parseFloat(noiseLevel.value), 'report', notes);
+            if (addRes && addRes.error) throw addRes.error;
+
+            // Notify admins via alerts table
+            var msg = 'New report (' + severityLabel(parseFloat(noiseLevel.value)) + ') at ' + (tableId || location);
+            try { await window.supabaseDB.addAlert(user.id, 'report', msg); } catch (_) { }
+
+            successModal.classList.remove('hidden');
+            successModal.classList.add('flex');
+          } catch (err) {
+            console.error('Failed to submit report:', err);
+            alert('Failed to submit report. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Report';
+          }
+
+          function severityLabel(level) {
+            if (level >= 4.5) return 'critical';
+            if (level >= 3) return 'warning';
+            return 'info';
+          }
+        });
+      }
+
+      // Visual feedback for radio buttons
+      function setupRadioVisuals() {
+        // Noise level options
+        var noiseLevels = document.querySelectorAll('input[name="noiseLevel"]');
+        noiseLevels.forEach(function (radio) {
+          radio.addEventListener('change', function () {
+            // Remove previous selections
+            document.querySelectorAll('.noise-level-option').forEach(function (option) {
+              option.classList.remove('border-indigo-500', 'bg-indigo-50');
+              option.classList.add('border-slate-200');
+            });
+            // Add selection to current
+            if (this.checked) {
+              var option = this.parentElement.querySelector('.noise-level-option');
+              option.classList.remove('border-slate-200');
+              option.classList.add('border-indigo-500', 'bg-indigo-50');
+            }
+          });
+        });
+
+        // Urgency options
+        var urgencies = document.querySelectorAll('input[name="urgency"]');
+        urgencies.forEach(function (radio) {
+          radio.addEventListener('change', function () {
+            // Remove previous selections
+            document.querySelectorAll('.urgency-option').forEach(function (option) {
+              option.classList.remove('border-indigo-500', 'bg-indigo-50');
+              option.classList.add('border-slate-200');
+            });
+            // Add selection to current
+            if (this.checked) {
+              var option = this.parentElement.querySelector('.urgency-option');
+              option.classList.remove('border-slate-200');
+              option.classList.add('border-indigo-500', 'bg-indigo-50');
+            }
+          });
+        });
+      }
+
+      // Load community reports via RPC
+      function loadCommunityReports() {
+        var list = document.getElementById('communityReports');
+        var limitSel = document.getElementById('communityLimit');
+        if (!supabaseInitialized || !list) return;
+        var limit = 25;
+        try { limit = parseInt(limitSel && limitSel.value || '25', 10) || 25; } catch (_) { }
+        list.innerHTML = '<div class="text-center text-slate-500 py-6 text-sm">Loading…</div>';
+        window.supabaseDB.publicListReports(limit).then(function (result) {
+          var rows = Array.isArray(result.data) ? result.data : [];
+          if (rows.length === 0) {
+            list.innerHTML = '\n            <div class="text-center text-slate-500 py-8">\n              <p>No community reports yet</p>\n              <p class="text-sm">New reports from students will appear here</p>\n            </div>\n          ';
+            return;
+          }
+          list.innerHTML = '';
+          rows.forEach(function (r) {
+            var level = parseFloat(r.noise_level || 0);
+            var badge = (level >= 4.5) ? 'bg-red-100 text-red-800' : (level >= 3 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800');
+            var el = document.createElement('div');
+            el.className = 'p-3 rounded-lg border border-slate-200';
+            el.innerHTML = '\n            <div class="flex items-start justify-between">\n              <div>\n                <div class="flex items-center gap-2">\n                  <span class="px-2 py-0.5 text-xs rounded ' + badge + '">Level ' + (r.noise_level || '-') + '</span>\n                  <span class="text-sm text-slate-600">' + (r.location || r.table_id || '—') + '</span>\n                </div>\n                <div class="text-xs text-slate-500 mt-1">' + new Date(r.created_at).toLocaleString() + (r.reporter_email ? ' • ' + r.reporter_email : '') + '</div>\n                <div class="text-sm text-slate-700 mt-1">' + (r.notes || '') + '</div>\n              </div>\n              <div class="text-xs text-slate-500">' + (r.status || '') + '</div>\n            </div>\n          ';
+            list.appendChild(el);
+          });
+        }).catch(function () {
+          list.innerHTML = '<div class="text-center text-red-600 py-6 text-sm">Failed to load community reports.</div>';
+        });
+      }
+
+      // Load community reports immediately (no auth gate needed to view)
+      if (supabaseInitialized) {
+        loadCommunityReports();
+        var limitSel = document.getElementById('communityLimit');
+        var refreshBtn = document.getElementById('refreshCommunity');
+        if (limitSel) limitSel.addEventListener('change', loadCommunityReports);
+        if (refreshBtn) refreshBtn.addEventListener('click', loadCommunityReports);
+      }
+
+      // Initialize
+      setupRadioVisuals();
+    })();
+  </script>
+  <script>
+    // Mobile menu toggle for Frame 16 (robust)
+    (function () {
+      try {
+        var mobileBtn = document.getElementById('mobile-menu-btn');
+        var mobileMenu = document.getElementById('mobile-menu');
+        var header = document.querySelector('header.site-header');
+        if (mobileBtn && mobileMenu && header) {
+          mobileBtn.addEventListener('click', function () {
+            var isHidden = mobileMenu.classList.contains('hidden');
+            if (isHidden) {
+              header.classList.add('menu-open');
+              mobileMenu.classList.remove('hidden');
+              mobileBtn.setAttribute('aria-expanded', 'true');
+            } else {
+              header.classList.remove('menu-open');
+              mobileMenu.classList.add('hidden');
+              mobileBtn.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
+      } catch (_) { }
+    })();
+  </script>
+
+  <style>
+    .noise-level-option:hover {
+      transform: translateY(-1px);
+    }
+
+    .urgency-option:hover {
+      transform: translateY(-1px);
+    }
+  </style>
+</body>
+
+</html>

@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Frame 9 - Alerts & Notifications</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="theme.css" />
+  <script defer src="theme.js"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+</head>
+<script>
+  // Admin access control (copied from Frame_6.html)
+  (function () {
+    async function checkAdminAccess() {
+      try {
+        // Check if user is authenticated
+        const userResult = await window.supabaseAuth.getCurrentUser();
+        if (userResult.error || !userResult.data || !userResult.data.user) {
+          console.log('User not authenticated, redirecting to login');
+          window.location.href = 'index.html';
+          return false;
+        }
+        const user = userResult.data.user;
+        // Check for legacy admin credentials first
+        const email = user.email ? user.email.toLowerCase() : '';
+        if (email === 'adminlibrarian@umak.edu.ph') {
+          console.log('Legacy admin user detected, granting access');
+          return true;
+        }
+        // Check if user is admin in database
+        const adminResult = await window.supabaseDB.isAdmin(user.id);
+        if (adminResult.error) {
+          console.error('Error checking admin status:', adminResult.error);
+          showAccessDenied();
+          return false;
+        }
+        if (!adminResult.data) {
+          console.log('User is not an admin, redirecting to student dashboard');
+          window.location.href = 'Frame_4.html'; // Redirect to student dashboard
+          return false;
+        }
+        return true;
+      } catch (error) {
+        console.error('Error in admin access check:', error);
+        showAccessDenied();
+        return false;
+      }
+    }
+    function showAccessDenied() {
+      document.body.innerHTML = `
+      <div class="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-lg p-8 max-w-md mx-4 text-center">
+          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+          </div>
+          <h1 class="text-2xl font-bold text-slate-900 mb-2">Access Denied</h1>
+          <p class="text-slate-600 mb-6">You don't have permission to access the admin panel. Only administrators can view this page.</p>
+          <div class="space-y-3">
+            <a href="Frame_4.html" class="block w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 hover:text-white transition">
+              Go to Student Dashboard
+            </a>
+            <a href="index.html" class="block w-full px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">
+              Back to Login
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+    }
+    function showLoadingState() {
+      const loadingOverlay = document.createElement('div');
+      loadingOverlay.id = 'loading-overlay';
+      loadingOverlay.className = 'fixed inset-0 bg-slate-50 flex items-center justify-center z-50';
+      loadingOverlay.innerHTML = `
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+        <p class="text-slate-600">Verifying admin access...</p>
+      </div>
+    `;
+      document.body.appendChild(loadingOverlay);
+    }
+    function hideLoadingState() {
+      const loadingOverlay = document.getElementById('loading-overlay');
+      if (loadingOverlay) {
+        loadingOverlay.remove();
+      }
+    }
+    async function initialize() {
+      showLoadingState();
+      const hasAccess = await checkAdminAccess();
+      if (hasAccess) {
+        hideLoadingState();
+      }
+    }
+    initialize();
+  })();
+</script>
+</head>
+
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+  <header class="site-header">
+    <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
+      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
+      <a href="Frame_6.html" class="brand-title text-2xl font-semibold mr-auto">UMak Noise Monitor - Admin</a>
+      <button id="mobile-menu-btn"
+        class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+        aria-label="Open main menu" aria-expanded="false">
+        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <nav class="hidden md:flex items-center gap-4 text-sm">
+        <a href="Frame_6.html" class="nav-link">Dashboard</a>
+        <a href="Frame_7.html" class="nav-link">Log</a>
+        <a href="Frame_9.html" class="nav-link active">Alerts</a>
+        <a href="Frame_18.html" class="nav-link">Reports</a>
+        <a href="Frame_15.html" class="nav-link">Users</a>
+        <button onclick="logout()" class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
+          style="color: black !important;">Logout</button>
+      </nav>
+    </div>
+    <nav id="mobile-menu" class="md:hidden hidden px-6 pb-3">
+      <a href="Frame_6.html" class="block py-2 text-sm nav-link">Dashboard</a>
+      <a href="Frame_7.html" class="block py-2 text-sm nav-link">Log</a>
+      <a href="Frame_9.html" class="block py-2 text-sm nav-link active">Alerts</a>
+      <a href="Frame_18.html" class="block py-2 text-sm nav-link">Reports</a>
+      <a href="Frame_15.html" class="block py-2 text-sm nav-link">Users</a>
+      <button onclick="logout()"
+        class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
+        style="color: black !important;">Logout</button>
+    </nav>
+  </header>
+
+  <main class="flex-1 py-8 px-6">
+    <div class="max-w-7xl mx-auto">
+
+      <!-- Header Section -->
+      <div class="mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 class="text-3xl font-bold mb-2">Alerts & Notifications</h1>
+            <p class="text-slate-600">Stay informed about noise levels and system updates</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button onclick="markAllAsRead()"
+              class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+              Mark All Read
+            </button>
+            <button onclick="refreshAlerts()"
+              class="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition">
+              Refresh
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alert Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-1">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-2xl font-bold text-red-600" id="criticalAlerts">—</div>
+              <div class="text-sm text-slate-500">Critical Alerts</div>
+            </div>
+            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center floating">
+              <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z">
+                </path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-2">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-2xl font-bold text-yellow-600" id="warningAlerts">—</div>
+              <div class="text-sm text-slate-500">Warnings</div>
+            </div>
+            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center floating">
+              <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 17h5l-5 5-5-5h5v-5a7.5 7.5 0 1 0-15 0v5h5l-5 5-5-5h5v-5a7.5 7.5 0 1 0 15 0v5z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-2xl font-bold text-blue-600" id="infoAlerts">—</div>
+              <div class="text-sm text-slate-500">Info</div>
+            </div>
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center floating">
+              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-2xl font-bold text-slate-600" id="totalAlerts">—</div>
+              <div class="text-sm text-slate-500">Total Alerts</div>
+            </div>
+            <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center floating">
+              <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 17h5l-5 5-5-5h5v-5a7.5 7.5 0 1 0-15 0v5h5l-5 5-5-5h5v-5a7.5 7.5 0 1 0 15 0v5z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-6">
+        <div class="flex flex-wrap gap-2">
+          <button onclick="filterAlerts('all')"
+            class="filter-btn px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium">All</button>
+          <button onclick="filterAlerts('critical')"
+            class="filter-btn px-4 py-2 rounded-lg bg-slate-200 text-black text-sm font-medium hover:bg-slate-300">Critical</button>
+          <button onclick="filterAlerts('warning')"
+            class="filter-btn px-4 py-2 rounded-lg bg-slate-200 text-black text-sm font-medium hover:bg-slate-300">Warning</button>
+          <button onclick="filterAlerts('info')"
+            class="filter-btn px-4 py-2 rounded-lg bg-slate-200 text-black text-sm font-medium hover:bg-slate-300">Info</button>
+          <button onclick="filterAlerts('unread')"
+            class="filter-btn px-4 py-2 rounded-lg bg-slate-200 text-black text-sm font-medium hover:bg-slate-300">Unread</button>
+        </div>
+      </div>
+
+      <!-- Alerts List -->
+      <div class="space-y-4" id="alertsList">
+        <!-- Sample alerts will be populated here -->
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div class="flex items-center gap-4">
+            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <h3 class="font-semibold text-slate-900">High Noise Level Detected</h3>
+                <span class="text-sm text-slate-500">2 minutes ago</span>
+              </div>
+              <p class="text-sm text-slate-600 mt-1">Table 3 area is experiencing excessive noise levels (4.8/5). Please
+                check the area.</p>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Critical</span>
+                <span class="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded-full">Noise</span>
+              </div>
+            </div>
+            <button onclick="markAsRead(this)" class="px-3 py-1 text-sm text-slate-500 hover:text-slate-700">Mark
+              Read</button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div class="flex items-center gap-4">
+            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <h3 class="font-semibold text-slate-900">Seat Request</h3>
+                <span class="text-sm text-slate-500">5 minutes ago</span>
+              </div>
+              <p class="text-sm text-slate-600 mt-1">Student requested a quieter seat due to nearby noise disturbance.
+              </p>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Warning</span>
+                <span class="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded-full">Request</span>
+              </div>
+            </div>
+            <button onclick="markAsRead(this)" class="px-3 py-1 text-sm text-slate-500 hover:text-slate-700">Mark
+              Read</button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div class="flex items-center gap-4">
+            <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <h3 class="font-semibold text-slate-900">System Update</h3>
+                <span class="text-sm text-slate-500">1 hour ago</span>
+              </div>
+              <p class="text-sm text-slate-600 mt-1">Noise monitoring system has been updated with improved accuracy.
+              </p>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Info</span>
+                <span class="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded-full">System</span>
+              </div>
+            </div>
+            <button onclick="markAsRead(this)" class="px-3 py-1 text-sm text-slate-500 hover:text-slate-700">Mark
+              Read</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notification Settings -->
+      <div class="mt-8 bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+        <h3 class="text-lg font-semibold mb-4">Notification Settings</h3>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="font-medium">Noise Level Alerts</div>
+              <div class="text-sm text-slate-500">Get notified when noise levels exceed thresholds</div>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" class="sr-only peer" checked>
+              <div
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+              </div>
+            </label>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="font-medium">Seat Requests</div>
+              <div class="text-sm text-slate-500">Notifications for seat change requests</div>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" class="sr-only peer" checked>
+              <div
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+              </div>
+            </label>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="font-medium">System Updates</div>
+              <div class="text-sm text-slate-500">Important system notifications</div>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" class="sr-only peer" checked>
+              <div
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+  <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+
+  <script>
+    (function () {
+      // Robust mobile menu toggle
+      try {
+        var mmBtn = document.getElementById('mobile-menu-btn');
+        var mmenu = document.getElementById('mobile-menu');
+        var hdr = document.querySelector('header.site-header');
+        if (mmBtn && mmenu && hdr) {
+          mmBtn.addEventListener('click', function () {
+            var hidden = mmenu.classList.contains('hidden');
+            if (hidden) { hdr.classList.add('menu-open'); mmenu.classList.remove('hidden'); mmBtn.setAttribute('aria-expanded', 'true'); }
+            else { hdr.classList.remove('menu-open'); mmenu.classList.add('hidden'); mmBtn.setAttribute('aria-expanded', 'false'); }
+          });
+        }
+      } catch (_) { }
+
+      var alerts = [];
+      var filteredAlerts = [];
+      var currentFilter = 'all';
+
+      // Firebase init
+      var cfg = window.firebaseConfig || {};
+      try { if (!firebase.apps.length) firebase.initializeApp(cfg); } catch (_) { }
+      var db = null; try { db = firebase.database(); } catch (_) { }
+
+      // Sample alerts data
+      var sampleAlerts = [
+        {
+          id: 1,
+          type: 'critical',
+          title: 'High Noise Level Detected',
+          message: 'Table 3 area is experiencing excessive noise levels (4.8/5). Please check the area.',
+          timestamp: Date.now() - 120000,
+          read: false,
+          category: 'noise'
+        },
+        {
+          id: 2,
+          type: 'warning',
+          title: 'Seat Request',
+          message: 'Student requested a quieter seat due to nearby noise disturbance.',
+          timestamp: Date.now() - 300000,
+          read: false,
+          category: 'request'
+        },
+        {
+          id: 3,
+          type: 'info',
+          title: 'System Update',
+          message: 'Noise monitoring system has been updated with improved accuracy.',
+          timestamp: Date.now() - 3600000,
+          read: true,
+          category: 'system'
+        },
+        {
+          id: 4,
+          type: 'critical',
+          title: 'Sensor Malfunction',
+          message: 'Noise sensor at Table 2 is not responding. Manual inspection required.',
+          timestamp: Date.now() - 1800000,
+          read: false,
+          category: 'system'
+        },
+        {
+          id: 5,
+          type: 'warning',
+          title: 'Capacity Warning',
+          message: 'Library is at 85% capacity. Consider opening additional areas.',
+          timestamp: Date.now() - 2400000,
+          read: true,
+          category: 'capacity'
+        }
+      ];
+
+      function updateStats() {
+        var critical = alerts.filter(function (a) { return a.type === 'critical' && !a.read; }).length;
+        var warning = alerts.filter(function (a) { return a.type === 'warning' && !a.read; }).length;
+        var info = alerts.filter(function (a) { return a.type === 'info' && !a.read; }).length;
+        var total = alerts.length;
+
+        var criticalEl = document.getElementById('criticalAlerts');
+        var warningEl = document.getElementById('warningAlerts');
+        var infoEl = document.getElementById('infoAlerts');
+        var totalEl = document.getElementById('totalAlerts');
+
+        if (criticalEl) criticalEl.textContent = critical;
+        if (warningEl) warningEl.textContent = warning;
+        if (infoEl) infoEl.textContent = info;
+        if (totalEl) totalEl.textContent = total;
+      }
+
+      function renderAlerts() {
+        var container = document.getElementById('alertsList');
+        if (!container) return;
+
+        if (filteredAlerts.length === 0) {
+          container.innerHTML = '<div class="text-center py-12 text-slate-500">No alerts found</div>';
+          return;
+        }
+
+        container.innerHTML = '';
+        filteredAlerts.forEach(function (alert) {
+          var alertEl = document.createElement('div');
+          alertEl.className = 'bg-white rounded-xl p-6 shadow-sm border border-slate-200' + (alert.read ? ' opacity-60' : '');
+
+          var typeColors = {
+            critical: 'bg-red-500',
+            warning: 'bg-yellow-500',
+            info: 'bg-blue-500'
+          };
+
+          var typeBgColors = {
+            critical: 'bg-red-100 text-red-800',
+            warning: 'bg-yellow-100 text-yellow-800',
+            info: 'bg-blue-100 text-blue-800'
+          };
+
+          var timeAgo = getTimeAgo(alert.timestamp);
+
+          alertEl.innerHTML = `
+            <div class="flex items-center gap-4">
+              <div class="w-3 h-3 rounded-full ${typeColors[alert.type]}"></div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-semibold text-slate-900">${alert.title}</h3>
+                  <span class="text-sm text-slate-500">${timeAgo}</span>
+                </div>
+                <p class="text-sm text-slate-600 mt-1">${alert.message}</p>
+                <div class="flex items-center gap-2 mt-2">
+                  <span class="px-2 py-1 ${typeBgColors[alert.type]} text-xs rounded-full">${alert.type.charAt(0).toUpperCase() + alert.type.slice(1)}</span>
+                  <span class="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded-full">${alert.category}</span>
+                </div>
+              </div>
+              <button onclick="markAsRead(${alert.id})" class="px-3 py-1 text-sm text-slate-500 hover:text-slate-700">Mark Read</button>
+            </div>
+          `;
+
+          container.appendChild(alertEl);
+        });
+      }
+
+      function getTimeAgo(timestamp) {
+        var now = Date.now();
+        var diff = now - timestamp;
+        var minutes = Math.floor(diff / 60000);
+        var hours = Math.floor(diff / 3600000);
+        var days = Math.floor(diff / 86400000);
+
+        if (minutes < 1) return 'Just now';
+        if (minutes < 60) return minutes + ' minute' + (minutes > 1 ? 's' : '') + ' ago';
+        if (hours < 24) return hours + ' hour' + (hours > 1 ? 's' : '') + ' ago';
+        return days + ' day' + (days > 1 ? 's' : '') + ' ago';
+      }
+
+      function filterAlerts(type) {
+        currentFilter = type;
+
+        // Update filter buttons
+        var buttons = document.querySelectorAll('.filter-btn');
+        buttons.forEach(function (btn) {
+          btn.classList.remove('bg-indigo-600', 'text-white');
+          btn.classList.add('bg-slate-200', 'text-black');
+        });
+
+        var activeBtn = document.querySelector(`[onclick="filterAlerts('${type}')"]`);
+        if (activeBtn) {
+          activeBtn.classList.remove('bg-slate-200', 'text-black');
+          activeBtn.classList.add('bg-indigo-600', 'text-white');
+        }
+
+        if (type === 'all') {
+          filteredAlerts = alerts;
+        } else if (type === 'unread') {
+          filteredAlerts = alerts.filter(function (a) { return !a.read; });
+        } else {
+          filteredAlerts = alerts.filter(function (a) { return a.type === type; });
+        }
+
+        renderAlerts();
+      }
+
+      function markAsRead(alertId) {
+        var alert = alerts.find(function (a) { return a.id === alertId; });
+        if (alert) {
+          alert.read = true;
+          updateStats();
+          filterAlerts(currentFilter);
+        }
+      }
+
+      function markAllAsRead() {
+        alerts.forEach(function (alert) { alert.read = true; });
+        updateStats();
+        filterAlerts(currentFilter);
+      }
+
+      function refreshAlerts() {
+        // In a real app, this would fetch from Firebase
+        updateStats();
+        filterAlerts(currentFilter);
+      }
+
+      function logout() {
+        try {
+          if (window.supabaseAuth) {
+            window.supabaseAuth.signOut().then(function () {
+              window.location.href = 'index.html';
+            }).catch(function (e) {
+              try { alert(e.message); } catch (_) { }
+            });
+          } else {
+            window.location.href = 'index.html';
+          }
+        } catch (_) { window.location.href = 'index.html'; }
+      }
+
+      // Expose functions globally
+      window.markAsRead = markAsRead;
+      window.markAllAsRead = markAllAsRead;
+      window.refreshAlerts = refreshAlerts;
+      window.filterAlerts = filterAlerts;
+      window.logout = logout;
+
+      // Initialize
+      alerts = sampleAlerts;
+      filteredAlerts = alerts;
+      updateStats();
+      renderAlerts();
+    })();
+  </script>
+</body>
+
+</html>
