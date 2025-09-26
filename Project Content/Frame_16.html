@@ -486,11 +486,15 @@
           }
           list.innerHTML = '';
           rows.forEach(function (r) {
-            var level = parseFloat(r.noise_level || 0);
-            var badge = (level >= 4.5) ? 'bg-red-100 text-red-800' : (level >= 3 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800');
+            var isAdmin = r.notes && r.notes.toLowerCase().includes('posted by admin');
             var el = document.createElement('div');
-            el.className = 'p-3 rounded-lg border border-slate-200';
-            el.innerHTML = '\n            <div class="flex items-start justify-between">\n              <div>\n                <div class="flex items-center gap-2">\n                  <span class="px-2 py-0.5 text-xs rounded ' + badge + '">Level ' + (r.noise_level || '-') + '</span>\n                  <span class="text-sm text-slate-600">' + (r.location || r.table_id || '—') + '</span>\n                </div>\n                <div class="text-xs text-slate-500 mt-1">' + new Date(r.created_at).toLocaleString() + (r.reporter_email ? ' • ' + r.reporter_email : '') + '</div>\n                <div class="text-sm text-slate-700 mt-1">' + (r.notes || '') + '</div>\n              </div>\n              <div class="text-xs text-slate-500">' + (r.status || '') + '</div>\n            </div>\n          ';
+            el.className = 'p-3 rounded-lg border border-slate-200' + (isAdmin ? ' bg-indigo-50 border-indigo-400' : '');
+            el.innerHTML = '\n            <div class="flex items-start justify-between">\n              <div>\n                <div class="flex items-center gap-2">' +
+              (isAdmin
+                ? '<span class="px-2 py-0.5 text-xs rounded bg-indigo-600 text-white font-semibold">Admin</span>'
+                : '<span class="px-2 py-0.5 text-xs rounded bg-slate-300 text-slate-800">User</span>') +
+              '<span class="text-sm text-slate-600">' + (r.location || r.table_id || '—') + '</span>' +
+              '</div>\n                <div class="text-xs text-slate-500 mt-1">' + new Date(r.created_at).toLocaleString() + (r.reporter_email ? ' • ' + r.reporter_email : '') + '</div>\n                <div class="text-sm text-slate-700 mt-1">' + (r.notes || '') + '</div>\n              </div>\n              <div class="text-xs text-slate-500">' + (r.status || '') + '</div>\n            </div>\n          ';
             list.appendChild(el);
           });
         }).catch(function () {
