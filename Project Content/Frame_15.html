@@ -692,7 +692,41 @@
     function initUsersPage() {
       var container = document.querySelector('main .max-w-7xl');
       if (!container) return;
-      container.innerHTML = '\n      <div class="mb-8">\n        <h1 class="text-3xl font-bold mb-2">Users</h1>\n        <p class="text-slate-600">Search users, view details, and manage admin access</p>\n      </div>\n      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-6">\n        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">\n          <div class="flex items-center gap-2">\n            <input id="userSearch" placeholder="Search by email, name, student ID" class="px-3 py-2 rounded-lg border border-slate-300 w-72" />\n            <button id="searchBtn" class="px-3 py-2 rounded-lg btn-outline">Search</button>\n          </div>\n          <div class="text-sm text-slate-500" id="usersStatus"></div>\n        </div>\n      </div>\n      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">\n        <div class="overflow-auto">\n          <table class="w-full text-sm">\n            <thead>\n              <tr class="text-left text-slate-500 border-b">\n                <th class="py-2 pr-3">Name</th>\n                <th class="py-2 pr-3">Email</th>\n                <th class="py-2 pr-3">Student ID</th>\n                <th class="py-2 pr-3">Program</th>\n                <th class="py-2 pr-3">Created</th>\n                <th class="py-2 pr-3">Admin</th>\n                <th class="py-2 pr-3">Action</th>\n              </tr>\n            </thead>\n            <tbody id="usersRows">\n              <tr><td colspan="7" class="py-6 text-center text-slate-400">Loading...</td></tr>\n            </tbody>\n          </table>\n        </div>\n      </div>\n      ';
+      container.innerHTML = `
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold mb-2">Users</h1>
+        <p class="text-slate-600">Search users, view details, and manage admin access</p>
+      </div>
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full max-w-md">
+            <input id="userSearch" placeholder="Search by email, name, student ID" class="px-3 py-2 rounded-lg border border-slate-300 w-full" />
+            <button id="searchBtn" class="px-3 py-2 rounded-lg btn-outline w-full sm:w-auto">Search</button>
+          </div>
+          <div class="text-sm text-slate-500" id="usersStatus"></div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+        <div class="overflow-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-slate-500 border-b">
+                <th class="py-2 pr-3">Name</th>
+                <th class="py-2 pr-3">Email</th>
+                <th class="py-2 pr-3">Student ID</th>
+                <th class="py-2 pr-3">Program</th>
+                <th class="py-2 pr-3">Created</th>
+                <th class="py-2 pr-3">Admin</th>
+                <th class="py-2 pr-3">Action</th>
+              </tr>
+            </thead>
+            <tbody id="usersRows">
+              <tr><td colspan="7" class="py-6 text-center text-slate-400">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      `;
       // Wire events
       var searchBtn = document.getElementById('searchBtn');
       if (searchBtn) searchBtn.addEventListener('click', loadUsers);
