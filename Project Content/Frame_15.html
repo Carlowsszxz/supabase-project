@@ -716,7 +716,7 @@
                 <th class="py-2 pr-3">Student ID</th>
                 <th class="py-2 pr-3">Program</th>
                 <th class="py-2 pr-3">Created</th>
-                <th class="py-2 pr-3">Admin</th>
+              
                 <th class="py-2 pr-3">Action</th>
               </tr>
             </thead>
@@ -785,7 +785,7 @@
         } else {
           actionHtml = '<div class="flex gap-2">\n            <button class="px-3 py-1 text-xs rounded bg-red-600 hover:bg-red-700 text-white" data-action="remove-user" data-id="' + u.id + '">Delete User</button>\n          </div>';
         }
-        tr.innerHTML = '\n          <td class="py-2 pr-3">' + (name || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.email || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.student_id || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.program || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.created_at ? new Date(u.created_at).toLocaleDateString() : '—') + '</td>\n          <td class="py-2 pr-3">' + (u.is_admin ? '<span class="px-2 py-0.5 text-xs rounded bg-indigo-100 text-indigo-800">Admin</span>' : '') + '</td>\n          <td class="py-2 pr-3">' + actionHtml + '</td>';
+        tr.innerHTML = '\n          <td class="py-2 pr-3">' + (name || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.email || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.student_id || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.program || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.created_at ? new Date(u.created_at).toLocaleDateString() : '—') + '</td>\n        \n          <td class="py-2 pr-3">' + actionHtml + '</td>';
         body.appendChild(tr);
       });
     }
