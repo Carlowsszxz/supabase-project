@@ -781,9 +781,9 @@
         var name = ((u.first_name || '') + ' ' + (u.last_name || '')).trim();
         var actionHtml = '';
         if (u.is_admin) {
-          actionHtml = '<button class="px-3 py-1 text-xs rounded bg-slate-200 hover:bg-slate-300 text-black" data-action="unset-admin" data-id="' + u.id + '">Remove Admin</button>';
+          actionHtml = '';
         } else {
-          actionHtml = '<div class="flex gap-2">\n            <button class="px-3 py-1 text-xs rounded bg-indigo-600 hover:bg-indigo-700 text-white" data-action="set-admin" data-id="' + u.id + '">Make Admin</button>\n            <button class="px-3 py-1 text-xs rounded bg-red-600 hover:bg-red-700 text-white" data-action="remove-user" data-id="' + u.id + '">Delete User</button>\n          </div>';
+          actionHtml = '<div class="flex gap-2">\n            <button class="px-3 py-1 text-xs rounded bg-red-600 hover:bg-red-700 text-white" data-action="remove-user" data-id="' + u.id + '">Delete User</button>\n          </div>';
         }
         tr.innerHTML = '\n          <td class="py-2 pr-3">' + (name || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.email || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.student_id || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.program || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.created_at ? new Date(u.created_at).toLocaleDateString() : '—') + '</td>\n          <td class="py-2 pr-3">' + (u.is_admin ? '<span class="px-2 py-0.5 text-xs rounded bg-indigo-100 text-indigo-800">Admin</span>' : '') + '</td>\n          <td class="py-2 pr-3">' + actionHtml + '</td>';
         body.appendChild(tr);
