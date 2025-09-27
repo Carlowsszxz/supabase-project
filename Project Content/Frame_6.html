@@ -26,12 +26,21 @@
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
 </head>
+</head>
 
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
   <header class="site-header">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
       <a href="Frame_6.html" class="brand-title text-2xl font-semibold mr-auto">UMak Noise Monitor - Admin</a>
+      <button id="mobile-menu-btn"
+        class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+        aria-label="Open main menu" aria-expanded="false">
+        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
       <nav class="hidden md:flex items-center gap-4 text-sm">
         <a href="Frame_6.html" class="nav-link active">Dashboard</a>
         <a href="Frame_7.html" class="nav-link">Log</a>
@@ -42,6 +51,15 @@
           style="color: black !important;">Logout</button>
       </nav>
     </div>
+    <nav id="mobile-menu" class="md:hidden hidden px-6 pb-3">
+      <a href="Frame_6.html" class="block py-2 text-sm nav-link active">Dashboard</a>
+      <a href="Frame_7.html" class="block py-2 text-sm nav-link">Log</a>
+      <a href="Frame_9.html" class="block py-2 text-sm nav-link">Alerts</a>
+      <a href="Frame_18.html" class="block py-2 text-sm nav-link">Reports</a>
+      <a href="Frame_15.html" class="block py-2 text-sm nav-link">Users</a>
+      <button id="logoutBtnMobile"
+        class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition text-left">Logout</button>
+    </nav>
   </header>
 
   <main class="flex-1 py-8 px-6">
@@ -678,6 +696,41 @@
           }
         }
       }
+
+      // Hamburger menu toggle for mobile
+      (function () {
+        var btn = document.getElementById('mobile-menu-btn');
+        var menu = document.getElementById('mobile-menu');
+        if (btn && menu) {
+          btn.addEventListener('click', function () {
+            var isOpen = menu.classList.contains('hidden') === false;
+            if (isOpen) {
+              menu.classList.add('hidden');
+              btn.setAttribute('aria-expanded', 'false');
+            } else {
+              menu.classList.remove('hidden');
+              btn.setAttribute('aria-expanded', 'true');
+            }
+          });
+        }
+        // Mobile logout
+        var logoutBtnMobile = document.getElementById('logoutBtnMobile');
+        function handleLogout() {
+          try {
+            if (window.supabaseAuth) {
+              window.supabaseAuth.signOut().then(function () {
+                window.location.href = 'index.html';
+              }).catch(function (err) {
+                console.error('Logout error:', err);
+                window.location.href = 'index.html';
+              });
+            } else {
+              window.location.href = 'index.html';
+            }
+          } catch (_) { window.location.href = 'index.html'; }
+        }
+        if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', handleLogout);
+      })();
 
       // Initialize
       initialize();
