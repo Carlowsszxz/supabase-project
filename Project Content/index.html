@@ -32,6 +32,20 @@
       opacity: 1;
       filter: none;
     }
+
+    /* Global fade-in system (copied from Frame 15) */
+    [data-fade] {
+      opacity: 0;
+      --fade-init: 14px;
+      --fade-filter: none;
+      filter: var(--fade-filter) !important;
+      transition: var(--fade-transition, opacity 1000ms ease-out, filter 1000ms ease-out) !important;
+      will-change: opacity, filter;
+    }
+
+    [data-fade]:not([data-blur="false"]) {
+      --fade-filter: blur(var(--fade-init));
+    }
   </style>
 
   <script defer src="theme.js"></script>
@@ -53,7 +67,7 @@
 </head>
 
 <body class="text-slate-900 min-h-screen flex flex-col relative">
-  <header class="site-header">
+  <header class="site-header" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
       <a href="index.html" class="brand-title text-xl md:text-2xl font-semibold mr-auto">University of Makati
@@ -77,7 +91,8 @@
     </nav>
   </header>
 
-  <main class="flex-1 flex items-start justify-center py-12 px-6">
+  <main class="flex-1 flex items-start justify-center py-12 px-6" data-fade data-blur="true" data-initial-opacity="0"
+    data-duration="1000" data-delay="50">
     <div id="fade-content" class="w-full max-w-6xl fade-content" data-blur="true" data-duration="1000"
       data-easing="ease-out" data-initial-opacity="0">
       <div class="bg-white rounded-2xl shadow overflow-hidden">
@@ -207,7 +222,8 @@
     </div>
   </main>
 
-  <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+  <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
+    data-duration="1000" data-delay="100">© 2025 UMak Library · Noise Comfort Index</footer>
   <script>
     (function () {
       function initSquares() {
@@ -224,6 +240,44 @@
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initSquares);
       } else { initSquares(); }
+    })();
+  </script>
+  <script>
+    // Fade-on-scroll transitions (same behavior as Frame 15)
+    (function () {
+      var fadeElements = Array.from(document.querySelectorAll('[data-fade]'));
+      if (fadeElements.length === 0) return;
+
+      fadeElements.forEach(function (el) {
+        var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+        var easing = el.getAttribute('data-easing') || 'ease-out';
+        var blurPxAttr = el.getAttribute('data-blur-px');
+        var blurPx = parseInt(blurPxAttr || '14', 10);
+        el.style.opacity = String(initialOpacity);
+        el.style.setProperty('--fade-init', blurPx + 'px');
+        el.style.setProperty('--fade-transition', 'opacity ' + duration + 'ms ' + easing + ', filter ' + duration + 'ms ' + easing);
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var el = entry.target;
+            var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+            var blurAttr = el.getAttribute('data-blur');
+            var blurEnabled = (blurAttr !== 'false');
+            observer.unobserve(el);
+            setTimeout(function () {
+              el.style.opacity = '1';
+              if (blurEnabled) {
+                el.style.setProperty('--fade-init', '0px');
+              }
+            }, delay);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      fadeElements.forEach(function (el) { observer.observe(el); });
     })();
   </script>
   <script>
