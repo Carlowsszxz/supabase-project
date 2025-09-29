@@ -120,15 +120,18 @@
         <!-- Map Container Section -->
         <div class="mb-6">
           <h2 class="text-xl font-semibold mb-3">Library Floor Plan</h2>
-          <div id="map-container"
+          <div id="map-container" data-fade data-blur="true" data-duration="1000" data-easing="ease-out" data-delay="0"
+            data-initial-opacity="0"
             class="relative h-80 rounded-lg border border-slate-200 bg-white flex items-center justify-center overflow-hidden">
-            <img src="FloorPlan.png" alt="Library Floor Plan" class="max-w-full max-h-full object-contain">
+            <img src="FloorPlan.png" alt="Library Floor Plan" class="max-w-full max-h-full object-contain" data-fade
+              data-blur="true" data-delay="150" data-initial-opacity="0">
           </div>
         </div>
 
         <div class="grid md:grid-cols-3 gap-6">
           <div class="md:col-span-2">
-            <div id="table-area"
+            <div id="table-area" data-fade data-blur="true" data-duration="1000" data-easing="ease-out" data-delay="50"
+              data-initial-opacity="0"
               class="relative h-72 rounded-lg border border-slate-200 bg-white flex items-center justify-center">
 
               <!-- Table 1 -->
@@ -786,13 +789,13 @@
             </div>
           </div>
           <aside class="space-y-4">
-            <div class="p-4 rounded-lg border border-slate-200 bg-white">
+            <div class="p-4 rounded-lg border border-slate-200 bg-white" data-fade data-blur="true" data-delay="100">
               <div class="text-sm text-slate-500">Selected table</div>
               <div class="font-medium mt-1"><span id="seat-title">—</span> · Seats: <span id="seat-count">0</span>/8
                 occupied</div>
               <div id="seat-list" class="mt-3 grid grid-cols-4 gap-2 text-xs text-center"></div>
             </div>
-            <div class="p-4 rounded-lg border border-slate-200 bg-white">
+            <div class="p-4 rounded-lg border border-slate-200 bg-white" data-fade data-blur="true" data-delay="200">
               <div class="text-sm text-slate-500">Legend</div>
               <div class="flex items-center gap-6 mt-2 text-sm">
                 <div class="flex items-center gap-2"><span
@@ -1095,6 +1098,50 @@
 
       // Start polling as fallback
       setTimeout(startPolling, 10000); // Start polling after 10 seconds
+    })();
+  </script>
+  <script>
+    // Fade-on-scroll transitions (vanilla equivalent of React FadeContent)
+    (function () {
+      var fadeElements = Array.from(document.querySelectorAll('[data-fade]'));
+      if (fadeElements.length === 0) return;
+
+      // Initialize starting styles
+      fadeElements.forEach(function (el) {
+        var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+        var easing = el.getAttribute('data-easing') || 'ease-out';
+        var blur = el.getAttribute('data-blur');
+        el.style.opacity = String(initialOpacity);
+        el.style.filter = (blur === 'true' || blur === '' || blur === '1') ? 'blur(10px)' : 'none';
+        el.style.transition = 'opacity ' + duration + 'ms ' + easing + ', filter ' + duration + 'ms ' + easing;
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var el = entry.target;
+            var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+            var blur = el.getAttribute('data-blur');
+            // Unobserve to mimic one-time reveal
+            observer.unobserve(el);
+            setTimeout(function () {
+              el.style.opacity = '1';
+              if (blur === 'true' || blur === '' || blur === '1') {
+                el.style.filter = 'blur(0px)';
+              }
+            }, delay);
+          }
+        });
+      }, {
+        threshold: parseFloat((function () {
+          // optional per-element threshold
+          // default 0.1 like in React component
+          return '0.1';
+        })())
+      });
+
+      fadeElements.forEach(function (el) { observer.observe(el); });
     })();
   </script>
   <script>
