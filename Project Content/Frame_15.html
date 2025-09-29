@@ -10,10 +10,26 @@
   <script defer src="theme.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="supabase.js"></script>
+  <style>
+    /* First-paint blur + transition variables */
+    [data-fade] {
+      opacity: 0;
+      --fade-init: 14px;
+      --fade-filter: none;
+      filter: var(--fade-filter) !important;
+      transition: var(--fade-transition, opacity 1000ms ease-out, filter 1000ms ease-out) !important;
+      will-change: opacity, filter;
+    }
+
+    [data-fade]:not([data-blur="false"]) {
+      --fade-filter: blur(var(--fade-init));
+    }
+  </style>
 </head>
 
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
-  <header class="site-header">
+  <header class="site-header" data-fade data-blur="true" data-blur-px="16" data-initial-opacity="0"
+    data-duration="1000">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
       <a href="Frame_6.html" class="brand-title text-2xl font-semibold mr-auto">UMak Noise Monitor - Admin</a>
@@ -47,40 +63,48 @@
     </nav>
   </header>
 
-  <main class="flex-1 py-8 px-6">
+  <main class="flex-1 py-8 px-6" data-fade data-blur="true" data-blur-px="16" data-initial-opacity="0"
+    data-duration="1000" data-delay="50">
     <div class="max-w-7xl mx-auto">
 
       <!-- Users Management -->
-      <div class="mb-8">
+      <div class="mb-8" data-fade data-blur="true" data-initial-opacity="0" data-duration="900">
         <h1 class="text-3xl font-bold mb-2">Users</h1>
         <p class="text-slate-600">Search users, view details, and manage admin access</p>
       </div>
 
       <!-- Quick Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-1">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" data-fade data-blur="true" data-initial-opacity="0"
+        data-delay="75">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover" data-fade data-blur="true"
+          data-initial-opacity="0" data-delay="0">
           <div class="text-2xl font-bold text-indigo-600" id="total-seats">25</div>
           <div class="text-sm text-slate-500">Total Seats</div>
         </div>
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-2">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover" data-fade data-blur="true"
+          data-initial-opacity="0" data-delay="50">
           <div class="text-2xl font-bold text-green-600" id="available-seats">14</div>
           <div class="text-sm text-slate-500">Available</div>
         </div>
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-3">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover" data-fade data-blur="true"
+          data-initial-opacity="0" data-delay="100">
           <div class="text-2xl font-bold text-red-600" id="occupied-seats">11</div>
           <div class="text-sm text-slate-500">Occupied</div>
         </div>
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-4">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover" data-fade data-blur="true"
+          data-initial-opacity="0" data-delay="150">
           <div class="text-2xl font-bold text-slate-600" id="occupancy-rate">44%</div>
           <div class="text-sm text-slate-500">Occupancy Rate</div>
         </div>
       </div>
 
       <!-- Tables Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6" data-fade data-blur="true"
+        data-initial-opacity="0" data-delay="200">
 
         <!-- Table 1 -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 bounce-in stagger-1">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
+          data-initial-opacity="0" data-delay="0">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">Table 1</h3>
             <div class="flex gap-2">
@@ -113,7 +137,8 @@
         </div>
 
         <!-- Table 2 -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 bounce-in stagger-2">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
+          data-initial-opacity="0" data-delay="50">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">Table 2</h3>
             <div class="flex gap-2">
@@ -146,7 +171,8 @@
         </div>
 
         <!-- Table 3 -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 bounce-in stagger-3">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
+          data-initial-opacity="0" data-delay="100">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">Table 3</h3>
             <div class="flex gap-2">
@@ -179,7 +205,8 @@
         </div>
 
         <!-- Table 4 -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 bounce-in stagger-4">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
+          data-initial-opacity="0" data-delay="150">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">Table 4</h3>
             <div class="flex gap-2">
@@ -212,7 +239,8 @@
         </div>
 
         <!-- Table 5 -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 bounce-in stagger-5">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
+          data-initial-opacity="0" data-delay="200">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">Table 5</h3>
             <div class="flex gap-2">
@@ -245,7 +273,8 @@
         </div>
 
         <!-- Global Actions -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
+          data-initial-opacity="0" data-delay="250">
           <h3 class="text-lg font-semibold mb-4">Global Actions</h3>
           <div class="space-y-3">
             <button onclick="clearAllTables()"
@@ -278,7 +307,8 @@
       </div>
 
       <!-- Current Student Selection -->
-      <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
+        data-initial-opacity="0" data-delay="300">
         <h3 class="text-lg font-semibold mb-2">Current Student Selection</h3>
         <div class="text-sm text-slate-600">
           <span id="current-selection">No active selection</span>
@@ -286,7 +316,8 @@
       </div>
 
       <!-- Legend -->
-      <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
+        data-initial-opacity="0" data-delay="350">
         <h3 class="text-lg font-semibold mb-4">Legend</h3>
         <div class="flex flex-wrap gap-6 text-sm">
           <div class="flex items-center gap-2">
@@ -307,11 +338,91 @@
     </div>
   </main>
 
-  <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+  <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
+    data-delay="400">© 2025 UMak Library · Noise Comfort Index</footer>
   <div id="supabase-status" style="position:fixed;right:12px;bottom:12px;pointer-events:none"
     class="px-2 py-1 rounded-md text-xs bg-slate-200 text-slate-700 hidden"></div>
   <div id="toast" style="position:fixed;right:12px;bottom:48px;pointer-events:none"
     class="px-3 py-2 rounded-md text-sm bg-slate-800 text-white shadow hidden"></div>
+
+  <!-- Add User Modal -->
+  <div id="add-user-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-[90%] p-5">
+      <h3 class="text-lg font-semibold mb-3">Add User</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+        <div class="sm:col-span-2">
+          <label class="block text-sm mb-1">Email</label>
+          <input id="add_email" type="email" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-sm mb-1">Temporary Password</label>
+          <input id="add_password" type="password" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
+        </div>
+        <div>
+          <label class="block text-sm mb-1">First Name</label>
+          <input id="add_first_name" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Last Name</label>
+          <input id="add_last_name" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Student ID</label>
+          <input id="add_student_id" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Program</label>
+          <input id="add_program" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
+        </div>
+        <label class="flex items-center gap-2 sm:col-span-2 text-sm">
+          <input id="add_is_admin" type="checkbox" class="rounded border-slate-300" />
+          <span>Grant admin access</span>
+        </label>
+      </div>
+      <div class="flex justify-end gap-2">
+        <button id="add-user-cancel"
+          class="px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-black">Cancel</button>
+        <button id="add-user-save"
+          class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit User Modal -->
+  <div id="edit-user-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-[90%] p-5">
+      <h3 class="text-lg font-semibold mb-3">Edit User</h3>
+      <input id="edit_user_id" type="hidden" />
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+        <div>
+          <label class="block text-sm mb-1">First Name</label>
+          <input id="edit_first_name" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Last Name</label>
+          <input id="edit_last_name" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Student ID</label>
+          <input id="edit_student_id" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Program</label>
+          <input id="edit_program" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
+        </div>
+        <label class="flex items-center gap-2 sm:col-span-2 text-sm">
+          <input id="edit_is_admin" type="checkbox" class="rounded border-slate-300" />
+          <span>Admin access</span>
+        </label>
+      </div>
+      <div class="flex justify-end gap-2">
+        <button id="edit-user-cancel"
+          class="px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-black">Cancel</button>
+        <button id="edit-user-save"
+          class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">Save</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Confirm Modal -->
   <div id="confirm-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
@@ -381,15 +492,9 @@
         }
 
         const user = userResult.data.user;
-
-        // Check for legacy admin credentials first
         const email = user.email ? user.email.toLowerCase() : '';
-        if (email === 'adminlibrarian@umak.edu.ph') {
-          console.log('Legacy admin user detected, granting access');
-          return true;
-        }
 
-        // Check if user is admin in database
+        // 1) Check DB admin first
         const adminResult = await window.supabaseDB.isAdmin(user.id);
 
         if (adminResult.error) {
@@ -399,7 +504,13 @@
           return true;
         }
 
-        if (!adminResult.data) {
+        window.__currentIsAdminRPC = !!(adminResult && adminResult.data);
+        if (!window.__currentIsAdminRPC) {
+          // 2) Fallback: allow legacy email to view page, but no admin RPCs
+          if (email === 'adminlibrarian@umak.edu.ph') {
+            console.log('Legacy admin user detected (view-only).');
+            return true;
+          }
           console.log('User is not an admin, redirecting to student dashboard');
           window.location.href = 'Frame_4.html'; // Redirect to student dashboard
           return false;
@@ -703,7 +814,10 @@
             <input id="userSearch" placeholder="Search by email, name, student ID" class="px-3 py-2 rounded-lg border border-slate-300 w-full" />
             <button id="searchBtn" class="px-3 py-2 rounded-lg btn-outline w-full sm:w-auto">Search</button>
           </div>
-          <div class="text-sm text-slate-500" id="usersStatus"></div>
+          <div class="flex items-center gap-2">
+            <button id="addUserBtn" class="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">Add User</button>
+            <div class="text-sm text-slate-500" id="usersStatus"></div>
+          </div>
         </div>
       </div>
       <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
@@ -730,10 +844,18 @@
       // Wire events
       var searchBtn = document.getElementById('searchBtn');
       if (searchBtn) searchBtn.addEventListener('click', loadUsers);
+      var addBtnRendered = document.getElementById('addUserBtn');
+      if (addBtnRendered && addModal) {
+        addBtnRendered.addEventListener('click', function () { addModal.classList.remove('hidden'); });
+      }
       var rows = document.getElementById('usersRows');
       if (rows) rows.addEventListener('click', function (e) {
         var t = e.target; if (!t || !t.getAttribute) return; var id = t.getAttribute('data-id');
         var action = t.getAttribute('data-action');
+        if (action === 'edit-user') {
+          openEditUser(id);
+          return;
+        }
         if (action === 'set-admin') {
           openConfirm('Are you sure you want to grant Admin access to this user?', function () {
             t.disabled = true;
@@ -779,12 +901,21 @@
         var tr = document.createElement('tr');
         tr.className = 'border-b last:border-0';
         var name = ((u.first_name || '') + ' ' + (u.last_name || '')).trim();
-        var actionHtml = '';
-        if (u.is_admin) {
-          actionHtml = '';
-        } else {
-          actionHtml = '<div class="flex gap-2">\n            <button class="px-3 py-1 text-xs rounded bg-red-600 hover:bg-red-700 text-white" data-action="remove-user" data-id="' + u.id + '">Delete User</button>\n          </div>';
+        var actionParts = [];
+        actionParts.push('<button class="px-3 py-1 text-xs rounded bg-slate-200 hover:bg-slate-300" data-action="edit-user" data-id="' + u.id + '">Edit</button>');
+        // Only show admin controls if current viewer is admin
+        if (window.__currentIsAdminRPC) {
+          if (u.is_admin) {
+            actionParts.push('<button class="px-3 py-1 text-xs rounded bg-amber-600 hover:bg-amber-700 text-white" data-action="unset-admin" data-id="' + u.id + '">Remove Admin</button>');
+          } else {
+            actionParts.push('<button class="px-3 py-1 text-xs rounded bg-green-600 hover:bg-green-700 text-white" data-action="set-admin" data-id="' + u.id + '">Grant Admin</button>');
+          }
         }
+        // Never allow deleting admin accounts; anyone else allowed if viewer is admin
+        if (!u.is_admin && window.__currentIsAdminRPC) {
+          actionParts.push('<button class="px-3 py-1 text-xs rounded bg-red-600 hover:bg-red-700 text-white" data-action="remove-user" data-id="' + u.id + '">Delete User</button>');
+        }
+        var actionHtml = '<div class="flex gap-2">' + actionParts.join(' ') + '</div>';
         tr.innerHTML = '\n          <td class="py-2 pr-3">' + (name || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.email || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.student_id || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.program || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.created_at ? new Date(u.created_at).toLocaleDateString() : '—') + '</td>\n        \n          <td class="py-2 pr-3">' + actionHtml + '</td>';
         body.appendChild(tr);
       });
@@ -832,6 +963,137 @@
       clearTimeout(window.__toastTimer);
       window.__toastTimer = setTimeout(function () { el.classList.add('hidden'); }, 2500);
     }
+
+    // Add/Edit user modal logic
+    var addModal = document.getElementById('add-user-modal');
+    var editModal = document.getElementById('edit-user-modal');
+    var addBtn = document.getElementById('addUserBtn');
+    if (addBtn && addModal) {
+      addBtn.addEventListener('click', function () { addModal.classList.remove('hidden'); });
+    }
+    function closeAdd() { if (addModal) addModal.classList.add('hidden'); }
+    function closeEdit() { if (editModal) editModal.classList.add('hidden'); }
+    var addCancel = document.getElementById('add-user-cancel'); if (addCancel) addCancel.addEventListener('click', closeAdd);
+    var editCancel = document.getElementById('edit-user-cancel'); if (editCancel) editCancel.addEventListener('click', closeEdit);
+
+    // Create user
+    var addSave = document.getElementById('add-user-save');
+    if (addSave) {
+      addSave.addEventListener('click', async function () {
+        try {
+          var email = (document.getElementById('add_email') || {}).value || '';
+          var password = (document.getElementById('add_password') || {}).value || '';
+          var firstName = (document.getElementById('add_first_name') || {}).value || '';
+          var lastName = (document.getElementById('add_last_name') || {}).value || '';
+          var studentId = (document.getElementById('add_student_id') || {}).value || '';
+          var program = (document.getElementById('add_program') || {}).value || '';
+          var isAdmin = !!((document.getElementById('add_is_admin') || {}).checked);
+          if (!email || !password) { showToast('Email and password are required', false); return; }
+          // Create auth user (trigger will create profile row)
+          var signRes = await window.supabaseAuth.signUp(email, password, { first_name: firstName, last_name: lastName, student_id: studentId, program: program });
+          if (signRes && signRes.error) { showToast(signRes.error.message || 'Failed to create auth user', false); return; }
+          var uid = (signRes && signRes.data && signRes.data.user && signRes.data.user.id) ? signRes.data.user.id : null;
+          if (!uid) { showToast('No user id returned', false); return; }
+          // Instantly confirm email for admin-created users
+          try { if (window.__currentIsAdminRPC) { await window.supabaseDB.adminConfirmUser(uid); } } catch (_) { }
+          // Profile creation is handled by DB trigger; no direct insert to avoid RLS
+          // Optional: grant admin
+          if (isAdmin && window.__currentIsAdminRPC) { try { await window.supabaseDB.adminSetUserAdmin(uid, true); } catch (_) { } }
+          closeAdd();
+          showToast('User created', true);
+          loadUsers();
+        } catch (e) {
+          showToast('Create failed', false);
+        }
+      });
+    }
+
+    // Open edit modal prefilled
+    function openEditUser(userId) {
+      try {
+        var row = Array.from(document.querySelectorAll('#usersRows tr')).find(function (tr) {
+          return Array.from(tr.querySelectorAll('[data-action]')).some(function (b) { return b.getAttribute('data-id') === userId; });
+        });
+        if (!row) { if (editModal) editModal.classList.remove('hidden'); return; }
+        (document.getElementById('edit_user_id') || {}).value = userId;
+        var tds = row.querySelectorAll('td');
+        (document.getElementById('edit_first_name') || {}).value = (tds[0].textContent || '').split(' ')[0] || '';
+        (document.getElementById('edit_last_name') || {}).value = (tds[0].textContent || '').split(' ')[1] || '';
+        (document.getElementById('edit_student_id') || {}).value = tds[2].textContent || '';
+        (document.getElementById('edit_program') || {}).value = tds[3].textContent || '';
+        if (editModal) editModal.classList.remove('hidden');
+      } catch (_) { if (editModal) editModal.classList.remove('hidden'); }
+    }
+
+    // Save edits
+    var editSave = document.getElementById('edit-user-save');
+    if (editSave) {
+      editSave.addEventListener('click', async function () {
+        try {
+          var uid = (document.getElementById('edit_user_id') || {}).value || '';
+          var firstName = (document.getElementById('edit_first_name') || {}).value || '';
+          var lastName = (document.getElementById('edit_last_name') || {}).value || '';
+          var studentId = (document.getElementById('edit_student_id') || {}).value || '';
+          var program = (document.getElementById('edit_program') || {}).value || '';
+          var isAdmin = !!((document.getElementById('edit_is_admin') || {}).checked);
+          if (!uid) { showToast('No user selected', false); return; }
+          var upd;
+          if (window.__currentIsAdminRPC) {
+            upd = await window.supabaseDB.adminUpdateUserProfile(uid, { first_name: firstName, last_name: lastName, student_id: studentId, program: program });
+          } else {
+            upd = await window.supabaseDB.updateUser(uid, { first_name: firstName, last_name: lastName, student_id: studentId, program: program });
+          }
+          if (upd && upd.error) { showToast(upd.error.message || 'Failed to update', false); return; }
+          // Update admin status
+          try {
+            if (window.__currentIsAdminRPC) {
+              await window.supabaseDB.adminSetUserAdmin(uid, isAdmin);
+            }
+          } catch (_) { }
+          closeEdit();
+          showToast('User updated', true);
+          loadUsers();
+        } catch (e) { showToast('Update failed', false); }
+      });
+    }
+  </script>
+  <script>
+    // Fade-on-scroll transitions (CSS-vars driven like other frames)
+    (function () {
+      var fadeElements = Array.from(document.querySelectorAll('[data-fade]'));
+      if (fadeElements.length === 0) return;
+
+      fadeElements.forEach(function (el) {
+        var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+        var easing = el.getAttribute('data-easing') || 'ease-out';
+        var blurPxAttr = el.getAttribute('data-blur-px');
+        var blurPx = parseInt(blurPxAttr || '14', 10);
+        el.style.opacity = String(initialOpacity);
+        el.style.setProperty('--fade-init', blurPx + 'px');
+        el.style.setProperty('--fade-transition', 'opacity ' + duration + 'ms ' + easing + ', filter ' + duration + 'ms ' + easing);
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var el = entry.target;
+            var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+            var blurAttr = el.getAttribute('data-blur');
+            var blurEnabled = (blurAttr !== 'false');
+            observer.unobserve(el);
+            setTimeout(function () {
+              el.style.opacity = '1';
+              if (blurEnabled) {
+                el.style.setProperty('--fade-init', '0px');
+              }
+            }, delay);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      fadeElements.forEach(function (el) { observer.observe(el); });
+    })();
   </script>
 </body>
 
