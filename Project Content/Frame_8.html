@@ -50,11 +50,25 @@
       transform: none !important;
       position: absolute !important;
     }
+
+    /* Global fade-in (match Frame 15/11/index) */
+    [data-fade] {
+      opacity: 0;
+      --fade-init: 14px;
+      --fade-filter: none;
+      filter: var(--fade-filter) !important;
+      transition: var(--fade-transition, opacity 1000ms ease-out, filter 1000ms ease-out) !important;
+      will-change: opacity, filter;
+    }
+
+    [data-fade]:not([data-blur="false"]) {
+      --fade-filter: blur(var(--fade-init));
+    }
   </style>
 </head>
 
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
-  <header class="site-header">
+  <header class="site-header" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
       <a href="index.html" class="brand-title text-2xl font-semibold mr-auto">University of Makati Library</a>
@@ -82,7 +96,8 @@
         class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition text-left">Logout</button>
     </nav>
   </header>
-  <main class="flex-1 flex items-start justify-center py-12 px-6">
+  <main class="flex-1 flex items-start justify-center py-12 px-6" data-fade data-blur="true" data-initial-opacity="0"
+    data-duration="1000" data-delay="50">
     <div class="w-full max-w-4xl">
 
       <div class="bg-white rounded-xl border border-slate-200 p-6">
@@ -811,7 +826,8 @@
 
       </div>
   </main>
-  <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+  <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
+    data-duration="1000" data-delay="100">© 2025 UMak Library · Noise Comfort Index</footer>
   <div id="supabase-status" style="position:fixed;right:12px;bottom:12px"
     class="px-2 py-1 rounded-md text-xs bg-slate-200 text-slate-700 hidden"></div>
 
@@ -1101,20 +1117,21 @@
     })();
   </script>
   <script>
-    // Fade-on-scroll transitions (vanilla equivalent of React FadeContent)
+    // Fade-on-scroll transitions (Frame 15 CSS-var approach to avoid sticky blur)
     (function () {
       var fadeElements = Array.from(document.querySelectorAll('[data-fade]'));
       if (fadeElements.length === 0) return;
 
-      // Initialize starting styles
+      // Initialize starting styles via CSS vars
       fadeElements.forEach(function (el) {
         var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
         var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
         var easing = el.getAttribute('data-easing') || 'ease-out';
-        var blur = el.getAttribute('data-blur');
+        var blurPxAttr = el.getAttribute('data-blur-px');
+        var blurPx = parseInt(blurPxAttr || '14', 10);
         el.style.opacity = String(initialOpacity);
-        el.style.filter = (blur === 'true' || blur === '' || blur === '1') ? 'blur(10px)' : 'none';
-        el.style.transition = 'opacity ' + duration + 'ms ' + easing + ', filter ' + duration + 'ms ' + easing;
+        el.style.setProperty('--fade-init', blurPx + 'px');
+        el.style.setProperty('--fade-transition', 'opacity ' + duration + 'ms ' + easing + ', filter ' + duration + 'ms ' + easing);
       });
 
       var observer = new IntersectionObserver(function (entries) {
@@ -1122,24 +1139,18 @@
           if (entry.isIntersecting) {
             var el = entry.target;
             var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
-            var blur = el.getAttribute('data-blur');
-            // Unobserve to mimic one-time reveal
+            var blurAttr = el.getAttribute('data-blur');
+            var blurEnabled = (blurAttr !== 'false');
             observer.unobserve(el);
             setTimeout(function () {
               el.style.opacity = '1';
-              if (blur === 'true' || blur === '' || blur === '1') {
-                el.style.filter = 'blur(0px)';
+              if (blurEnabled) {
+                el.style.setProperty('--fade-init', '0px');
               }
             }, delay);
           }
         });
-      }, {
-        threshold: parseFloat((function () {
-          // optional per-element threshold
-          // default 0.1 like in React component
-          return '0.1';
-        })())
-      });
+      }, { threshold: 0.1 });
 
       fadeElements.forEach(function (el) { observer.observe(el); });
     })();
