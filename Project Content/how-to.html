@@ -20,11 +20,25 @@
       opacity: 1;
       filter: none;
     }
+
+    /* Global fade-in like other frames */
+    [data-fade] {
+      opacity: 0;
+      --fade-init: 14px;
+      --fade-filter: none;
+      filter: var(--fade-filter) !important;
+      transition: var(--fade-transition, opacity 1000ms ease-out, filter 1000ms ease-out) !important;
+      will-change: opacity, filter;
+    }
+
+    [data-fade]:not([data-blur="false"]) {
+      --fade-filter: blur(var(--fade-init));
+    }
   </style>
 </head>
 
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
-  <header class="site-header">
+  <header class="site-header" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
       <a href="index.html" class="brand-title text-2xl font-semibold mr-auto">University of Makati Library</a>
@@ -35,7 +49,8 @@
     </div>
   </header>
 
-  <main class="flex-1 py-10 px-6">
+  <main class="flex-1 py-10 px-6" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000"
+    data-delay="50">
     <div class="max-w-5xl mx-auto">
       <div id="fade-content" class="fade-content" data-blur="true" data-duration="1000" data-easing="ease-out"
         data-initial-opacity="0">
@@ -119,39 +134,61 @@
     </div>
   </main>
 
-  <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+  <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
+    data-duration="1000" data-delay="100">© 2025 UMak Library · Noise Comfort Index</footer>
   <script>
     (function () {
-      function initFadeContent() {
-        var el = document.getElementById('fade-content');
-        if (!el) return;
-        var blur = el.getAttribute('data-blur') === 'true';
-        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
-        var easing = el.getAttribute('data-easing') || 'ease-out';
-        var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+      // Fade-on-scroll transitions for [data-fade]
+      var fadeElements = Array.from(document.querySelectorAll('[data-fade]'));
+      if (fadeElements.length) {
+        fadeElements.forEach(function (el) {
+          var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+          var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+          var easing = el.getAttribute('data-easing') || 'ease-out';
+          var blurPx = parseInt(el.getAttribute('data-blur-px') || '14', 10);
+          el.style.opacity = String(initialOpacity);
+          el.style.setProperty('--fade-init', blurPx + 'px');
+          el.style.setProperty('--fade-transition', 'opacity ' + duration + 'ms ' + easing + ', filter ' + duration + 'ms ' + easing);
+        });
 
-        el.style.setProperty('--fade-duration', duration + 'ms');
-        el.style.setProperty('--fade-easing', easing);
-        el.style.setProperty('--fade-initial-opacity', String(initialOpacity));
-        if (blur) el.style.filter = 'blur(6px)';
-
-        var io = new IntersectionObserver(function (entries) {
+        var observer = new IntersectionObserver(function (entries) {
           entries.forEach(function (entry) {
             if (entry.isIntersecting) {
-              try { el.style.filter = 'none'; } catch (_) { }
-              el.classList.add('is-visible');
-              if (io) io.disconnect();
+              var el = entry.target;
+              var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+              var blurEnabled = (el.getAttribute('data-blur') !== 'false');
+              observer.unobserve(el);
+              setTimeout(function () {
+                el.style.opacity = '1';
+                if (blurEnabled) el.style.setProperty('--fade-init', '0px');
+              }, delay);
             }
           });
         }, { threshold: 0.1 });
-        io.observe(el);
+
+        fadeElements.forEach(function (el) { observer.observe(el); });
       }
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initFadeContent);
-      } else {
-        initFadeContent();
+      // Keep existing inner section fade
+      function initFadeContent() {
+        var el = document.getElementById('fade-content');
+        if (!el) return;
+        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+        var easing = el.getAttribute('data-easing') || 'ease-out';
+        var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+        el.style.setProperty('--fade-duration', duration + 'ms');
+        el.style.setProperty('--fade-easing', easing);
+        el.style.setProperty('--fade-initial-opacity', String(initialOpacity));
+        var io = new IntersectionObserver(function (entries) {
+          var e = entries[0];
+          if (e && e.isIntersecting) {
+            io.unobserve(el);
+            el.classList.add('is-visible');
+          }
+        }, { threshold: 0.1 });
+        io.observe(el);
       }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initFadeContent); else initFadeContent();
     })();
   </script>
 </body>
