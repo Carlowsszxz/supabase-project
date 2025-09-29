@@ -10,6 +10,21 @@
   <script defer src="theme.js"></script>
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
+  <style>
+    /* First-paint blur + transition variables */
+    [data-fade] {
+      opacity: 0;
+      --fade-init: 14px;
+      --fade-filter: none;
+      filter: var(--fade-filter) !important;
+      transition: var(--fade-transition, opacity 1000ms ease-out, filter 1000ms ease-out) !important;
+      will-change: opacity, filter;
+    }
+
+    [data-fade]:not([data-blur="false"]) {
+      --fade-filter: blur(var(--fade-init));
+    }
+  </style>
 </head>
 <script>
   // Admin access control (copied from Frame_6.html)
@@ -103,7 +118,8 @@
 </head>
 
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
-  <header class="site-header">
+  <header class="site-header" data-fade data-blur="true" data-blur-px="16" data-initial-opacity="0"
+    data-duration="1000">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
       <a href="Frame_6.html" class="brand-title text-2xl font-semibold mr-auto">UMak Noise Monitor - Admin</a>
@@ -137,11 +153,12 @@
     </nav>
   </header>
 
-  <main class="flex-1 py-8 px-6">
+  <main class="flex-1 py-8 px-6" data-fade data-blur="true" data-blur-px="16" data-initial-opacity="0"
+    data-duration="1000" data-delay="50">
     <div class="max-w-7xl mx-auto">
 
       <!-- Header Section -->
-      <div class="mb-8">
+      <div class="mb-8" data-fade data-blur="true" data-initial-opacity="0" data-duration="900">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 class="text-3xl font-bold mb-2">Alerts & Notifications</h1>
@@ -158,88 +175,21 @@
       </div>
 
       <!-- Alert Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-1">
-          <div class="flex items-center justify-between">
-            <div>
-              <div class="text-2xl font-bold text-red-600" id="criticalAlerts">—</div>
-              <div class="text-sm text-slate-500">Critical Alerts</div>
-            </div>
-            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center floating">
-              <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z">
-                </path>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-2">
-          <div class="flex items-center justify-between">
-            <div>
-              <div class="text-2xl font-bold text-yellow-600" id="warningAlerts">—</div>
-              <div class="text-sm text-slate-500">Warnings</div>
-            </div>
-            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center floating">
-              <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15 17h5l-5 5-5-5h5v-5a7.5 7.5 0 1 0-15 0v5h5l-5 5-5-5h5v-5a7.5 7.5 0 1 0 15 0v5z"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-3">
-          <div class="flex items-center justify-between">
-            <div>
-              <div class="text-2xl font-bold text-blue-600" id="infoAlerts">—</div>
-              <div class="text-sm text-slate-500">Info</div>
-            </div>
-            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center floating">
-              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <div class="text-2xl font-bold text-slate-600" id="totalAlerts">—</div>
-              <div class="text-sm text-slate-500">Total Alerts</div>
-            </div>
-            <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center floating">
-              <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15 17h5l-5 5-5-5h5v-5a7.5 7.5 0 1 0-15 0v5h5l-5 5-5-5h5v-5a7.5 7.5 0 1 0 15 0v5z"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Alert Stats removed -->
 
       <!-- Filter Tabs -->
-      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-6">
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-6" data-fade data-blur="true"
+        data-initial-opacity="0" data-delay="75">
         <div class="flex flex-wrap gap-2">
-          <button onclick="filterAlerts('all')"
-            class="filter-btn px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium">All</button>
-          <button onclick="filterAlerts('critical')"
-            class="filter-btn px-4 py-2 rounded-lg bg-slate-200 text-black text-sm font-medium hover:bg-slate-300">Critical</button>
-          <button onclick="filterAlerts('warning')"
-            class="filter-btn px-4 py-2 rounded-lg bg-slate-200 text-black text-sm font-medium hover:bg-slate-300">Warning</button>
-          <button onclick="filterAlerts('info')"
-            class="filter-btn px-4 py-2 rounded-lg bg-slate-200 text-black text-sm font-medium hover:bg-slate-300">Info</button>
           <button onclick="filterAlerts('unread')"
-            class="filter-btn px-4 py-2 rounded-lg bg-slate-200 text-black text-sm font-medium hover:bg-slate-300">Unread</button>
+            class="filter-btn px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium">Unread</button>
         </div>
       </div>
 
       <!-- Alerts List -->
       <!-- Community Reports (Admin View) -->
-      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-8">
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-8" data-fade data-blur="true"
+        data-initial-opacity="0" data-delay="125">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-semibold">Community Reports</h2>
           <button id="refreshCommunityAdmin"
@@ -258,7 +208,8 @@
       </div>
 
       <!-- Notification Settings -->
-      <div class="mt-8 bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+      <div class="mt-8 bg-white rounded-xl p-6 shadow-sm border border-slate-200" data-fade data-blur="true"
+        data-initial-opacity="0" data-delay="175">
         <h3 class="text-lg font-semibold mb-4">Notification Settings</h3>
         <div class="space-y-4">
           <div class="flex items-center justify-between">
@@ -304,7 +255,8 @@
 
     </div>
   </main>
-  <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+  <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
+    data-delay="225">© 2025 UMak Library · Noise Comfort Index</footer>
 
   <script>
     (function () {
@@ -547,6 +499,45 @@
       } else {
         loadCommunityReportsAdmin();
       }
+    })();
+  </script>
+  <script>
+    // Fade-on-scroll transitions (CSS-vars driven)
+    (function () {
+      var fadeElements = Array.from(document.querySelectorAll('[data-fade]'));
+      if (fadeElements.length === 0) return;
+
+      fadeElements.forEach(function (el) {
+        var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+        var easing = el.getAttribute('data-easing') || 'ease-out';
+        var blurAttr = el.getAttribute('data-blur');
+        var blurPxAttr = el.getAttribute('data-blur-px');
+        var blurPx = parseInt(blurPxAttr || '14', 10);
+        el.style.opacity = String(initialOpacity);
+        el.style.setProperty('--fade-init', blurPx + 'px');
+        el.style.setProperty('--fade-transition', 'opacity ' + duration + 'ms ' + easing + ', filter ' + duration + 'ms ' + easing);
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var el = entry.target;
+            var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+            var blurAttr = el.getAttribute('data-blur');
+            var blurEnabled = (blurAttr !== 'false');
+            observer.unobserve(el);
+            setTimeout(function () {
+              el.style.opacity = '1';
+              if (blurEnabled) {
+                el.style.setProperty('--fade-init', '0px');
+              }
+            }, delay);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      fadeElements.forEach(function (el) { observer.observe(el); });
     })();
   </script>
 </body>
