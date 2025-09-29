@@ -20,6 +20,20 @@
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
+  <style>
+    .fade-content {
+      opacity: var(--fade-initial-opacity, 0);
+      will-change: opacity, filter;
+      transition: opacity var(--fade-duration, 1000ms) var(--fade-easing, ease-out),
+        filter var(--fade-duration, 1000ms) var(--fade-easing, ease-out);
+    }
+
+    .fade-content.is-visible {
+      opacity: 1;
+      filter: none;
+    }
+  </style>
+
   <script defer src="theme.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="config.js"></script>
@@ -38,7 +52,7 @@
   <script src="password-toggle.js"></script>
 </head>
 
-<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+<body class="text-slate-900 min-h-screen flex flex-col relative">
   <header class="site-header">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
@@ -64,12 +78,13 @@
   </header>
 
   <main class="flex-1 flex items-start justify-center py-12 px-6">
-    <div class="w-full max-w-6xl">
+    <div id="fade-content" class="w-full max-w-6xl fade-content" data-blur="true" data-duration="1000"
+      data-easing="ease-out" data-initial-opacity="0">
       <div class="bg-white rounded-2xl shadow overflow-hidden">
         <div class="grid grid-cols-1 md:grid-cols-2">
           <!-- Left: Login form -->
           <div class="p-8">
-            <h1 class="text-2xl font-bold mb-2">Welcome Back</h1>
+            <h1 id="welcome-heading" class="text-4xl font-bold mb-2">Welcome back</h1>
             <p class="text-sm text-slate-500 mb-6">Sign in to access the library dashboard</p>
 
             <!-- Status Messages -->
@@ -189,9 +204,66 @@
         </div>
       </div>
     </div>
+    </div>
   </main>
 
   <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+  <script>
+    (function () {
+      function initSquares() {
+        var el = document.getElementById('squares-bg');
+        if (!el || typeof window.createSquares !== 'function') return;
+        window.createSquares(el, {
+          speed: 0.5,
+          squareSize: 40,
+          direction: 'diagonal',
+          borderColor: '#052865',
+          hoverFillColor: '#222'
+        });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSquares);
+      } else { initSquares(); }
+    })();
+  </script>
+  <script>
+    (function () {
+      function initFadeContent() {
+        var el = document.getElementById('fade-content');
+        if (!el) return;
+        var blur = el.getAttribute('data-blur') === 'true';
+        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+        var easing = el.getAttribute('data-easing') || 'ease-out';
+        var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+
+        // set CSS variables
+        el.style.setProperty('--fade-duration', duration + 'ms');
+        el.style.setProperty('--fade-easing', easing);
+        el.style.setProperty('--fade-initial-opacity', String(initialOpacity));
+        if (blur) el.style.filter = 'blur(6px)';
+
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              // remove inline blur then reveal
+              try { el.style.filter = 'none'; } catch (_) { }
+              el.classList.add('is-visible');
+              if (io) io.disconnect();
+            }
+          });
+        }, { threshold: 0.1 });
+        io.observe(el);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initFadeContent);
+      } else {
+        initFadeContent();
+      }
+    })();
+  </script>
+
+
 
   <script>
     (function () {
@@ -574,7 +646,7 @@
                 showError('Please use a University of Makati email address (@umak.edu.ph)');
               } else {
                 hideAllMessages();
-     }
+              }
             }
           }
         });
