@@ -871,7 +871,17 @@
         if (action === 'remove-user') {
           openConfirm('Are you sure you want to delete this user and ALL of their data? This action cannot be undone.', function () {
             t.disabled = true;
-            window.supabaseDB.adminPurgeUser(id).then(function (res) {
+            var purgeFn = (window.supabaseDB && typeof window.supabaseDB.adminPurgeUser === 'function')
+              ? window.supabaseDB.adminPurgeUser
+              : (window.supabaseDB && typeof window.supabaseDB.adminDeleteUser === 'function'
+                ? function (userId) { return window.supabaseDB.adminDeleteUser(userId); }
+                : null);
+            if (!purgeFn) {
+              showToast('Delete function not available', false);
+              t.disabled = false;
+              return;
+            }
+            purgeFn(id).then(function (res) {
               if (res && !res.error) {
                 showToast('User deleted successfully', true);
               } else {
