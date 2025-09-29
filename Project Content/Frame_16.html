@@ -13,7 +13,8 @@
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
   <header class="site-header">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
-      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
+      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" data-fade data-blur="true"
+        data-delay="50" data-initial-opacity="0" />
       <a href="Frame_11.html" class="brand-title text-xl md:text-2xl font-semibold mr-auto">University of Makati
         Library</a>
       <button id="mobile-menu-btn"
@@ -45,7 +46,8 @@
     <div class="w-full max-w-4xl">
 
       <!-- Report Header -->
-      <section class="bg-white rounded-2xl shadow p-4 sm:p-6 mb-6">
+      <section class="bg-white rounded-2xl shadow p-4 sm:p-6 mb-6" data-fade data-blur="true" data-duration="900"
+        data-easing="ease-out" data-delay="0" data-initial-opacity="0">
         <div class="flex items-start gap-4">
           <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center order-1 ml-[5px]">
             <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,7 +56,7 @@
               </path>
             </svg>
           </div>
-          <div class="flex-1 order-2">
+          <div class="flex-1 order-2" data-fade data-blur="true" data-delay="50" data-initial-opacity="0">
             <h1 class="text-2xl font-semibold mb-2">Report Noise Disturbance</h1>
             <p class="text-slate-600">Help maintain a quiet study environment by reporting noise issues. Your reports
               help librarians take appropriate action.</p>
@@ -65,7 +67,8 @@
       </section>
 
       <!-- Noise Report Form -->
-      <section class="bg-white rounded-2xl shadow p-4 sm:p-6 mb-6">
+      <section class="bg-white rounded-2xl shadow p-4 sm:p-6 mb-6" data-fade data-blur="true" data-duration="950"
+        data-easing="ease-out" data-delay="75" data-initial-opacity="0">
         <form id="noiseReportForm" class="space-y-6">
           <!-- Noise Level -->
           <div>
@@ -242,7 +245,8 @@
       </section>
 
       <!-- Community Reports -->
-      <section class="bg-white rounded-2xl shadow p-4 sm:p-6">
+      <section class="bg-white rounded-2xl shadow p-4 sm:p-6" data-fade data-blur="true" data-duration="1000"
+        data-easing="ease-out" data-delay="150" data-initial-opacity="0">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-semibold">Community Reports</h2>
           <div class="flex items-center gap-2">
@@ -513,6 +517,44 @@
 
       // Initialize
       setupRadioVisuals();
+    })();
+  </script>
+  <script>
+    // Fade-on-scroll transitions (same as Frame 8)
+    (function () {
+      var fadeElements = Array.from(document.querySelectorAll('[data-fade]'));
+      if (fadeElements.length === 0) return;
+
+      fadeElements.forEach(function (el) {
+        var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+        var easing = el.getAttribute('data-easing') || 'ease-out';
+        var blurAttr = el.getAttribute('data-blur');
+        var blurEnabled = (blurAttr !== 'false');
+        el.style.opacity = String(initialOpacity);
+        el.style.filter = blurEnabled ? 'blur(10px)' : 'none';
+        el.style.transition = 'opacity ' + duration + 'ms ' + easing + ', filter ' + duration + 'ms ' + easing;
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var el = entry.target;
+            var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+            var blurAttr = el.getAttribute('data-blur');
+            var blurEnabled = (blurAttr !== 'false');
+            observer.unobserve(el);
+            setTimeout(function () {
+              el.style.opacity = '1';
+              if (blurEnabled) {
+                el.style.filter = 'blur(0px)';
+              }
+            }, delay);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      fadeElements.forEach(function (el) { observer.observe(el); });
     })();
   </script>
   <script>
