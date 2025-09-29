@@ -238,6 +238,37 @@ const db = {
     }
   },
 
+  // Admin: update another user's profile via RPC (bypasses RLS)
+  async adminUpdateUserProfile(userId, fields) {
+    if (!supabase) return { error: 'Supabase not initialized' };
+    try {
+      const { first_name = null, last_name = null, student_id = null, program = null } = fields || {};
+      const { data, error } = await supabase.rpc('admin_update_user_profile', {
+        p_user_id: userId,
+        p_first_name: first_name,
+        p_last_name: last_name,
+        p_student_id: student_id,
+        p_program: program
+      });
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
+  },
+
+  // Admin: instantly confirm a user's email (no verification email flow)
+  async adminConfirmUser(userId) {
+    if (!supabase) return { error: 'Supabase not initialized' };
+    try {
+      const { data, error } = await supabase.rpc('admin_confirm_user', { p_user_id: userId });
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
+  },
+
   // Update user profile
   async updateUser(uid, updates) {
     if (!supabase) return { error: 'Supabase not initialized' };
@@ -500,12 +531,9 @@ const db = {
   async isAdmin(userId) {
     if (!supabase) return { error: 'Supabase not initialized' };
     try {
-      const { data, error } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      if (error && error.code !== 'PGRST116') throw error;
+      // Prefer RPC to avoid RLS recursion on admin_users table
+      const { data, error } = await supabase.rpc('is_admin', { p_user_id: userId });
+      if (error) throw error;
       return { data: !!data, error: null };
     } catch (error) {
       return { data: false, error };
