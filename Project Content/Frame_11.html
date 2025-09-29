@@ -8,6 +8,19 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
   <script defer src="theme.js"></script>
+  <style>
+    .fade-content {
+      opacity: var(--fade-initial-opacity, 0);
+      will-change: opacity, filter;
+      transition: opacity var(--fade-duration, 1000ms) var(--fade-easing, ease-out),
+        filter var(--fade-duration, 1000ms) var(--fade-easing, ease-out);
+    }
+
+    .fade-content.is-visible {
+      opacity: 1;
+      filter: none;
+    }
+  </style>
 </head>
 
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
@@ -42,246 +55,250 @@
   </header>
   <main class="flex-1 flex items-start justify-center py-12 px-6">
     <div class="w-full max-w-6xl">
+      <div id="fade-content" class="fade-content" data-blur="true" data-duration="1000" data-easing="ease-out"
+        data-initial-opacity="0" data-delay="0" data-threshold="0.1">
 
-      <!-- Profile Header -->
-      <section class="bg-white rounded-2xl shadow p-6 mb-6">
-        <div class="flex items-start gap-6">
-          <div class="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center text-2xl font-bold"
-            id="avatar">—</div>
-          <div class="flex-1">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div>
-                <h1 class="text-2xl font-semibold" id="displayName">—</h1>
-                <div class="text-sm text-slate-500">Student ID: <span id="studentId">—</span> · Program: <span
-                    id="program">—</span></div>
+        <!-- Profile Header -->
+        <section class="bg-white rounded-2xl shadow p-6 mb-6">
+          <div class="flex items-start gap-6">
+            <div class="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center text-2xl font-bold"
+              id="avatar">—</div>
+            <div class="flex-1">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <h1 class="text-2xl font-semibold" id="displayName">—</h1>
+                  <div class="text-sm text-slate-500">Student ID: <span id="studentId">—</span> · Program: <span
+                      id="program">—</span></div>
+                </div>
+                <div class="flex items-center justify-center">
+                  <button class="px-4 py-2 text-sm rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white hidden"
+                    id="checkInBtn">Check In</button>
+                </div>
               </div>
-              <div class="flex items-center justify-center">
-                <button class="px-4 py-2 text-sm rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white hidden"
-                  id="checkInBtn">Check In</button>
+              <div class="mt-3 text-sm text-slate-500">Current session: <span id="currentSession">Not checked in</span>
               </div>
             </div>
-            <div class="mt-3 text-sm text-slate-500">Current session: <span id="currentSession">Not checked in</span>
+          </div>
+        </section>
+
+        <!-- Complete Profile Banner/Form (hidden until needed) -->
+        <section id="complete-profile" class="bg-white rounded-2xl shadow p-6 border border-yellow-100 mb-8 hidden">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-full bg-yellow-50 flex items-center justify-center">⚠️</div>
+            <div class="flex-1">
+              <h2 class="text-lg font-semibold mb-2">Complete your profile</h2>
+              <p class="text-sm text-slate-600 mb-4">We need a few basic details to get you started.</p>
+              <form id="profile-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label for="pf-first" class="block text-sm text-slate-700">First name</label>
+                  <input id="pf-first" name="pf-first"
+                    class="mt-1 block w-full rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                    placeholder="First name" />
+                </div>
+                <div>
+                  <label for="pf-last" class="block text-sm text-slate-700">Last name</label>
+                  <input id="pf-last" name="pf-last"
+                    class="mt-1 block w-full rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                    placeholder="Last name" />
+                </div>
+                <div>
+                  <label for="pf-studentId" class="block text-sm text-slate-700">Student ID <span
+                      class="text-red-600">*</span></label>
+                  <input id="pf-studentId" name="pf-studentId" required
+                    class="mt-1 block w-full rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                    placeholder="Student ID" />
+                </div>
+                <div>
+                  <label for="pf-program" class="block text-sm text-slate-700">Program <span
+                      class="text-red-600">*</span></label>
+                  <input id="pf-program" name="pf-program" required
+                    class="mt-1 block w-full rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                    placeholder="e.g., BSIT" />
+                </div>
+                <div class="md:col-span-2 flex items-center justify-end gap-2 mt-2">
+                  <button type="button" id="pf-cancel" class="px-3 py-2 text-sm rounded-lg btn-outline">Not now</button>
+                  <button type="submit" id="pf-save"
+                    class="px-4 py-2 text-sm rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">Save</button>
+                </div>
+              </form>
+              <div id="pf-msg" class="mt-3 text-sm text-slate-600 hidden"></div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- Complete Profile Banner/Form (hidden until needed) -->
-      <section id="complete-profile" class="bg-white rounded-2xl shadow p-6 border border-yellow-100 mb-8 hidden">
-        <div class="flex items-start gap-4">
-          <div class="w-10 h-10 rounded-full bg-yellow-50 flex items-center justify-center">⚠️</div>
-          <div class="flex-1">
-            <h2 class="text-lg font-semibold mb-2">Complete your profile</h2>
-            <p class="text-sm text-slate-600 mb-4">We need a few basic details to get you started.</p>
-            <form id="profile-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label for="pf-first" class="block text-sm text-slate-700">First name</label>
-                <input id="pf-first" name="pf-first"
-                  class="mt-1 block w-full rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                  placeholder="First name" />
-              </div>
-              <div>
-                <label for="pf-last" class="block text-sm text-slate-700">Last name</label>
-                <input id="pf-last" name="pf-last"
-                  class="mt-1 block w-full rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                  placeholder="Last name" />
-              </div>
-              <div>
-                <label for="pf-studentId" class="block text-sm text-slate-700">Student ID <span
-                    class="text-red-600">*</span></label>
-                <input id="pf-studentId" name="pf-studentId" required
-                  class="mt-1 block w-full rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                  placeholder="Student ID" />
-              </div>
-              <div>
-                <label for="pf-program" class="block text-sm text-slate-700">Program <span
-                    class="text-red-600">*</span></label>
-                <input id="pf-program" name="pf-program" required
-                  class="mt-1 block w-full rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                  placeholder="e.g., BSIT" />
-              </div>
-              <div class="md:col-span-2 flex items-center justify-end gap-2 mt-2">
-                <button type="button" id="pf-cancel" class="px-3 py-2 text-sm rounded-lg btn-outline">Not now</button>
-                <button type="submit" id="pf-save"
-                  class="px-4 py-2 text-sm rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">Save</button>
-              </div>
-            </form>
-            <div id="pf-msg" class="mt-3 text-sm text-slate-600 hidden"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Current Session Status -->
-      <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div class="bg-white rounded-2xl shadow p-6 border border-slate-200 card-hover fade-in-up stagger-1">
-          <h2 class="text-lg font-semibold mb-4">Current Session</h2>
-          <div class="space-y-3">
-            <div class="flex justify-between"><span class="text-slate-500">Seat</span><span id="currentSeat"
-                class="font-medium">—</span></div>
-            <div class="flex justify-between"><span class="text-slate-500">Duration</span><span id="sessionDuration"
-                class="font-medium">—</span></div>
-            <div class="mt-4">
-              <button id="checkOutBtn"
-                class="w-full px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white hidden">Check Out</button>
-            </div>
-          </div>
-        </div>
-        <div class="bg-white rounded-2xl shadow p-6 border border-slate-200 card-hover fade-in-up stagger-2">
-          <h2 class="text-lg font-semibold mb-4">Study Environment</h2>
-          <div class="space-y-3">
-            <div class="flex justify-between"><span class="text-slate-500">Status</span><span id="environmentStatus"
-                class="font-medium text-green-600">Good</span></div>
-            <div class="flex justify-between"><span class="text-slate-500">Alerts</span><span id="noiseAlerts"
-                class="font-medium">On</span></div>
-            <div class="mt-4">
-              <button id="adjustNoiseBtn" class="w-full px-4 py-2 rounded-lg btn-outline">Settings</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Main Content Grid -->
-      <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 space-y-6">
-          <!-- Study Status -->
+        <!-- Current Session Status -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <div class="bg-white rounded-2xl shadow p-6 border border-slate-200">
-            <div class="flex items-center justify-between mb-4">
-              <h2 class="text-lg font-semibold">Study Status</h2>
-              <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                <span class="text-sm text-slate-500">Active</span>
-              </div>
-            </div>
-            <div class="text-center py-8">
-              <div class="text-4xl mb-2">📚</div>
-              <div class="text-slate-600">Ready to study? Find a seat and get started!</div>
-            </div>
-          </div>
-
-          <!-- Study Tips -->
-          <div class="bg-white rounded-2xl shadow p-6 border border-slate-200 h-18">
-            <h2 class="text-lg font-semibold mb-4">Study Tips</h2>
-            <div class="space-y-3 text-sm">
-              <div class="flex items-start gap-3">
-                <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                </div>
-                <div>
-                  <div class="font-medium text-slate-900">Find Your Quiet Zone</div>
-                  <div class="text-slate-600">Choose seats away from high-traffic areas for better focus</div>
-                </div>
-              </div>
-
-              <div class="flex items-start gap-3">
-                <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                </div>
-                <div>
-                  <div class="font-medium text-slate-900">Take Regular Breaks</div>
-                  <div class="text-slate-600">Follow the 25-5 rule: 25 minutes study, 5 minutes break</div>
-                </div>
-              </div>
-
-              <div class="flex items-start gap-3">
-                <div class="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg class="w-3 h-3 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z">
-                    </path>
-                  </svg>
-                </div>
-                <div>
-                  <div class="font-medium text-slate-900">Report Disturbances</div>
-                  <div class="text-slate-600">Help maintain a quiet environment by reporting noise issues</div>
-                </div>
-              </div>
-
-              <div class="flex items-start gap-3 mt-6">
-                <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
-                    </path>
-                  </svg>
-                </div>
-                <div>
-                  <div class="font-medium text-slate-900">Stay Hydrated</div>
-                  <div class="text-slate-600">Keep water nearby and take regular hydration breaks</div>
-                </div>
-              </div>
-
-              <div class="flex items-start gap-3">
-                <div class="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg class="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4">
-                    </path>
-                  </svg>
-                </div>
-                <div>
-                  <div class="font-medium text-slate-900">Organize Your Space</div>
-                  <div class="text-slate-600">Keep your study area clean and organized for better focus</div>
-                </div>
+            <h2 class="text-lg font-semibold mb-4">Current Session</h2>
+            <div class="space-y-3">
+              <div class="flex justify-between"><span class="text-slate-500">Seat</span><span id="currentSeat"
+                  class="font-medium">—</span></div>
+              <div class="flex justify-between"><span class="text-slate-500">Duration</span><span id="sessionDuration"
+                  class="font-medium">—</span></div>
+              <div class="mt-4">
+                <button id="checkOutBtn"
+                  class="w-full px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white hidden">Check Out</button>
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- Right Column -->
-        <div class="space-y-6">
-          <!-- Quick Actions -->
           <div class="bg-white rounded-2xl shadow p-6 border border-slate-200">
-            <h2 class="text-lg font-semibold mb-4">Quick Actions</h2>
-            <div class="space-y-2">
-              <a href="Frame_8.html" class="w-full px-4 py-2 rounded-lg btn-outline block text-center">Find a Seat</a>
-              <a href="Frame_16.html" class="w-full px-4 py-2 rounded-lg btn-outline block text-center">Report Issue</a>
-            </div>
-          </div>
-
-          <!-- Study Goals -->
-          <div class="bg-white rounded-2xl shadow p-6 border border-slate-200">
-            <h2 class="text-lg font-semibold mb-4">Study Goals</h2>
-            <div class="space-y-3 text-sm">
-              <div class="flex justify-between">
-                <span class="text-slate-500">Today's Target</span>
-                <span class="font-medium">4 hours</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-500">Completed</span>
-                <span class="font-medium">2h 30m</span>
-              </div>
-              <div class="w-full bg-slate-200 rounded-full h-2">
-                <div class="bg-indigo-600 h-2 rounded-full w-[62%]"></div>
+            <h2 class="text-lg font-semibold mb-4">Study Environment</h2>
+            <div class="space-y-3">
+              <div class="flex justify-between"><span class="text-slate-500">Status</span><span id="environmentStatus"
+                  class="font-medium text-green-600">Good</span></div>
+              <div class="flex justify-between"><span class="text-slate-500">Alerts</span><span id="noiseAlerts"
+                  class="font-medium">On</span></div>
+              <div class="mt-4">
+                <button id="adjustNoiseBtn" class="w-full px-4 py-2 rounded-lg btn-outline">Settings</button>
               </div>
             </div>
           </div>
+        </section>
 
+        <!-- Main Content Grid -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 space-y-6">
+            <!-- Study Status -->
+            <div class="bg-white rounded-2xl shadow p-6 border border-slate-200">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold">Study Status</h2>
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                  <span class="text-sm text-slate-500">Active</span>
+                </div>
+              </div>
+              <div class="text-center py-8">
+                <div class="text-4xl mb-2">📚</div>
+                <div class="text-slate-600">Ready to study? Find a seat and get started!</div>
+              </div>
+            </div>
 
-          <!-- Study Progress -->
-          <div class="bg-white rounded-2xl shadow p-6 border border-slate-200">
-            <h2 class="text-lg font-semibold mb-4">Study Progress</h2>
-            <div class="space-y-3 text-sm">
-              <div class="flex justify-between">
-                <span class="text-slate-500">This Week</span>
-                <span class="font-medium">18h 45m</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-500">Streak</span>
-                <span class="font-medium">5 days</span>
-              </div>
-              <div class="w-full bg-slate-200 rounded-full h-2">
-                <div class="bg-green-600 h-2 rounded-full w-[75%]"></div>
+            <!-- Study Tips -->
+            <div class="bg-white rounded-2xl shadow p-6 border border-slate-200 h-18">
+              <h2 class="text-lg font-semibold mb-4">Study Tips</h2>
+              <div class="space-y-3 text-sm">
+                <div class="flex items-start gap-3">
+                  <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-medium text-slate-900">Find Your Quiet Zone</div>
+                    <div class="text-slate-600">Choose seats away from high-traffic areas for better focus</div>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-3">
+                  <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-medium text-slate-900">Take Regular Breaks</div>
+                    <div class="text-slate-600">Follow the 25-5 rule: 25 minutes study, 5 minutes break</div>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-3">
+                  <div class="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg class="w-3 h-3 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z">
+                      </path>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-medium text-slate-900">Report Disturbances</div>
+                    <div class="text-slate-600">Help maintain a quiet environment by reporting noise issues</div>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-3 mt-6">
+                  <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                      </path>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-medium text-slate-900">Stay Hydrated</div>
+                    <div class="text-slate-600">Keep water nearby and take regular hydration breaks</div>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-3">
+                  <div class="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg class="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4">
+                      </path>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-medium text-slate-900">Organize Your Space</div>
+                    <div class="text-slate-600">Keep your study area clean and organized for better focus</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
+          <!-- Right Column -->
+          <div class="space-y-6">
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-2xl shadow p-6 border border-slate-200">
+              <h2 class="text-lg font-semibold mb-4">Quick Actions</h2>
+              <div class="space-y-2">
+                <a href="Frame_8.html" class="w-full px-4 py-2 rounded-lg btn-outline block text-center">Find a Seat</a>
+                <a href="Frame_16.html" class="w-full px-4 py-2 rounded-lg btn-outline block text-center">Report
+                  Issue</a>
+              </div>
+            </div>
+
+            <!-- Study Goals -->
+            <div class="bg-white rounded-2xl shadow p-6 border border-slate-200">
+              <h2 class="text-lg font-semibold mb-4">Study Goals</h2>
+              <div class="space-y-3 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Today's Target</span>
+                  <span class="font-medium">4 hours</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Completed</span>
+                  <span class="font-medium">2h 30m</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-2">
+                  <div class="bg-indigo-600 h-2 rounded-full w-[62%]"></div>
+                </div>
+              </div>
+            </div>
+
+
+            <!-- Study Progress -->
+            <div class="bg-white rounded-2xl shadow p-6 border border-slate-200">
+              <h2 class="text-lg font-semibold mb-4">Study Progress</h2>
+              <div class="space-y-3 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-slate-500">This Week</span>
+                  <span class="font-medium">18h 45m</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">Streak</span>
+                  <span class="font-medium">5 days</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-2">
+                  <div class="bg-green-600 h-2 rounded-full w-[75%]"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
     </div>
   </main>
   <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
@@ -512,6 +529,35 @@
           }
         } catch (_) { }
       }
+
+      (function () {
+        var el = document.getElementById('fade-content');
+        if (!el) return;
+        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+        var easing = el.getAttribute('data-easing') || 'ease-out';
+        var initial = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+        var blur = el.getAttribute('data-blur') === 'true';
+        var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+        var threshold = parseFloat(el.getAttribute('data-threshold') || '0.1');
+
+        el.style.setProperty('--fade-duration', duration + 'ms');
+        el.style.setProperty('--fade-easing', easing);
+        el.style.setProperty('--fade-initial-opacity', String(initial));
+        if (blur) el.style.filter = 'blur(10px)';
+
+        var io = new IntersectionObserver(function (entries) {
+          var e = entries[0];
+          if (e && e.isIntersecting) {
+            io.unobserve(el);
+            setTimeout(function () {
+              try { el.style.filter = 'none'; } catch (_) { }
+              el.classList.add('is-visible');
+            }, Math.max(0, delay));
+          }
+        }, { threshold: isNaN(threshold) ? 0.1 : threshold });
+
+        io.observe(el);
+      })();
 
       function selectSeat(seatId) {
         // Check in to seat (basic optimistic flow)
