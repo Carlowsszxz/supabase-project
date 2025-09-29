@@ -9,11 +9,15 @@
 
 /* Light theme tokens */
 :root[data-theme="light"] {
-  --bg-page: #f8fafc; /* light slate */
+  --bg-page: #f8fafc;
+  /* light slate */
   --bg-surface: #ffffff;
-  --text-primary: #0f172a; /* slate-900 */
-  --text-secondary: #475569; /* slate-600 */
-  --border: #e2e8f0; /* slate-200 */
+  --text-primary: #0f172a;
+  /* slate-900 */
+  --text-secondary: #475569;
+  /* slate-600 */
+  --border: #e2e8f0;
+  /* slate-200 */
   --brand: var(--yale-blue);
   --brand-600: #00305c;
   --brand-700: #002647;
@@ -23,7 +27,8 @@
 /* Dark theme tokens */
 :root[data-theme="dark"] {
   --bg-page: var(--rich-black);
-  --bg-surface: #0a1424; /* slightly lighter than rich-black */
+  --bg-surface: #0a1424;
+  /* slightly lighter than rich-black */
   --text-primary: #e6ecf5;
   --text-secondary: #a9b6cc;
   --border: #152238;
@@ -34,120 +39,252 @@
 }
 
 /* Base application theming */
-html, body { background-color: var(--bg-page); color: var(--text-primary); }
+html,
+body {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+}
 
 /* Card / surfaces */
-.bg-white, .bg-slate-50, .bg-white\/70 { background-color: var(--bg-surface) !important; }
+.bg-white,
+.bg-slate-50,
+.bg-white\/70 {
+  background-color: var(--bg-surface) !important;
+}
 
-.text-slate-900, .text-slate-800 { color: var(--text-primary) !important; }
-.text-slate-700, .text-slate-600, .text-slate-500, .text-slate-400 { color: var(--text-secondary) !important; }
+.text-slate-900,
+.text-slate-800 {
+  color: var(--text-primary) !important;
+}
 
-.border, .border-slate-100, .border-slate-300 { border-color: var(--border) !important; }
+.text-slate-700,
+.text-slate-600,
+.text-slate-500,
+.text-slate-400 {
+  color: var(--text-secondary) !important;
+}
+
+.border,
+.border-slate-100,
+.border-slate-300 {
+  border-color: var(--border) !important;
+}
 
 /* Header backdrop tint */
-.backdrop-blur { background-color: color-mix(in oklab, var(--bg-page) 70%, transparent) !important; }
+.backdrop-blur {
+  background-color: color-mix(in oklab, var(--bg-page) 70%, transparent) !important;
+}
 
 /* Interactive / links */
-a { color: var(--accent); }
-a:hover { color: var(--brand); }
+a {
+  color: var(--accent);
+}
+
+a:hover {
+  color: var(--brand);
+}
 
 /* Buttons mapped from Tailwind utility classes in the HTML */
-.bg-indigo-600 { background-color: var(--brand) !important; }
-.hover\:bg-indigo-700:hover { background-color: var(--brand-600) !important; }
-.focus\:ring-indigo-500:focus { box-shadow: 0 0 0 3px rgba(0, 53, 102, 0.35) !important; }
-.focus\:border-indigo-500:focus { border-color: var(--brand) !important; }
-.text-indigo-600 { color: var(--brand) !important; }
+.bg-indigo-600 {
+  background-color: var(--brand) !important;
+}
+
+.hover\:bg-indigo-700:hover {
+  background-color: var(--brand-600) !important;
+}
+
+.focus\:ring-indigo-500:focus {
+  box-shadow: 0 0 0 3px rgba(0, 53, 102, 0.35) !important;
+}
+
+.focus\:border-indigo-500:focus {
+  border-color: var(--brand) !important;
+}
+
+.text-indigo-600 {
+  color: var(--brand) !important;
+}
 
 /* Status colors re-mapped to theme (greens/yellows/reds softened for dark bg) */
-.bg-red-50 { background-color: color-mix(in srgb, #ff5757 12%, transparent) !important; }
-.border-red-100 { border-color: color-mix(in srgb, #ff5757 35%, transparent) !important; }
-.text-red-600 { color: #ff5757 !important; }
+.bg-red-50 {
+  background-color: color-mix(in srgb, #ff5757 12%, transparent) !important;
+}
 
-.bg-yellow-50 { background-color: color-mix(in srgb, var(--gold) 12%, transparent) !important; }
-.border-yellow-100 { border-color: color-mix(in srgb, var(--gold) 35%, transparent) !important; }
+.border-red-100 {
+  border-color: color-mix(in srgb, #ff5757 35%, transparent) !important;
+}
 
-.bg-green-300 { background-color: #18c29c !important; }
-.bg-yellow-300 { background-color: var(--gold) !important; }
-.bg-red-300 { background-color: #ff6b6b !important; }
+.text-red-600 {
+  color: #ff5757 !important;
+}
+
+.bg-yellow-50 {
+  background-color: color-mix(in srgb, var(--gold) 12%, transparent) !important;
+}
+
+.border-yellow-100 {
+  border-color: color-mix(in srgb, var(--gold) 35%, transparent) !important;
+}
+
+.bg-green-300 {
+  background-color: #18c29c !important;
+}
+
+.bg-yellow-300 {
+  background-color: var(--gold) !important;
+}
+
+.bg-red-300 {
+  background-color: #ff6b6b !important;
+}
 
 /* Muted chips */
-.bg-slate-100 { background-color: color-mix(in srgb, var(--bg-surface) 85%, var(--bg-page)) !important; }
-.odd\:bg-white:nth-child(odd) { background-color: #0d1a2b !important; }
-.even\:bg-slate-50:nth-child(even) { background-color: #0b1727 !important; }
+.bg-slate-100 {
+  background-color: color-mix(in srgb, var(--bg-surface) 85%, var(--bg-page)) !important;
+}
+
+.odd\:bg-white:nth-child(odd) {
+  background-color: #0d1a2b !important;
+}
+
+.even\:bg-slate-50:nth-child(even) {
+  background-color: #0b1727 !important;
+}
 
 /* Light variants for row striping */
-:root[data-theme="light"] .odd\:bg-white:nth-child(odd) { background-color: #ffffff !important; }
-:root[data-theme="light"] .even\:bg-slate-50:nth-child(even) { background-color: #f8fafc !important; }
+:root[data-theme="light"] .odd\:bg-white:nth-child(odd) {
+  background-color: #ffffff !important;
+}
+
+:root[data-theme="light"] .even\:bg-slate-50:nth-child(even) {
+  background-color: #f8fafc !important;
+}
 
 /* Utility: shadows on dark surfaces feel harsher; soften */
-.shadow, .shadow-sm, .shadow-lg { box-shadow: 0 8px 24px rgba(0,0,0,0.35) !important; }
+.shadow,
+.shadow-sm,
+.shadow-lg {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+}
 
 /* Headers / titles accent underline (optional subtle) */
-h1, h2, h3 { color: var(--text-primary); }
+h1,
+h2,
+h3 {
+  color: var(--text-primary);
+}
 
 /* Header/nav enhancements */
 .site-header {
-  position: sticky; top: 0; z-index: 10;
+  position: sticky;
+  top: 0;
+  z-index: 10;
   border-bottom: 1px solid var(--border);
   background-color: #052865;
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
-.brand-title { color: #ffffff; }
-.brand-title:hover { color: var(--gold); }
-.nav-link { color: #e2e8f0; transition: color .2s ease; }
-.nav-link:hover { color: var(--gold); }
-.nav-link.active { color: var(--gold); }
+
+.brand-title {
+  color: #ffffff;
+}
+
+.brand-title:hover {
+  color: var(--gold);
+}
+
+.nav-link {
+  color: #e2e8f0;
+  transition: color .2s ease;
+}
+
+.nav-link:hover {
+  color: var(--gold);
+}
+
+.nav-link.active {
+  color: var(--gold);
+}
 
 /* Info panel gradient alignment */
-.info-panel { color: #ffffff; }
+.info-panel {
+  color: #ffffff;
+}
+
 /* Overlay for subtle readability */
-.info-panel { position: relative; overflow: hidden; }
+.info-panel {
+  position: relative;
+  overflow: hidden;
+}
+
 .info-panel::before {
   content: "";
-  position: absolute; inset: 0;
+  position: absolute;
+  inset: 0;
   background: rgba(0, 0, 0, 0.12);
   pointer-events: none;
 }
-.info-panel > * { position: relative; z-index: 1; }
+
+.info-panel>* {
+  position: relative;
+  z-index: 1;
+}
+
 /* Light theme gradient (matches header blues) */
 :root[data-theme="light"] .info-panel {
   background-image: linear-gradient(135deg, #052865, #003566 45%, #001d3d);
 }
+
 /* Dark theme gradient slightly deeper */
 :root[data-theme="dark"] .info-panel {
   background-image: linear-gradient(135deg, #001633, #00264f 45%, #000f28);
 }
-.info-panel:where(:root[data-theme="dark"] .info-panel)::before { background: rgba(0, 0, 0, 0.2); }
-.info-panel .info-muted { color: rgba(255,255,255,0.85) !important; }
+
+.info-panel:where(:root[data-theme="dark"] .info-panel)::before {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.info-panel .info-muted {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
 
 /* How-to button hover color tuning */
-:root[data-theme="light"] .howto-btn:hover { background-color: rgba(255,255,255,1) !important; color: #052865 !important; }
-:root[data-theme="dark"] .howto-btn:hover { background-color: rgba(255,255,255,0.2) !important; }
+:root[data-theme="light"] .howto-btn:hover {
+  background-color: rgba(255, 255, 255, 1) !important;
+  color: #052865 !important;
+}
+
+:root[data-theme="dark"] .howto-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
 
 .btn-outline {
   color: var(--text-primary);
   border: 1px solid var(--border);
   background: transparent;
 }
-.btn-outline:hover { background: color-mix(in srgb, var(--bg-page) 85%, var(--bg-surface)); }
+
+.btn-outline:hover {
+  background: color-mix(in srgb, var(--bg-page) 85%, var(--bg-surface));
+}
 
 /* Input fields and form controls */
-input[type="text"], 
-input[type="email"], 
-input[type="password"], 
-input[type="number"], 
-textarea, 
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
 select {
   background-color: var(--bg-surface) !important;
   color: var(--text-primary) !important;
   border-color: var(--border) !important;
 }
 
-input[type="text"]:focus, 
-input[type="email"]:focus, 
-input[type="password"]:focus, 
-input[type="number"]:focus, 
-textarea:focus, 
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+textarea:focus,
 select:focus {
   background-color: var(--bg-surface) !important;
   color: var(--text-primary) !important;
@@ -156,7 +293,7 @@ select:focus {
 }
 
 /* Placeholder text */
-input::placeholder, 
+input::placeholder,
 textarea::placeholder {
   color: var(--text-secondary) !important;
   opacity: 0.7;
@@ -169,13 +306,15 @@ select option {
 }
 
 /* Search input specific styling */
-#searchInput, #userFilter {
+#searchInput,
+#userFilter {
   background-color: var(--bg-surface) !important;
   color: var(--text-primary) !important;
   border-color: var(--border) !important;
 }
 
-#searchInput:focus, #userFilter:focus {
+#searchInput:focus,
+#userFilter:focus {
   background-color: var(--bg-surface) !important;
   color: var(--text-primary) !important;
   border-color: var(--brand) !important;
@@ -198,45 +337,105 @@ select option {
 
 /* Dynamic animations and movements */
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 5px rgba(0, 53, 102, 0.3); }
-  50% { box-shadow: 0 0 20px rgba(0, 53, 102, 0.6); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(0, 53, 102, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 20px rgba(0, 53, 102, 0.6);
+  }
 }
 
 @keyframes slide-in-right {
-  0% { transform: translateX(100px); opacity: 0; }
-  100% { transform: translateX(0); opacity: 1; }
+  0% {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 @keyframes slide-in-left {
-  0% { transform: translateX(-100px); opacity: 0; }
-  100% { transform: translateX(0); opacity: 1; }
+  0% {
+    transform: translateX(-100px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 @keyframes fade-in-up {
-  0% { transform: translateY(30px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes bounce-in {
-  0% { transform: scale(0.3); opacity: 0; }
-  50% { transform: scale(1.05); }
-  70% { transform: scale(0.9); }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+  70% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes shimmer {
-  0% { background-position: -200px 0; }
-  100% { background-position: calc(200px + 100%) 0; }
+  0% {
+    background-position: -200px 0;
+  }
+
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
 }
 
 @keyframes noise-wave {
-  0%, 100% { transform: scaleY(1); }
-  50% { transform: scaleY(1.5); }
+
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  50% {
+    transform: scaleY(1.5);
+  }
 }
 
 /* Floating elements */
@@ -244,8 +443,13 @@ select option {
   animation: float 6s ease-in-out infinite;
 }
 
-.floating:nth-child(2) { animation-delay: -2s; }
-.floating:nth-child(3) { animation-delay: -4s; }
+.floating:nth-child(2) {
+  animation-delay: -2s;
+}
+
+.floating:nth-child(3) {
+  animation-delay: -4s;
+}
 
 /* Pulsing glow for important elements */
 .pulse-glow {
@@ -292,11 +496,25 @@ select option {
 }
 
 /* Staggered animations for lists */
-.stagger-1 { animation-delay: 0.1s; }
-.stagger-2 { animation-delay: 0.2s; }
-.stagger-3 { animation-delay: 0.3s; }
-.stagger-4 { animation-delay: 0.4s; }
-.stagger-5 { animation-delay: 0.5s; }
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+
+.stagger-3 {
+  animation-delay: 0.3s;
+}
+
+.stagger-4 {
+  animation-delay: 0.4s;
+}
+
+.stagger-5 {
+  animation-delay: 0.5s;
+}
 
 /* Smooth page transitions */
 .page-transition {
@@ -325,8 +543,13 @@ select option {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Gradient background animation */
@@ -337,9 +560,17 @@ select option {
 }
 
 @keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* Password Toggle Styles */
@@ -399,7 +630,129 @@ select option {
 
 
 /* Ensure Logout button text stays consistent across themes */
-#logoutBtn { color: #000000 !important; }
-button[onclick="logout()"] { color: #000000 !important; }
-:root[data-theme="dark"] #logoutBtn { color: #000000 !important; }
-:root[data-theme="dark"] button[onclick="logout()"] { color: #000000 !important; }
+#logoutBtn {
+  color: #000000 !important;
+}
+
+button[onclick="logout()"] {
+  color: #000000 !important;
+}
+
+:root[data-theme="dark"] #logoutBtn {
+  color: #000000 !important;
+}
+
+:root[data-theme="dark"] button[onclick="logout()"] {
+  color: #000000 !important;
+}
+
+/* Utility: fixed status badge position */
+#supabase-status {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+}
+
+/* Frame 8 seat map sizing */
+.table-wrapper .seat {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+@media (min-width: 640px) {
+
+  /* sm */
+  .table-wrapper .seat {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+@media (min-width: 768px) {
+
+  /* md */
+  .table-wrapper .seat {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+}
+
+/* ------------------------------------------------------
+   Global smooth interaction transitions (hover & click)
+   Applies across all frames without per-page changes
+------------------------------------------------------- */
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+  a,
+  button,
+  [role="button"],
+  .btn,
+  .howto-btn,
+  .btn-outline,
+  .nav-link,
+  .card,
+  .card-hover,
+  input,
+  select,
+  textarea,
+  .password-toggle {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Smooth transitions for common interactive elements */
+a,
+button,
+[role="button"],
+.btn,
+.howto-btn,
+.btn-outline,
+.nav-link,
+.card,
+.card-hover,
+input,
+select,
+textarea,
+.password-toggle {
+  transition: background-color 0.25s ease, color 0.25s ease,
+    border-color 0.25s ease, box-shadow 0.25s ease,
+    transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Subtle press/click feedback (kept gentle to avoid layout jank) */
+button:active,
+[role="button"]:active,
+a:active,
+.howto-btn:active,
+.btn-outline:active,
+.card:active,
+.card-hover:active {
+  transform: scale(0.98);
+}
+
+/* Focus-visible enhancement for keyboard users */
+button:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.howto-btn:focus-visible,
+.btn-outline:focus-visible,
+.password-toggle:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Mobile header dropdown: no animation (simple show/hide) */
+#mobile-menu {
+  overflow: visible;
+}
+
+/* Fallback: if header has menu-open, force menu visible */
+.site-header.menu-open #mobile-menu {
+  display: block !important;
+}
