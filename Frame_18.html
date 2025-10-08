@@ -11,10 +11,26 @@
   <script defer src="theme.js"></script>
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
+  <style>
+    /* First-paint blur + transition variables */
+    [data-fade] {
+      opacity: 0;
+      --fade-init: 14px;
+      --fade-filter: none;
+      filter: var(--fade-filter) !important;
+      transition: var(--fade-transition, opacity 1000ms ease-out, filter 1000ms ease-out) !important;
+      will-change: opacity, filter;
+    }
+
+    [data-fade]:not([data-blur="false"]) {
+      --fade-filter: blur(var(--fade-init));
+    }
+  </style>
 </head>
 
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
-  <header class="site-header">
+  <header class="site-header" data-fade data-blur="true" data-blur-px="16" data-initial-opacity="0"
+    data-duration="1000">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
       <a href="Frame_6.html" class="brand-title text-2xl font-semibold mr-auto">UMak Noise Monitor - Admin</a>
@@ -32,6 +48,7 @@
         <a href="Frame_9.html" class="nav-link">Alerts</a>
         <a href="Frame_18.html" class="nav-link active">Reports</a>
         <a href="Frame_15.html" class="nav-link">Users</a>
+        <a href="Frame_19.html" class="nav-link">Settings</a>
         <button onclick="logout()" id="logoutBtn"
           class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
           style="color: black !important;">Logout</button>
@@ -43,25 +60,30 @@
       <a href="Frame_9.html" class="block py-2 text-sm nav-link">Alerts</a>
       <a href="Frame_18.html" class="block py-2 text-sm nav-link active">Reports</a>
       <a href="Frame_15.html" class="block py-2 text-sm nav-link">Users</a>
+      <a href="Frame_19.html" class="block py-2 text-sm nav-link">Settings</a>
       <button onclick="logout()"
         class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
         style="color: black !important;">Logout</button>
     </nav>
   </header>
 
-  <main class="flex-1 py-8 px-6">
+  <!-- Scoped UI/UX refinements to #admin-reports-root; visuals only, no logic changes -->
+  <main id="admin-reports-root" class="flex-1 py-8 px-6" data-fade data-blur="true" data-blur-px="16"
+    data-initial-opacity="0" data-duration="1000" data-delay="50">
     <div class="max-w-7xl mx-auto">
-      <div class="mb-8">
+      <div class="mb-8" data-fade data-blur="true" data-initial-opacity="0" data-duration="900">
         <h1 class="text-3xl font-bold mb-2">Student Reports</h1>
         <p class="text-slate-600">View and handle submitted noise reports</p>
         <div id="supabase-status" class="mt-2 text-xs text-slate-500"></div>
       </div>
 
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 mb-8 card-hover" data-fade
+        data-blur="true" data-initial-opacity="0" data-delay="75">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
           <div class="flex items-center gap-2 text-sm">
             <label class="text-slate-600">Filter:</label>
-            <select id="filterType" class="px-3 py-2 rounded-lg border border-slate-300">
+            <select id="filterType"
+              class="px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500">
               <option value="all">All</option>
               <option value="critical">Critical</option>
               <option value="warning">Warning</option>
@@ -70,7 +92,11 @@
             </select>
           </div>
           <div class="flex items-center gap-2 text-sm">
-            <button id="refreshBtn" class="px-3 py-2 rounded-lg btn-outline">Refresh</button>
+            <button id="refreshBtn" class="px-3 py-2 h-10 rounded-lg btn-outline">Refresh</button>
+            <button id="deleteAllBtn"
+              class="px-3 py-2 h-10 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-all duration-200 ease-in-out">Delete
+              All
+              Messages</button>
           </div>
         </div>
 
@@ -95,7 +121,8 @@
     </div>
   </main>
 
-  <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+  <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
+    data-delay="150">© 2025 UMak Library · Noise Comfort Index</footer>
 
   <script>
     (function () {
@@ -149,21 +176,24 @@
           var badgeCls = sev === 'critical' ? 'bg-red-100 text-red-800' : (sev === 'warning' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800');
           var statusChip = r.canceled_at ? '<span class="px-2 py-0.5 text-xs rounded bg-slate-200 text-slate-700">Canceled</span>' : (r.resolved_at ? '<span class="px-2 py-0.5 text-xs rounded bg-blue-600 text-white">Resolved</span>' : '');
           var icon = sev === 'critical' ? '🔴' : (sev === 'warning' ? '🟡' : '🟢');
+          var isAdmin = r.notes && r.notes.toLowerCase().includes('posted by admin');
           tr.innerHTML = `
             <td class="py-2 pr-3">${fmtTime(r.created_at)}</td>
             <td class="py-2 pr-3">
               <div class="flex items-center gap-2">
                 <span class="text-base">${icon}</span>
-                <span class="font-medium">Level ${r.noise_level != null ? r.noise_level : '—'} • ${r.table_id || r.location || '—'}</span>
+                <span class="font-medium">${r.table_id || r.location || '—'}</span>
                 <span class="text-xs px-2 py-0.5 rounded ${badgeCls}">${sev}</span>
                 ${statusChip}
+                ${isAdmin ? '<span class="ml-2 px-2 py-0.5 text-xs rounded bg-indigo-600 text-white font-semibold">Admin</span>' : ''}
               </div>
             </td>
             <td class="py-2 pr-3 max-w-[420px] truncate" title="${r.notes || ''}">${r.notes || '—'}</td>
             <td class="py-2 pr-3">
               <div class="flex items-center gap-2">
-                ${r.canceled_at ? '<button disabled class="px-3 py-1 text-xs rounded bg-slate-200">Canceled</button>' : (r.resolved_at ? '<button disabled class="px-3 py-1 text-xs rounded bg-blue-600 text-white">Resolved</button>' : `<button class=\"px-3 py-1 text-xs rounded bg-green-600 hover:bg-green-700 text-white\" data-action=\"resolve\" data-id=\"${r.id}\" data-uid=\"${r.user_id}\">Mark Resolved</button>`)}
-                <button class="px-3 py-1 text-xs rounded bg-red-600 hover:bg-red-700 text-white" data-action="delete" data-id="${r.id}">Delete</button>
+                ${isAdmin
+              ? `<button class=\"px-3 py-1 text-xs rounded bg-red-600 hover:bg-red-700 text-white\" data-action=\"delete\" data-id=\"${r.id}\">Delete</button>`
+              : (r.canceled_at ? '<button disabled class="px-3 py-1 text-xs rounded bg-slate-200">Canceled</button>' : (r.resolved_at ? '<button disabled class="px-3 py-1 text-xs rounded bg-blue-600 text-white">Resolved</button>' : `<button class=\"px-3 py-1 text-xs rounded bg-green-600 hover:bg-green-700 text-white\" data-action=\"resolve\" data-id=\"${r.id}\" data-uid=\"${r.user_id}\">Mark Resolved</button>`)) + ` <button class=\"px-3 py-1 text-xs rounded bg-red-600 hover:bg-red-700 text-white\" data-action=\"delete\" data-id=\"${r.id}\">Delete</button>`}
               </div>
             </td>`;
           rowsEl.appendChild(tr);
@@ -284,6 +314,67 @@
           showStatus('Initialization error', false);
         }
       })();
+
+      // Add after DOMContentLoaded or main script init
+      var deleteAllBtn = document.getElementById('deleteAllBtn');
+      if (deleteAllBtn) {
+        deleteAllBtn.addEventListener('click', async function () {
+          if (!confirm('Are you sure you want to delete ALL messages? This cannot be undone.')) return;
+          try {
+            // Fetch all report IDs
+            var allRows = Array.from(rowsEl.querySelectorAll('button[data-action="delete"]'));
+            for (const btn of allRows) {
+              const id = btn.getAttribute('data-id');
+              if (id) {
+                await window.supabaseDB.deleteNoiseLog(parseInt(id, 10));
+              }
+            }
+            fetchReports();
+            showStatus('All messages deleted.', true);
+          } catch (e) {
+            showStatus('Failed to delete all: ' + (e && e.message ? e.message : e), false);
+          }
+        });
+      }
+    })();
+  </script>
+  <script>
+    // Fade-on-scroll transitions (CSS-vars driven)
+    (function () {
+      var fadeElements = Array.from(document.querySelectorAll('[data-fade]'));
+      if (fadeElements.length === 0) return;
+
+      fadeElements.forEach(function (el) {
+        var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+        var easing = el.getAttribute('data-easing') || 'ease-out';
+        var blurAttr = el.getAttribute('data-blur');
+        var blurPxAttr = el.getAttribute('data-blur-px');
+        var blurPx = parseInt(blurPxAttr || '14', 10);
+        el.style.opacity = String(initialOpacity);
+        el.style.setProperty('--fade-init', blurPx + 'px');
+        el.style.setProperty('--fade-transition', 'opacity ' + duration + 'ms ' + easing + ', filter ' + duration + 'ms ' + easing);
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var el = entry.target;
+            var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+            var blurAttr = el.getAttribute('data-blur');
+            var blurEnabled = (blurAttr !== 'false');
+            observer.unobserve(el);
+            setTimeout(function () {
+              el.style.opacity = '1';
+              if (blurEnabled) {
+                el.style.setProperty('--fade-init', '0px');
+              }
+            }, delay);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      fadeElements.forEach(function (el) { observer.observe(el); });
     })();
   </script>
 </body>

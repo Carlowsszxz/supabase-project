@@ -8,12 +8,34 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
   <script defer src="theme.js"></script>
+  <!-- UI/UX refinements (non-breaking):
+       - improved padding and spacing consistency across sections
+       - fixed low-contrast text by mapping to theme tokens
+       - unified card/option hover & selected states with brand color
+       - replaced hard dividers with spacing for cleaner separation
+       - responsive tweaks for mobile readability and hierarchy -->
+  <style>
+    /* Global fade-in like Frame 15 */
+    [data-fade] {
+      opacity: 0;
+      --fade-init: 14px;
+      --fade-filter: none;
+      filter: var(--fade-filter) !important;
+      transition: var(--fade-transition, opacity 1000ms ease-out, filter 1000ms ease-out) !important;
+      will-change: opacity, filter;
+    }
+
+    [data-fade]:not([data-blur="false"]) {
+      --fade-filter: blur(var(--fade-init));
+    }
+  </style>
 </head>
 
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
-  <header class="site-header">
+  <header class="site-header" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
-      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
+      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" data-fade data-blur="true"
+        data-delay="50" data-initial-opacity="0" />
       <a href="Frame_11.html" class="brand-title text-xl md:text-2xl font-semibold mr-auto">University of Makati
         Library</a>
       <button id="mobile-menu-btn"
@@ -41,11 +63,13 @@
     </nav>
   </header>
 
-  <main class="flex-1 flex items-start justify-center py-12 px-6">
+  <main class="flex-1 flex items-start justify-center py-12 px-6" data-fade data-blur="true" data-initial-opacity="0"
+    data-duration="1000" data-delay="50">
     <div class="w-full max-w-4xl">
 
       <!-- Report Header -->
-      <section class="bg-white rounded-2xl shadow p-4 sm:p-6 mb-6">
+      <section class="bg-white rounded-2xl shadow p-4 sm:p-6 mb-6" data-fade data-blur="true" data-duration="900"
+        data-easing="ease-out" data-delay="0" data-initial-opacity="0">
         <div class="flex items-start gap-4">
           <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center order-1 ml-[5px]">
             <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,7 +78,7 @@
               </path>
             </svg>
           </div>
-          <div class="flex-1 order-2">
+          <div class="flex-1 order-2" data-fade data-blur="true" data-delay="50" data-initial-opacity="0">
             <h1 class="text-2xl font-semibold mb-2">Report Noise Disturbance</h1>
             <p class="text-slate-600">Help maintain a quiet study environment by reporting noise issues. Your reports
               help librarians take appropriate action.</p>
@@ -65,7 +89,8 @@
       </section>
 
       <!-- Noise Report Form -->
-      <section class="bg-white rounded-2xl shadow p-4 sm:p-6 mb-6">
+      <section class="bg-white rounded-2xl shadow p-4 sm:p-6 mb-6" data-fade data-blur="true" data-duration="950"
+        data-easing="ease-out" data-delay="75" data-initial-opacity="0">
         <form id="noiseReportForm" class="space-y-6">
           <!-- Noise Level -->
           <div>
@@ -130,9 +155,20 @@
               <option value="table-3">Table 3 Area</option>
               <option value="table-4">Table 4 Area</option>
               <option value="table-5">Table 5 Area</option>
+              <option value="table-6">Table 6 Area</option>
+              <option value="table-7">Table 7 Area</option>
+              <option value="table-8">Table 8 Area</option>
+              <option value="table-9">Table 9 Area</option>
+              <option value="table-10">Table 10 Area</option>
+              <option value="table-11">Table 11 Area</option>
+              <option value="table-12">Table 12 Area</option>
+              <option value="table-13">Table 13 Area</option>
+              <option value="table-14">Table 14 Area</option>
+              <option value="table-15">Table 15 Area</option>
+              <option value="table-16">Table 16 Area</option>
+              <option value="table-17">Table 17 Area</option>
+              <option value="table-18">Table 18 Area</option>
               <option value="entrance">Entrance Area</option>
-              <option value="computer-section">Computer Section</option>
-              <option value="reference-section">Reference Section</option>
               <option value="group-study">Group Study Area</option>
               <option value="other">Other</option>
             </select>
@@ -241,10 +277,16 @@
         </form>
       </section>
 
-      <!-- Community Reports -->
-      <section class="bg-white rounded-2xl shadow p-4 sm:p-6">
+      <!-- Community Reports (user-facing list) -->
+      <!-- This section is designed for community users: card-style items, clear grouping, badges -->
+      <section class="bg-white rounded-2xl shadow p-4 sm:p-6" data-fade data-blur="true" data-duration="1000"
+        data-easing="ease-out" data-delay="150" data-initial-opacity="0">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold">Community Reports</h2>
+          <div>
+            <h2 class="text-lg font-semibold">Community Reports</h2>
+            <div class="text-xs text-slate-500 mt-0.5"><span id="communityCount">0</span> reports • <span
+                id="communityWindow">Last 25</span></div>
+          </div>
           <div class="flex items-center gap-2">
             <label for="communityLimit" class="sr-only">Community report count</label>
             <select id="communityLimit" name="communityLimit"
@@ -264,10 +306,35 @@
         </div>
       </section>
 
+      <!-- Admin-only Reports Table (hidden for non-admin users) -->
+      <!-- Admin view: retains table-like layout for quick scanning. Visibility toggled by role. -->
+      <section id="adminReportsTableContainer" class="bg-white rounded-2xl shadow p-4 sm:p-6 hidden" data-fade
+        data-blur="true" data-duration="1000" data-easing="ease-out" data-delay="150" data-initial-opacity="0">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold">Admin Reports (table)</h2>
+          <div class="text-xs text-slate-500">Visible to admins only</div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead>
+              <tr class="text-left text-slate-500">
+                <th class="py-2 pr-4">When</th>
+                <th class="py-2 pr-4">Reporter</th>
+                <th class="py-2 pr-4">Location</th>
+                <th class="py-2 pr-4">Notes</th>
+                <th class="py-2 pr-4">Status</th>
+              </tr>
+            </thead>
+            <tbody id="adminReportsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
     </div>
   </main>
 
-  <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+  <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
+    data-duration="1000" data-delay="100">© 2025 UMak Library · Noise Comfort Index</footer>
   <div id="supabase-status" class="px-2 py-1 rounded-md text-xs bg-slate-200 text-slate-700 hidden"></div>
 
   <!-- Success Modal -->
@@ -473,24 +540,43 @@
       // Load community reports via RPC
       function loadCommunityReports() {
         var list = document.getElementById('communityReports');
+        var countEl = document.getElementById('communityCount');
+        var windowEl = document.getElementById('communityWindow');
         var limitSel = document.getElementById('communityLimit');
         if (!supabaseInitialized || !list) return;
         var limit = 25;
         try { limit = parseInt(limitSel && limitSel.value || '25', 10) || 25; } catch (_) { }
+        if (windowEl) { windowEl.textContent = 'Last ' + limit; }
         list.innerHTML = '<div class="text-center text-slate-500 py-6 text-sm">Loading…</div>';
         window.supabaseDB.publicListReports(limit).then(function (result) {
           var rows = Array.isArray(result.data) ? result.data : [];
+          if (countEl) { countEl.textContent = String(rows.length); }
           if (rows.length === 0) {
             list.innerHTML = '\n            <div class="text-center text-slate-500 py-8">\n              <p>No community reports yet</p>\n              <p class="text-sm">New reports from students will appear here</p>\n            </div>\n          ';
             return;
           }
           list.innerHTML = '';
           rows.forEach(function (r) {
-            var level = parseFloat(r.noise_level || 0);
-            var badge = (level >= 4.5) ? 'bg-red-100 text-red-800' : (level >= 3 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800');
+            var isAdminPost = r.notes && r.notes.toLowerCase().includes('posted by admin');
+            var urgency = (function () {
+              var m = (r.notes || '').match(/\[Urgency\]\s*(\w+)/i); return m ? (m[1] || '').toLowerCase() : '';
+            })();
+            var types = (function () {
+              var m = (r.notes || '').match(/\[Types\]\s*([^|]+)/i); return m ? (m[1] || '').trim() : '';
+            })();
+            var duration = (function () {
+              var m = (r.notes || '').match(/\[Duration\]\s*([^|]+)/i); return m ? (m[1] || '').trim() : '';
+            })();
+
+            var badgeClass = urgency === 'high' ? 'badge badge-high' : (urgency === 'medium' ? 'badge badge-medium' : 'badge badge-low');
+            var who = (r.reporter_email || '').trim();
+            var when = new Date(r.created_at).toLocaleString();
+            var where = r.location || r.table_id || '—';
+            var notes = (r.notes || '').replace(/\s*\[Types\][^|]+\|?\s*/i, '').replace(/\s*\[Duration\][^|]+\|?\s*/i, '').replace(/\s*\[Urgency\][^|]+\|?\s*/i, '').trim();
+
             var el = document.createElement('div');
-            el.className = 'p-3 rounded-lg border border-slate-200';
-            el.innerHTML = '\n            <div class="flex items-start justify-between">\n              <div>\n                <div class="flex items-center gap-2">\n                  <span class="px-2 py-0.5 text-xs rounded ' + badge + '">Level ' + (r.noise_level || '-') + '</span>\n                  <span class="text-sm text-slate-600">' + (r.location || r.table_id || '—') + '</span>\n                </div>\n                <div class="text-xs text-slate-500 mt-1">' + new Date(r.created_at).toLocaleString() + (r.reporter_email ? ' • ' + r.reporter_email : '') + '</div>\n                <div class="text-sm text-slate-700 mt-1">' + (r.notes || '') + '</div>\n              </div>\n              <div class="text-xs text-slate-500">' + (r.status || '') + '</div>\n            </div>\n          ';
+            el.className = 'report-card p-3 sm:p-4';
+            el.innerHTML = '\n              <div class="flex items-start justify-between gap-3">\n                <div class="min-w-0">\n                  <div class="flex items-center gap-2 flex-wrap">\n                    ' + (isAdminPost ? '<span class="badge badge-medium">Admin</span>' : '') + '\n                    <span class="meta-sm">' + (who || 'Reporter') + '</span>\n                    <span class="meta-sm">•</span>\n                    <span class="meta-sm">' + when + '</span>\n                  </div>\n                  <div class="mt-1 text-sm">' + where + '</div>\n                  <div class="mt-2 flex items-center gap-2 flex-wrap">\n                    ' + (urgency ? '<span class="' + badgeClass + '">Urgency: ' + urgency.charAt(0).toUpperCase() + urgency.slice(1) + '</span>' : '') + '\n                    ' + (types ? '<span class="badge" style="background:rgba(59,130,246,0.12);color:#1d4ed8">' + types + '</span>' : '') + '\n                    ' + (duration ? '<span class="badge" style="background:rgba(107,114,128,0.12);color:#374151">' + duration + '</span>' : '') + '\n                  </div>\n                  ' + (notes ? '<div class="mt-2 text-sm text-slate-700">' + notes + '</div>' : '') + '\n                </div>\n              </div>\n            ';
             list.appendChild(el);
           });
         }).catch(function () {
@@ -505,10 +591,122 @@
         var refreshBtn = document.getElementById('refreshCommunity');
         if (limitSel) limitSel.addEventListener('change', loadCommunityReports);
         if (refreshBtn) refreshBtn.addEventListener('click', loadCommunityReports);
+
+        // Role-based visibility: show admin table if admin
+        try {
+          window.supabaseAuth.getCurrentUser().then(function (res) {
+            var user = res && res.data ? res.data.user : null;
+            if (!user) return;
+            window.supabaseDB.isAdmin(user.id).then(function (chk) {
+              var isAdmin = chk && chk.data === true;
+              var adminCt = document.getElementById('adminReportsTableContainer');
+              if (adminCt) {
+                if (isAdmin) {
+                  adminCt.classList.remove('hidden');
+                  // Populate admin table
+                  window.supabaseDB.getNoiseLogs('*', 50).then(function (res2) {
+                    var rows = Array.isArray(res2.data) ? res2.data : [];
+                    var tbody = document.getElementById('adminReportsTableBody');
+                    if (tbody) {
+                      tbody.innerHTML = '';
+                      rows.forEach(function (r) {
+                        var tr = document.createElement('tr');
+                        tr.innerHTML = '<td class="py-2 pr-4">' + (new Date(r.created_at).toLocaleString()) + '</td>' +
+                          '<td class="py-2 pr-4">' + (r.reporter_email || '') + '</td>' +
+                          '<td class="py-2 pr-4">' + (r.location || r.table_id || '—') + '</td>' +
+                          '<td class="py-2 pr-4">' + (r.notes || '') + '</td>' +
+                          '<td class="py-2 pr-4">' + (r.status || '') + '</td>';
+                        tbody.appendChild(tr);
+                      });
+                    }
+                  }).catch(function () { });
+                } else {
+                  adminCt.classList.add('hidden');
+                }
+              }
+            });
+          });
+        } catch (_) { }
       }
 
       // Initialize
       setupRadioVisuals();
+    })();
+  </script>
+  <script>
+    // Fade-on-scroll transitions (match other frames to avoid sticky blur)
+    (function () {
+      var fadeElements = Array.from(document.querySelectorAll('[data-fade]'));
+      if (fadeElements.length === 0) return;
+
+      fadeElements.forEach(function (el) {
+        var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+        var easing = el.getAttribute('data-easing') || 'ease-out';
+        var blurPxAttr = el.getAttribute('data-blur-px');
+        var blurPx = parseInt(blurPxAttr || '14', 10);
+        el.style.opacity = String(initialOpacity);
+        el.style.setProperty('--fade-init', blurPx + 'px');
+        el.style.setProperty('--fade-transition', 'opacity ' + duration + 'ms ' + easing + ', filter ' + duration + 'ms ' + easing);
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var el = entry.target;
+            var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+            var blurAttr = el.getAttribute('data-blur');
+            var blurEnabled = (blurAttr !== 'false');
+            observer.unobserve(el);
+            setTimeout(function () {
+              el.style.opacity = '1';
+              if (blurEnabled) {
+                el.style.setProperty('--fade-init', '0px');
+              }
+            }, delay);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      fadeElements.forEach(function (el) { observer.observe(el); });
+    })();
+  </script>
+  <script>
+    // Fade-on-scroll transitions (same as Frame 8)
+    (function () {
+      var fadeElements = Array.from(document.querySelectorAll('[data-fade]'));
+      if (fadeElements.length === 0) return;
+
+      fadeElements.forEach(function (el) {
+        var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+        var easing = el.getAttribute('data-easing') || 'ease-out';
+        var blurAttr = el.getAttribute('data-blur');
+        var blurEnabled = (blurAttr !== 'false');
+        el.style.opacity = String(initialOpacity);
+        el.style.filter = blurEnabled ? 'blur(10px)' : 'none';
+        el.style.transition = 'opacity ' + duration + 'ms ' + easing + ', filter ' + duration + 'ms ' + easing;
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var el = entry.target;
+            var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+            var blurAttr = el.getAttribute('data-blur');
+            var blurEnabled = (blurAttr !== 'false');
+            observer.unobserve(el);
+            setTimeout(function () {
+              el.style.opacity = '1';
+              if (blurEnabled) {
+                el.style.filter = 'blur(0px)';
+              }
+            }, delay);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      fadeElements.forEach(function (el) { observer.observe(el); });
     })();
   </script>
   <script>

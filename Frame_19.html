@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Frame 19 - Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="theme.css" />
+    <script defer src="theme.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <style>
+        /* Unified fade-in animation (matched to Frame 18 for consistent UX) */
+        [data-fade] {
+            opacity: 0;
+            --fade-init: 14px;
+            --fade-filter: none;
+            filter: var(--fade-filter) !important;
+            transition: var(--fade-transition, opacity 1000ms ease-out, filter 1000ms ease-out) !important;
+            will-change: opacity, filter;
+        }
+
+        [data-fade]:not([data-blur="false"]) {
+            --fade-filter: blur(var(--fade-init));
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+    <header class="site-header" data-fade data-blur="true" data-blur-px="16" data-initial-opacity="0"
+        data-duration="1000">
+        <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
+            <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
+            <a href="Frame_6.html" class="brand-title text-2xl font-semibold mr-auto">UMak Noise Monitor - Admin</a>
+            <button id="mobile-menu-btn"
+                class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                aria-label="Open main menu" aria-expanded="false">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            <nav class="hidden md:flex items-center gap-4 text-sm">
+                <a href="Frame_6.html" class="nav-link">Dashboard</a>
+                <a href="Frame_7.html" class="nav-link">Log</a>
+                <a href="Frame_9.html" class="nav-link">Alerts</a>
+                <a href="Frame_18.html" class="nav-link">Reports</a>
+                <a href="Frame_15.html" class="nav-link">Users</a>
+                <a href="Frame_19.html" class="nav-link active">Settings</a>
+                <button onclick="logout()"
+                    class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
+                    style="color: black !important;">Logout</button>
+            </nav>
+        </div>
+        <nav id="mobile-menu" class="md:hidden hidden px-6 pb-3">
+            <a href="Frame_6.html" class="block py-2 text-sm nav-link">Dashboard</a>
+            <a href="Frame_7.html" class="block py-2 text-sm nav-link">Log</a>
+            <a href="Frame_9.html" class="block py-2 text-sm nav-link">Alerts</a>
+            <a href="Frame_18.html" class="block py-2 text-sm nav-link">Reports</a>
+            <a href="Frame_15.html" class="block py-2 text-sm nav-link">Users</a>
+            <a href="Frame_19.html" class="block py-2 text-sm nav-link active">Settings</a>
+            <button onclick="logout()"
+                class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
+                style="color: black !important;">Logout</button>
+        </nav>
+    </header>
+
+    <main class="flex-1 py-8 px-6" data-fade data-blur="true" data-blur-px="16" data-initial-opacity="0"
+        data-duration="1000" data-delay="50">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold mb-2">Settings</h1>
+                <p class="text-slate-600">Configure Noise Thresholds, NCI behavior, and LCD display options</p>
+                <div id="supabase-status" class="mt-2 text-xs text-slate-500"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Noise Thresholds -->
+                <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold">Noise Thresholds</h2>
+                        <button id="saveNoiseBtn"
+                            class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm">Save</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Minimum Noise Threshold
+                                (critical)</label>
+                            <div class="flex items-center gap-3">
+                                <input id="noiseThreshold" type="range" min="0" max="5" step="0.1" class="flex-1" />
+                                <span id="noiseThresholdVal"
+                                    class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-sm w-12 text-center">—</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">Reports at or above this level are treated as
+                                critical.</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Warning Threshold</label>
+                            <div class="flex items-center gap-3">
+                                <input id="warningThreshold" type="range" min="0" max="5" step="0.1" class="flex-1" />
+                                <span id="warningThresholdVal"
+                                    class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-sm w-12 text-center">—</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">Reports at or above this level are treated as
+                                warnings.</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="flex items-center gap-2 text-sm"><input id="autoCreateAlerts" type="checkbox"
+                                    class="rounded" /> Auto-create alerts for critical</label>
+                            <label class="flex items-center gap-2 text-sm"><input id="notifyAdmins" type="checkbox"
+                                    class="rounded" /> Notify admins on critical</label>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- NCI Behavior -->
+                <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold">NCI Settings</h2>
+                        <button id="saveNciBtn"
+                            class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm">Save</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Averaging Window
+                                    (min)</label>
+                                <input id="nciAvgWindow" type="number" min="1" max="120" step="1"
+                                    class="w-full px-3 py-2 rounded-lg border border-slate-300" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Smoothing Factor
+                                    (0-1)</label>
+                                <input id="nciSmoothing" type="number" min="0" max="1" step="0.05"
+                                    class="w-full px-3 py-2 rounded-lg border border-slate-300" />
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="flex items-center gap-2 text-sm"><input id="nciShowBadges" type="checkbox"
+                                    class="rounded" /> Highlight critical areas</label>
+                            <label class="flex items-center gap-2 text-sm"><input id="nciEnablePolling" type="checkbox"
+                                    class="rounded" /> Enable live polling</label>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- LCD Display Settings -->
+                <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold">LCD Display</h2>
+                        <button id="saveLcdBtn"
+                            class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm">Save</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Display Mode</label>
+                                <select id="lcdMode" class="w-full px-3 py-2 rounded-lg border border-slate-300">
+                                    <option value="summary">Summary</option>
+                                    <option value="table">By Table</option>
+                                    <option value="rolling">Rolling Ticker</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Brightness</label>
+                                <input id="lcdBrightness" type="range" min="0" max="100" step="1" class="w-full" />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Info to Show</label>
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <label class="flex items-center gap-2"><input id="lcdShowNoise" type="checkbox"
+                                        class="rounded" /> Current Noise Level</label>
+                                <label class="flex items-center gap-2"><input id="lcdShowOccupancy" type="checkbox"
+                                        class="rounded" /> Occupancy</label>
+                                <label class="flex items-center gap-2"><input id="lcdShowWarnings" type="checkbox"
+                                        class="rounded" /> Warnings</label>
+                                <label class="flex items-center gap-2"><input id="lcdShowTips" type="checkbox"
+                                        class="rounded" /> Tips / Notices</label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Misc Settings -->
+                <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold">Additional Controls</h2>
+                        <button id="saveMiscBtn"
+                            class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm">Save</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="flex items-center gap-2 text-sm"><input id="maintenanceMode" type="checkbox"
+                                    class="rounded" /> Maintenance Mode</label>
+                            <label class="flex items-center gap-2 text-sm"><input id="enableStudentReports"
+                                    type="checkbox" class="rounded" checked /> Enable Student Reports</label>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Custom Message (LCD)</label>
+                            <input id="customMessage" type="text"
+                                class="w-full px-3 py-2 rounded-lg border border-slate-300"
+                                placeholder="Welcome to UMak Library" />
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="mt-6 flex items-center justify-end gap-3">
+                <button id="resetDefaults" class="px-4 py-2 rounded-lg btn-outline">Reset to Defaults</button>
+                <button id="saveAll"
+                    class="px-6 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium">Save
+                    All</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
+        data-delay="150">© 2025 UMak Library · Noise Comfort Index</footer>
+
+    <script>
+        (function () {
+            var supabaseInitialized = false;
+            // Admin access gate aligned with other admin frames (Supabase-based)
+            async function checkAdminAccess() {
+                try {
+                    if (!supabaseInitialized) {
+                        try { supabaseInitialized = await window.initSupabaseWithRetry(); } catch (_) { supabaseInitialized = false; }
+                    }
+                    if (!supabaseInitialized) {
+                        console.warn('[Frame 19] Supabase not initialized, redirecting to login');
+                        window.location.replace('index.html?from=settings');
+                        return false;
+                    }
+
+                    var userResult = await window.supabaseAuth.getCurrentUser();
+                    if (userResult.error || !userResult.data || !userResult.data.user) {
+                        console.log('[Frame 19] No authenticated user, redirecting to login');
+                        window.location.replace('index.html?from=settings');
+                        return false;
+                    }
+
+                    var user = userResult.data.user;
+                    var email = (user.email || '').toLowerCase();
+                    if (email === 'adminlibrarian@umak.edu.ph') {
+                        console.log('[Frame 19] Legacy admin detected, access granted');
+                        return true;
+                    }
+
+                    var adminResult = await window.supabaseDB.isAdmin(user.id);
+                    if (adminResult && adminResult.data) {
+                        console.log('[Frame 19] Database admin verified, access granted');
+                        return true;
+                    }
+
+                    console.log('[Frame 19] User is not admin, redirecting to student dashboard');
+                    window.location.replace('Frame_4.html');
+                    return false;
+                } catch (e) {
+                    console.error('[Frame 19] Admin access check failed:', e);
+                    window.location.replace('index.html?from=settings');
+                    return false;
+                }
+            }
+            function showStatus(text, ok) {
+                var el = document.getElementById('supabase-status');
+                if (!el) return;
+                el.textContent = text || '';
+                el.className = 'mt-2 text-xs ' + (ok ? 'text-green-600' : 'text-red-600');
+            }
+
+            function getEls() {
+                return {
+                    noiseThreshold: document.getElementById('noiseThreshold'),
+                    noiseThresholdVal: document.getElementById('noiseThresholdVal'),
+                    warningThreshold: document.getElementById('warningThreshold'),
+                    warningThresholdVal: document.getElementById('warningThresholdVal'),
+                    autoCreateAlerts: document.getElementById('autoCreateAlerts'),
+                    notifyAdmins: document.getElementById('notifyAdmins'),
+                    nciAvgWindow: document.getElementById('nciAvgWindow'),
+                    nciSmoothing: document.getElementById('nciSmoothing'),
+                    nciShowBadges: document.getElementById('nciShowBadges'),
+                    nciEnablePolling: document.getElementById('nciEnablePolling'),
+                    lcdMode: document.getElementById('lcdMode'),
+                    lcdBrightness: document.getElementById('lcdBrightness'),
+                    lcdShowNoise: document.getElementById('lcdShowNoise'),
+                    lcdShowOccupancy: document.getElementById('lcdShowOccupancy'),
+                    lcdShowWarnings: document.getElementById('lcdShowWarnings'),
+                    lcdShowTips: document.getElementById('lcdShowTips'),
+                    maintenanceMode: document.getElementById('maintenanceMode'),
+                    enableStudentReports: document.getElementById('enableStudentReports'),
+                    customMessage: document.getElementById('customMessage'),
+                };
+            }
+
+            function readForm() {
+                var el = getEls();
+                return {
+                    noiseThreshold: parseFloat(el.noiseThreshold.value),
+                    warningThreshold: parseFloat(el.warningThreshold.value),
+                    autoCreateAlerts: !!el.autoCreateAlerts.checked,
+                    notifyAdmins: !!el.notifyAdmins.checked,
+                    nci: {
+                        averagingWindowMin: parseInt(el.nciAvgWindow.value, 10),
+                        smoothingFactor: parseFloat(el.nciSmoothing.value),
+                        showBadges: !!el.nciShowBadges.checked,
+                        enablePolling: !!el.nciEnablePolling.checked
+                    },
+                    lcd: {
+                        mode: el.lcdMode.value,
+                        brightness: parseInt(el.lcdBrightness.value, 10),
+                        showNoise: !!el.lcdShowNoise.checked,
+                        showOccupancy: !!el.lcdShowOccupancy.checked,
+                        showWarnings: !!el.lcdShowWarnings.checked,
+                        showTips: !!el.lcdShowTips.checked,
+                        customMessage: el.customMessage.value || ''
+                    },
+                    maintenanceMode: !!el.maintenanceMode.checked,
+                    enableStudentReports: !!el.enableStudentReports.checked
+                };
+            }
+
+            function writeForm(data) {
+                var el = getEls();
+                var d = data || {};
+                var nci = d.nci || {};
+                var lcd = d.lcd || {};
+                var th = typeof d.noiseThreshold === 'number' ? d.noiseThreshold : 4.5;
+                var wh = typeof d.warningThreshold === 'number' ? d.warningThreshold : 3.0;
+                el.noiseThreshold.value = String(th);
+                el.noiseThresholdVal.textContent = String(th);
+                el.warningThreshold.value = String(wh);
+                el.warningThresholdVal.textContent = String(wh);
+                el.autoCreateAlerts.checked = !!d.autoCreateAlerts;
+                el.notifyAdmins.checked = !!d.notifyAdmins;
+                el.nciAvgWindow.value = String(typeof nci.averagingWindowMin === 'number' ? nci.averagingWindowMin : 15);
+                el.nciSmoothing.value = String(typeof nci.smoothingFactor === 'number' ? nci.smoothingFactor : 0.5);
+                el.nciShowBadges.checked = !!nci.showBadges;
+                el.nciEnablePolling.checked = typeof nci.enablePolling === 'boolean' ? nci.enablePolling : true;
+                el.lcdMode.value = lcd.mode || 'summary';
+                el.lcdBrightness.value = String(typeof lcd.brightness === 'number' ? lcd.brightness : 75);
+                el.lcdShowNoise.checked = typeof lcd.showNoise === 'boolean' ? lcd.showNoise : true;
+                el.lcdShowOccupancy.checked = typeof lcd.showOccupancy === 'boolean' ? lcd.showOccupancy : true;
+                el.lcdShowWarnings.checked = !!lcd.showWarnings;
+                el.lcdShowTips.checked = !!lcd.showTips;
+                el.customMessage.value = lcd.customMessage || '';
+            }
+
+            function wireUI() {
+                var el = getEls();
+                el.noiseThreshold.addEventListener('input', function () { document.getElementById('noiseThresholdVal').textContent = String(this.value); });
+                el.warningThreshold.addEventListener('input', function () { document.getElementById('warningThresholdVal').textContent = String(this.value); });
+            }
+
+            async function loadSettings() {
+                try {
+                    if (!supabaseInitialized) { try { supabaseInitialized = await window.initSupabaseWithRetry(); } catch (_) { supabaseInitialized = false; } }
+                    if (!supabaseInitialized) { showStatus('Supabase not available', false); return; }
+                    var res = await window.supabaseDB.getAdminLayout();
+                    var cfg = (res && res.data) || {};
+                    writeForm(cfg);
+                    showStatus('Loaded settings', true);
+                } catch (e) {
+                    console.error(e);
+                    showStatus('Failed to load settings', false);
+                }
+            }
+
+            async function save(partial) {
+                try {
+                    if (!supabaseInitialized) return;
+                    var existing = (await window.supabaseDB.getAdminLayout()).data || {};
+                    var merged = Object.assign({}, existing, partial);
+                    var out = await window.supabaseDB.updateAdminLayout(merged);
+                    showStatus('Saved', true);
+                    return out;
+                } catch (e) {
+                    console.error(e);
+                    showStatus('Save failed', false);
+                }
+            }
+
+            function bindActions() {
+                var el = getEls();
+                document.getElementById('saveNoiseBtn').addEventListener('click', function () {
+                    var data = readForm();
+                    save({ noiseThreshold: data.noiseThreshold, warningThreshold: data.warningThreshold, autoCreateAlerts: data.autoCreateAlerts, notifyAdmins: data.notifyAdmins });
+                });
+                document.getElementById('saveNciBtn').addEventListener('click', function () {
+                    var data = readForm();
+                    save({ nci: data.nci });
+                });
+                document.getElementById('saveLcdBtn').addEventListener('click', function () {
+                    var data = readForm();
+                    save({ lcd: data.lcd });
+                });
+                document.getElementById('saveMiscBtn').addEventListener('click', function () {
+                    var data = readForm();
+                    save({ maintenanceMode: data.maintenanceMode, enableStudentReports: data.enableStudentReports, lcd: Object.assign({}, data.lcd, { customMessage: data.lcd.customMessage }) });
+                });
+                document.getElementById('saveAll').addEventListener('click', function () { save(readForm()); });
+                document.getElementById('resetDefaults').addEventListener('click', function () {
+                    writeForm({});
+                });
+            }
+
+            function logout() {
+                try {
+                    if (window.supabaseAuth) {
+                        window.supabaseAuth.signOut().then(function () { window.location.href = 'index.html'; }).catch(function () { window.location.href = 'index.html'; });
+                    } else { window.location.href = 'index.html'; }
+                } catch (_) { window.location.href = 'index.html'; }
+            }
+            window.logout = logout;
+
+            // Mobile menu toggle
+            (function () {
+                var btn = document.getElementById('mobile-menu-btn');
+                var menu = document.getElementById('mobile-menu');
+                var header = document.querySelector('header.site-header');
+                if (btn && menu && header) {
+                    btn.addEventListener('click', function () {
+                        var isHidden = menu.classList.contains('hidden');
+                        if (isHidden) { header.classList.add('menu-open'); menu.classList.remove('hidden'); btn.setAttribute('aria-expanded', 'true'); }
+                        else { header.classList.remove('menu-open'); menu.classList.add('hidden'); btn.setAttribute('aria-expanded', 'false'); }
+                    });
+                }
+            })();
+
+            // Init (ensure fade starts after successful admin verification)
+            (async function init() {
+                var allowed = await checkAdminAccess();
+                if (!allowed) return;
+                wireUI();
+                bindActions();
+                await loadSettings();
+            })();
+        })();
+    </script>
+    <script>
+        // Unified fade-on-scroll transitions (same timing/easing as Frame 18)
+        // Note: Runs after main script to ensure access checks complete first
+        (function () {
+            var fadeElements = Array.from(document.querySelectorAll('[data-fade]'));
+            if (fadeElements.length === 0) return;
+
+            fadeElements.forEach(function (el) {
+                var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+                var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+                var easing = el.getAttribute('data-easing') || 'ease-out';
+                var blurPxAttr = el.getAttribute('data-blur-px');
+                var blurPx = parseInt(blurPxAttr || '14', 10);
+                el.style.opacity = String(initialOpacity);
+                el.style.setProperty('--fade-init', blurPx + 'px');
+                el.style.setProperty('--fade-transition', 'opacity ' + duration + 'ms ' + easing + ', filter ' + duration + 'ms ' + easing);
+            });
+
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        var el = entry.target;
+                        var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+                        var blurAttr = el.getAttribute('data-blur');
+                        var blurEnabled = (blurAttr !== 'false');
+                        observer.unobserve(el);
+                        setTimeout(function () {
+                            el.style.opacity = '1';
+                            if (blurEnabled) {
+                                el.style.setProperty('--fade-init', '0px');
+                            }
+                        }, delay);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            fadeElements.forEach(function (el) { observer.observe(el); });
+        })();
+    </script>
+</body>
+
+</html>

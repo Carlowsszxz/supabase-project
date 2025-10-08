@@ -25,13 +25,37 @@
   <script defer src="theme.js"></script>
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
+  <!-- UI polish (non-breaking):
+       - aligned header and filter spacing for clarity
+       - card-based grouping for stats and table controls
+       - improved contrast using theme tokens for dark/light
+       - consistent radius/shadows/hover across admin elements
+       - responsive gap tuning for dense grids -->
+  <style>
+    /* Ensure initial blur/opacity applies on first paint, even before JS */
+    [data-fade] {
+      opacity: 0;
+      /* Use CSS var so we can override with !important and per-element values */
+      --fade-init: 14px;
+      --fade-filter: none;
+      filter: var(--fade-filter) !important;
+      transition: var(--fade-transition, opacity 1000ms ease-out, filter 1000ms ease-out) !important;
+      will-change: opacity, filter;
+    }
+
+    [data-fade]:not([data-blur="false"]) {
+      --fade-filter: blur(var(--fade-init));
+    }
+  </style>
 </head>
 </head>
 
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
-  <header class="site-header">
+  <header class="site-header" data-fade data-blur="true" data-blur-px="16" data-initial-opacity="0" data-duration="1000"
+    data-easing="ease-out">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
-      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
+      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" data-fade data-blur="true"
+        data-delay="50" data-initial-opacity="0" />
       <a href="Frame_6.html" class="brand-title text-2xl font-semibold mr-auto">UMak Noise Monitor - Admin</a>
       <button id="mobile-menu-btn"
         class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
@@ -47,6 +71,7 @@
         <a href="Frame_9.html" class="nav-link">Alerts</a>
         <a href="Frame_18.html" class="nav-link">Reports</a>
         <a href="Frame_15.html" class="nav-link">Users</a>
+        <a href="Frame_19.html" class="nav-link">Settings</a>
         <button onclick="logout()" class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
           style="color: black !important;">Logout</button>
       </nav>
@@ -57,16 +82,19 @@
       <a href="Frame_9.html" class="block py-2 text-sm nav-link">Alerts</a>
       <a href="Frame_18.html" class="block py-2 text-sm nav-link">Reports</a>
       <a href="Frame_15.html" class="block py-2 text-sm nav-link">Users</a>
+      <a href="Frame_19.html" class="block py-2 text-sm nav-link">Settings</a>
       <button id="logoutBtnMobile"
         class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition text-left">Logout</button>
     </nav>
   </header>
 
-  <main class="flex-1 py-8 px-6">
+  <main class="flex-1 py-8 px-6" data-fade data-blur="true" data-blur-px="16" data-initial-opacity="0"
+    data-duration="1000" data-delay="50">
     <div class="max-w-7xl mx-auto">
 
       <!-- Header Section -->
-      <div class="mb-8">
+      <div class="mb-8" data-fade data-blur="true" data-duration="900" data-easing="ease-out" data-delay="0"
+        data-initial-opacity="0">
         <h1 class="text-3xl font-bold mb-2">Admin Dashboard</h1>
         <p class="text-slate-600">Manage table and seat occupancy for the library</p>
         <div id="status" class="mt-2 text-sm"></div>
@@ -79,32 +107,50 @@
             <option value="table-3">Table 3</option>
             <option value="table-4">Table 4</option>
             <option value="table-5">Table 5</option>
+            <option value="table-6">Table 6</option>
+            <option value="table-7">Table 7</option>
+            <option value="table-8">Table 8</option>
+            <option value="table-9">Table 9</option>
+            <option value="table-10">Table 10</option>
+            <option value="table-11">Table 11</option>
+            <option value="table-12">Table 12</option>
+            <option value="table-13">Table 13</option>
+            <option value="table-14">Table 14</option>
+            <option value="table-15">Table 15</option>
+            <option value="table-16">Table 16</option>
+            <option value="table-17">Table 17</option>
+            <option value="table-18">Table 18</option>
           </select>
         </div>
       </div>
 
       <!-- Quick Stats -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-          <div class="text-2xl font-bold text-indigo-600" id="total-seats">25</div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200" data-fade data-blur="true"
+          data-delay="50" data-initial-opacity="0">
+          <div class="text-2xl font-bold text-indigo-600" id="total-seats">144</div>
           <div class="text-sm text-slate-500">Total Seats</div>
         </div>
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-          <div class="text-2xl font-bold text-green-600" id="available-seats">25</div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200" data-fade data-blur="true"
+          data-delay="100" data-initial-opacity="0">
+          <div class="text-2xl font-bold text-green-600" id="available-seats">144</div>
           <div class="text-sm text-slate-500">Available</div>
         </div>
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200" data-fade data-blur="true"
+          data-delay="150" data-initial-opacity="0">
           <div class="text-2xl font-bold text-red-600" id="occupied-seats">0</div>
           <div class="text-sm text-slate-500">Occupied</div>
         </div>
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200" data-fade data-blur="true"
+          data-delay="200" data-initial-opacity="0">
           <div class="text-2xl font-bold text-slate-600" id="occupancy-rate">0%</div>
           <div class="text-sm text-slate-500">Occupancy Rate</div>
         </div>
       </div>
 
       <!-- Tables Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6" data-fade data-blur="true" data-delay="250"
+        data-initial-opacity="0">
 
         <!-- Table 1 -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-1">
@@ -119,7 +165,7 @@
                 All</button>
             </div>
           </div>
-          <div class="grid grid-cols-5 gap-2 mb-4">
+          <div class="grid grid-cols-4 gap-2 mb-4">
             <button data-table="table-1" data-seat="1"
               class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
               onclick="toggleSeat(this)"></button>
@@ -135,8 +181,17 @@
             <button data-table="table-1" data-seat="5"
               class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
               onclick="toggleSeat(this)"></button>
+            <button data-table="table-1" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-1" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-1" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
           </div>
-          <div class="text-sm text-slate-500">Occupancy: <span id="table-1-count">0</span>/5 seats</div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-1-count">0</span>/8 seats</div>
         </div>
 
         <!-- Table 2 -->
@@ -152,7 +207,7 @@
                 All</button>
             </div>
           </div>
-          <div class="grid grid-cols-5 gap-2 mb-4">
+          <div class="grid grid-cols-4 gap-2 mb-4">
             <button data-table="table-2" data-seat="1"
               class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
               onclick="toggleSeat(this)"></button>
@@ -168,8 +223,17 @@
             <button data-table="table-2" data-seat="5"
               class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
               onclick="toggleSeat(this)"></button>
+            <button data-table="table-2" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-2" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-2" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
           </div>
-          <div class="text-sm text-slate-500">Occupancy: <span id="table-2-count">0</span>/5 seats</div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-2-count">0</span>/8 seats</div>
         </div>
 
         <!-- Table 3 -->
@@ -185,7 +249,7 @@
                 All</button>
             </div>
           </div>
-          <div class="grid grid-cols-5 gap-2 mb-4">
+          <div class="grid grid-cols-4 gap-2 mb-4">
             <button data-table="table-3" data-seat="1"
               class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
               onclick="toggleSeat(this)"></button>
@@ -201,8 +265,17 @@
             <button data-table="table-3" data-seat="5"
               class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
               onclick="toggleSeat(this)"></button>
+            <button data-table="table-3" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-3" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-3" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
           </div>
-          <div class="text-sm text-slate-500">Occupancy: <span id="table-3-count">0</span>/5 seats</div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-3-count">0</span>/8 seats</div>
         </div>
 
         <!-- Table 4 -->
@@ -218,7 +291,7 @@
                 All</button>
             </div>
           </div>
-          <div class="grid grid-cols-5 gap-2 mb-4">
+          <div class="grid grid-cols-4 gap-2 mb-4">
             <button data-table="table-4" data-seat="1"
               class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
               onclick="toggleSeat(this)"></button>
@@ -234,8 +307,17 @@
             <button data-table="table-4" data-seat="5"
               class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
               onclick="toggleSeat(this)"></button>
+            <button data-table="table-4" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-4" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-4" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
           </div>
-          <div class="text-sm text-slate-500">Occupancy: <span id="table-4-count">0</span>/5 seats</div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-4-count">0</span>/8 seats</div>
         </div>
 
         <!-- Table 5 -->
@@ -251,7 +333,7 @@
                 All</button>
             </div>
           </div>
-          <div class="grid grid-cols-5 gap-2 mb-4">
+          <div class="grid grid-cols-4 gap-2 mb-4">
             <button data-table="table-5" data-seat="1"
               class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
               onclick="toggleSeat(this)"></button>
@@ -267,12 +349,568 @@
             <button data-table="table-5" data-seat="5"
               class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
               onclick="toggleSeat(this)"></button>
+            <button data-table="table-5" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-5" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-5" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
           </div>
-          <div class="text-sm text-slate-500">Occupancy: <span id="table-5-count">0</span>/5 seats</div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-5-count">0</span>/8 seats</div>
+        </div>
+
+        <!-- Table 6 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 6</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-6')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-6')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <button data-table="table-6" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-6" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-6" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-6" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-6" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-6" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-6" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-6" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-6-count">0</span>/8 seats</div>
+        </div>
+
+        <!-- Table 7 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-7">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 7</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-7')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-7')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <button data-table="table-7" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-7" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-7" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-7" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-7" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-7" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-7" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-7" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-7-count">0</span>/8 seats</div>
+        </div>
+
+        <!-- Table 8 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-8">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 8</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-8')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-8')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <button data-table="table-8" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-8" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-8" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-8" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-8" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-8" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-8" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-8" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-8-count">0</span>/8 seats</div>
+        </div>
+
+        <!-- Table 9 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-9">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 9</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-9')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-9')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <button data-table="table-9" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-9" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-9" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-9" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-9" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-9" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-9" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-9" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-9-count">0</span>/8 seats</div>
+        </div>
+
+        <!-- Table 10 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-10">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 10</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-10')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-10')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <button data-table="table-10" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-10" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-10" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-10" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-10" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-10" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-10" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-10" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-10-count">0</span>/8 seats</div>
+        </div>
+
+        <!-- Table 11 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-11">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 11</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-11')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-11')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <button data-table="table-11" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-11" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-11" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-11" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-11" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-11" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-11" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-11" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-11-count">0</span>/8 seats</div>
+        </div>
+
+        <!-- Table 12 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-12">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 12</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-12')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-12')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <button data-table="table-12" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-12" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-12" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-12" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-12" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-12" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-12" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-12" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-12-count">0</span>/8 seats</div>
+        </div>
+
+        <!-- Table 13 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-13">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 13</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-13')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-13')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <button data-table="table-13" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-13" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-13" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-13" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-13" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-13" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-13" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-13" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-13-count">0</span>/8 seats</div>
+        </div>
+
+        <!-- Table 14 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-14">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 14</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-14')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-14')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <button data-table="table-14" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-14" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-14" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-14" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-14" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-14" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-14" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-14" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-14-count">0</span>/8 seats</div>
+        </div>
+
+        <!-- Table 15 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-15">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 15</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-15')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-15')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <button data-table="table-15" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-15" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-15" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-15" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-15" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-15" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-15" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-15" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-15-count">0</span>/8 seats</div>
+        </div>
+
+        <!-- Table 16 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-16">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 16</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-16')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-16')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <button data-table="table-16" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-16" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-16" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-16" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-16" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-16" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-16" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-16" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-16-count">0</span>/8 seats</div>
+        </div>
+
+        <!-- Table 17 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-17">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 17</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-17')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-17')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <button data-table="table-17" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-17" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-17" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-17" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-17" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-17" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-17" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-17" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-17-count">0</span>/8 seats</div>
+        </div>
+
+        <!-- Table 18 -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-table-card="table-18">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Table 18</h3>
+            <div class="flex gap-2">
+              <button onclick="clearAllSeats('table-18')"
+                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
+                All</button>
+              <button onclick="occupyAllSeats('table-18')"
+                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
+                All</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <button data-table="table-18" data-seat="1"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-18" data-seat="2"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-18" data-seat="3"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-18" data-seat="4"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-18" data-seat="5"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-18" data-seat="6"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-18" data-seat="7"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+            <button data-table="table-18" data-seat="8"
+              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
+              onclick="toggleSeat(this)"></button>
+          </div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-18-count">0</span>/8 seats</div>
         </div>
 
         <!-- Global Actions -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
+          data-delay="300" data-initial-opacity="0">
           <h3 class="text-lg font-semibold mb-4">Global Actions</h3>
           <div class="space-y-3">
             <button onclick="clearAllTables()"
@@ -295,15 +933,16 @@
     </div>
   </main>
 
-  <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+  <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-blur-px="16"
+    data-initial-opacity="0" data-duration="1000" data-delay="100">© 2025 UMak Library · Noise Comfort Index</footer>
   <div id="supabase-status" style="position:fixed;right:12px;bottom:12px"
     class="px-2 py-1 rounded-md text-xs bg-slate-200 text-slate-700 hidden"></div>
 
   <script>
     (function () {
       // Simple state management
-      var TABLE_IDS = ['table-1', 'table-2', 'table-3', 'table-4', 'table-5'];
-      var SEATS_PER_TABLE = 5;
+      var TABLE_IDS = ['table-1', 'table-2', 'table-3', 'table-4', 'table-5', 'table-6', 'table-7', 'table-8', 'table-9', 'table-10', 'table-11', 'table-12', 'table-13', 'table-14', 'table-15', 'table-16', 'table-17', 'table-18'];
+      var SEATS_PER_TABLE = 8;
       var occupancyState = {};
       var supabaseInitialized = false;
 
@@ -734,6 +1373,50 @@
 
       // Initialize
       initialize();
+    })();
+  </script>
+  <script>
+    // Fade-on-scroll transitions
+    (function () {
+      var fadeElements = Array.from(document.querySelectorAll('[data-fade]'));
+      if (fadeElements.length === 0) return;
+
+      fadeElements.forEach(function (el) {
+        var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+        var easing = el.getAttribute('data-easing') || 'ease-out';
+        var blurAttr = el.getAttribute('data-blur');
+        var blurEnabled = (blurAttr !== 'false');
+        var blurPxAttr = el.getAttribute('data-blur-px');
+        var blurPx = parseInt(blurPxAttr || '14', 10);
+        // Set CSS variables to ensure !important styles apply from CSS
+        el.style.opacity = String(initialOpacity);
+        el.style.setProperty('--fade-init', blurPx + 'px');
+        el.style.setProperty('--fade-transition', 'opacity ' + duration + 'ms ' + easing + ', filter ' + duration + 'ms ' + easing);
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var el = entry.target;
+            var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+            var blurAttr = el.getAttribute('data-blur');
+            var blurEnabled = (blurAttr !== 'false');
+            var blurPxAttr = el.getAttribute('data-blur-px');
+            var blurPx = parseInt(blurPxAttr || '14', 10);
+            observer.unobserve(el);
+            setTimeout(function () {
+              el.style.opacity = '1';
+              if (blurEnabled) {
+                // Remove blur by setting CSS var target
+                el.style.setProperty('--fade-init', '0px');
+              }
+            }, delay);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      fadeElements.forEach(function (el) { observer.observe(el); });
     })();
   </script>
 </body>

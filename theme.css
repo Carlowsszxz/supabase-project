@@ -185,6 +185,18 @@ h3 {
   backdrop-filter: blur(8px);
 }
 
+/* Ensure background canvas sits behind content but below header */
+#veil-bg {
+  z-index: 1;
+}
+
+.site-header,
+main,
+footer {
+  position: relative;
+  z-index: 2;
+}
+
 .brand-title {
   color: #ffffff;
 }
@@ -595,6 +607,11 @@ select option {
   z-index: 10;
 }
 
+/* Prevent press animation for the eye toggle so it doesn't move on click */
+.password-toggle:active {
+  transform: translateY(-50%) !important;
+}
+
 .password-toggle:hover {
   color: var(--brand);
   background-color: color-mix(in srgb, var(--bg-surface) 80%, var(--bg-page));
@@ -756,3 +773,583 @@ textarea:focus-visible,
 .site-header.menu-open #mobile-menu {
   display: block !important;
 }
+
+/* ----------------------------------------------
+   Frame 7 (Admin Log) scoped visual refinements
+   ---------------------------------------------- */
+
+/* Header block spacing and hierarchy */
+#admin-log-root .mb-8>.flex {
+  gap: 1rem !important;
+}
+
+#admin-log-root h1 {
+  margin-bottom: 0.25rem !important;
+}
+
+#admin-log-root p {
+  color: var(--text-secondary) !important;
+}
+
+/* Buttons: consistent radius and hover/focus */
+#admin-log-root button {
+  border-radius: var(--radius) !important;
+}
+
+#admin-log-root button:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Filters card spacing and inputs */
+#admin-log-root .bg-white.rounded-xl.p-6,
+#admin-log-root .bg-white.rounded-xl.p-8 {
+  box-shadow: var(--shadow-card) !important;
+}
+
+#admin-log-root label {
+  color: var(--text-secondary) !important;
+}
+
+#admin-log-root select,
+#admin-log-root input[type="text"] {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border) !important;
+  border-radius: var(--radius) !important;
+}
+
+#admin-log-root select:focus,
+#admin-log-root input[type="text"]:focus {
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 3px rgba(0, 53, 102, 0.35) !important;
+}
+
+/* Stat cards */
+#admin-log-root .grid .bg-white.rounded-xl.p-6 {
+  box-shadow: var(--shadow-card) !important;
+}
+
+#admin-log-root .grid .bg-white.rounded-xl.p-6:hover {
+  box-shadow: var(--shadow-hover) !important;
+}
+
+#admin-log-root .text-sm.text-slate-500 {
+  color: var(--text-secondary) !important;
+}
+
+/* Timeline items */
+#admin-log-root #activityTimeline>div {
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+}
+
+#admin-log-root #activityTimeline h4 {
+  color: var(--text-primary);
+}
+
+#admin-log-root #activityTimeline span {
+  color: var(--text-secondary);
+}
+
+/* ----------------------------------------------
+   Frame 9 (Alerts) scoped visual refinements
+   ---------------------------------------------- */
+
+#admin-alerts-root .mb-8>.flex {
+  gap: 1rem !important;
+}
+
+#admin-alerts-root h1 {
+  margin-bottom: 0.25rem !important;
+}
+
+#admin-alerts-root p {
+  color: var(--text-secondary) !important;
+}
+
+#admin-alerts-root .bg-white.rounded-xl.p-6,
+#admin-alerts-root .bg-white.rounded-xl.p-8 {
+  box-shadow: var(--shadow-card) !important;
+}
+
+#admin-alerts-root button {
+  border-radius: var(--radius) !important;
+}
+
+#admin-alerts-root button:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+#admin-alerts-root input[type="text"],
+#admin-alerts-root select {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border) !important;
+  border-radius: var(--radius) !important;
+}
+
+#admin-alerts-root input[type="text"]:focus,
+#admin-alerts-root select:focus {
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 3px rgba(0, 53, 102, 0.35) !important;
+}
+
+#admin-alerts-root .card-hover {
+  transition: box-shadow .25s ease;
+}
+
+#admin-alerts-root .card-hover:hover {
+  box-shadow: var(--shadow-hover) !important;
+}
+
+/* ----------------------------------------------
+   Frame 18 (Reports) scoped visual refinements
+   ---------------------------------------------- */
+#admin-reports-root .mb-8>.flex,
+#admin-reports-root .mb-8>.grid {
+  gap: 1rem !important;
+}
+
+#admin-reports-root h1 {
+  margin-bottom: 0.25rem !important;
+}
+
+#admin-reports-root p {
+  color: var(--text-secondary) !important;
+}
+
+#admin-reports-root .bg-white.rounded-xl.p-6,
+#admin-reports-root .bg-white.rounded-xl.p-8 {
+  box-shadow: var(--shadow-card) !important;
+}
+
+#admin-reports-root button {
+  border-radius: var(--radius) !important;
+}
+
+#admin-reports-root button:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+#admin-reports-root select {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border) !important;
+  border-radius: var(--radius) !important;
+}
+
+#admin-reports-root select:focus {
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 3px rgba(0, 53, 102, 0.35) !important;
+}
+
+/* Table tweaks */
+#admin-reports-root table thead tr {
+  background: transparent;
+}
+
+#admin-reports-root table tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+
+#admin-reports-root table tbody tr:last-child {
+  border-bottom: 0;
+}
+
+/* ----------------------------------------------
+   Frame 16 refinements (Report Noise UI only)
+   ---------------------------------------------- */
+
+/* Card sections spacing and elevation */
+section.bg-white.rounded-2xl.shadow {
+  box-shadow: var(--shadow-card) !important;
+}
+
+/* Headings hierarchy */
+section h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+section h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Labels and meta text contrast */
+label.block.text-sm,
+.text-slate-600,
+.text-slate-500 {
+  color: var(--text-secondary) !important;
+}
+
+/* Interactive option cards (noise level, urgency) */
+.noise-level-option,
+.urgency-option {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border) !important;
+  border-radius: var(--radius) !important;
+}
+
+.noise-level-option:hover,
+.urgency-option:hover {
+  border-color: var(--brand) !important;
+  box-shadow: var(--shadow-card);
+}
+
+/* Selected state (JS toggles border-indigo-500/bg-indigo-50) remapped to theme */
+.border-indigo-500 {
+  border-color: var(--brand) !important;
+}
+
+.bg-indigo-50 {
+  background-color: color-mix(in srgb, var(--brand) 10%, var(--bg-surface)) !important;
+}
+
+/* Form controls sizing & consistency */
+#noiseReportForm select,
+#noiseReportForm textarea,
+#noiseReportForm input[type="text"] {
+  padding: 0.75rem !important;
+  border-radius: var(--radius) !important;
+}
+
+/* Submit/cancel area: replace visible divider with spacing emphasis */
+#noiseReportForm .border-t {
+  border-top-color: transparent !important;
+}
+
+#noiseReportForm .pt-4 {
+  padding-top: 1.25rem !important;
+  margin-top: 0.25rem !important;
+}
+
+/* Buttons: ensure consistent radius and hover */
+#submitBtn,
+#cancelBtn,
+#refreshCommunity {
+  border-radius: var(--radius) !important;
+}
+
+#submitBtn {
+  box-shadow: var(--shadow-card);
+}
+
+#submitBtn:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+/* Community list items */
+#communityReports>div {
+  background-color: color-mix(in srgb, var(--bg-surface) 97%, var(--bg-page));
+  border-color: var(--border) !important;
+  border-radius: var(--radius) !important;
+}
+
+/* Admin/User chips contrast */
+.bg-indigo-600.text-white {
+  background-color: var(--brand) !important;
+}
+
+.bg-slate-300.text-blue-600 {
+  color: var(--yale-blue) !important;
+}
+
+/* Success modal visual consistency */
+#successModal .bg-white {
+  box-shadow: var(--shadow-card) !important;
+  border-radius: var(--radius) !important;
+}
+
+/* Mobile spacing tweaks */
+@media (max-width: 640px) {
+  section.bg-white.rounded-2xl.shadow {
+    padding: 1rem !important;
+  }
+}
+
+/* Badges for urgency */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-low {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.badge-medium {
+  background: rgba(234, 179, 8, 0.16);
+  color: #b45309;
+}
+
+.badge-high {
+  background: rgba(239, 68, 68, 0.16);
+  color: #b91c1c;
+}
+
+/* Community card item */
+.report-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+.report-card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+/* Small meta text */
+.meta-sm {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Brief summary of Frame 16 improvements:
+   - improved padding consistency and radius matching dashboard style
+   - fixed low contrast text for dark mode using theme vars
+   - unified option card states (hover/selected) with brand color
+   - reduced visual noise by using spacing over hard dividers
+   - ensured responsive padding and legible hierarchy on mobile
+*/
+
+/* ----------------------------------------------
+   Frame 8 visual refinements (UI-only, no logic)
+   ---------------------------------------------- */
+
+/* Consistent radii and shadow across buttons, cards, inputs */
+:root {
+  --radius: 0.75rem;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.08), 0 10px 28px rgba(0, 0, 0, 0.08);
+}
+
+.rounded-lg,
+.rounded-xl,
+.rounded-2xl,
+.rounded-md,
+.rounded {
+  border-radius: var(--radius) !important;
+}
+
+/* Card/surface elevation tuned for both themes */
+.bg-white.border,
+.bg-white.border-slate-200,
+.bg-slate-50.border,
+.card,
+.p-4.bg-white,
+.p-6.bg-white {
+  box-shadow: var(--shadow-card) !important;
+}
+
+/* Hover lift for interactive cards/buttons */
+.card:hover,
+.p-4.bg-white:hover,
+.p-6.bg-white:hover {
+  box-shadow: var(--shadow-hover) !important;
+}
+
+/* Header nav/buttons consistency */
+.nav-link,
+#logoutBtn,
+#logoutBtnMobile,
+.btn-outline {
+  border-radius: var(--radius) !important;
+}
+
+/* Inputs/selects consistent sizing and states */
+input,
+select,
+textarea,
+button {
+  border-radius: var(--radius) !important;
+}
+
+/* Select specific polish for Frame 8 table picker */
+#table-select {
+  min-width: 16rem;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+}
+
+#table-select:hover {
+  border-color: var(--brand) !important;
+}
+
+/* Map and table areas: subtle separation from page */
+#map-container,
+#table-area {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+/* Table wrapper styling to match dashboard cards */
+.table-wrapper {
+  background-color: color-mix(in srgb, var(--bg-surface) 96%, var(--bg-page));
+  border: 1px solid var(--border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.table-wrapper:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+/* Table label text color consistency */
+.table-wrapper {
+  color: var(--text-secondary);
+}
+
+/* Seat styling: consistent rings, contrast, and focus */
+.seat {
+  border: 2px solid #ffffff;
+  /* maintains contrast on both themes */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.seat:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Ensure occupied/free colors have sufficient contrast on dark bg */
+.seat.bg-green-300 {
+  box-shadow: 0 0 0 2px #ffffff inset, 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.seat.bg-red-500 {
+  box-shadow: 0 0 0 2px #ffffff inset, 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+/* Sidebar chips spacing and readability */
+#seat-list>div {
+  border-color: var(--border) !important;
+}
+
+/* Legend dots with subtle border for contrast */
+.inline-block.w-3.h-3.rounded-full {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+/* Footer and status badge readability */
+footer {
+  border-top: 1px solid var(--border);
+}
+
+/* Responsive tweaks */
+@media (max-width: 640px) {
+  #map-container {
+    height: 16rem !important;
+  }
+
+  #table-area {
+    height: 16rem !important;
+  }
+
+  #table-select {
+    min-width: 12rem;
+  }
+}
+
+/* ----------------------------------------------
+   Frame 6 (Admin) visual refinements (UI-only)
+   ---------------------------------------------- */
+
+/* Header and filter row spacing */
+main .mb-8>h1 {
+  margin-bottom: 0.25rem !important;
+}
+
+main .mb-8>p {
+  color: var(--text-secondary) !important;
+}
+
+main .mb-8 .flex.flex-wrap.items-center.gap-3 {
+  gap: 0.5rem 0.75rem !important;
+}
+
+/* Filter select polish */
+#tableFilter {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border) !important;
+  border-radius: var(--radius) !important;
+}
+
+#tableFilter:hover {
+  border-color: var(--brand) !important;
+}
+
+#tableFilter:focus {
+  box-shadow: 0 0 0 3px rgba(0, 53, 102, 0.35) !important;
+}
+
+/* Quick stats cards consistency */
+.grid .bg-white.rounded-xl.p-6.shadow-sm.border {
+  box-shadow: var(--shadow-card) !important;
+}
+
+.grid .bg-white.rounded-xl.p-6.shadow-sm.border:hover {
+  box-shadow: var(--shadow-hover) !important;
+}
+
+.grid .text-sm.text-slate-500 {
+  color: var(--text-secondary) !important;
+}
+
+/* Table cards */
+[data-table-card] {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+[data-table-card]:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+[data-table-card] h3 {
+  color: var(--text-primary);
+}
+
+/* Seat buttons: clarity and focus */
+.seat-btn {
+  border-color: var(--border) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.seat-btn:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Global actions section */
+section .space-y-3 button {
+  border-radius: var(--radius) !important;
+}
+
+/* Responsive gap tuning for dense cards */
+@media (min-width: 1024px) {
+  .grid.grid-cols-1.lg\:grid-cols-2.xl\:grid-cols-3 {
+    gap: 1.25rem !important;
+  }
+}
+
+/* Brief summary of Frame 6 (Admin) improvements:
+   - increased spacing and consistent card elevation for scanability
+   - refined filter select and header text for hierarchy
+   - seat buttons get accessible focus and mild shadows
+   - aligned table cards with dashboard style (radius, border, shadow)
+*/

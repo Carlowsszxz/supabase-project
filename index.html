@@ -20,6 +20,34 @@
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
+  <style>
+    .fade-content {
+      opacity: var(--fade-initial-opacity, 0);
+      will-change: opacity, filter;
+      transition: opacity var(--fade-duration, 1000ms) var(--fade-easing, ease-out),
+        filter var(--fade-duration, 1000ms) var(--fade-easing, ease-out);
+    }
+
+    .fade-content.is-visible {
+      opacity: 1;
+      filter: none;
+    }
+
+    /* Global fade-in system (copied from Frame 15) */
+    [data-fade] {
+      opacity: 0;
+      --fade-init: 14px;
+      --fade-filter: none;
+      filter: var(--fade-filter) !important;
+      transition: var(--fade-transition, opacity 1000ms ease-out, filter 1000ms ease-out) !important;
+      will-change: opacity, filter;
+    }
+
+    [data-fade]:not([data-blur="false"]) {
+      --fade-filter: blur(var(--fade-init));
+    }
+  </style>
+
   <script defer src="theme.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="config.js"></script>
@@ -38,8 +66,8 @@
   <script src="password-toggle.js"></script>
 </head>
 
-<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
-  <header class="site-header">
+<body class="text-slate-900 min-h-screen flex flex-col relative">
+  <header class="site-header" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
       <a href="index.html" class="brand-title text-xl md:text-2xl font-semibold mr-auto">University of Makati
@@ -63,13 +91,15 @@
     </nav>
   </header>
 
-  <main class="flex-1 flex items-start justify-center py-12 px-6">
-    <div class="w-full max-w-6xl">
+  <main class="flex-1 flex items-start justify-center py-12 px-6" data-fade data-blur="true" data-initial-opacity="0"
+    data-duration="1000" data-delay="50">
+    <div id="fade-content" class="w-full max-w-6xl fade-content" data-blur="true" data-duration="1000"
+      data-easing="ease-out" data-initial-opacity="0">
       <div class="bg-white rounded-2xl shadow overflow-hidden">
         <div class="grid grid-cols-1 md:grid-cols-2">
           <!-- Left: Login form -->
           <div class="p-8">
-            <h1 class="text-2xl font-bold mb-2">Welcome Back</h1>
+            <h1 id="welcome-heading" class="text-4xl font-bold mb-2">Welcome back</h1>
             <p class="text-sm text-slate-500 mb-6">Sign in to access the library dashboard</p>
 
             <!-- Status Messages -->
@@ -133,65 +163,136 @@
             </div>
           </div>
 
-          <!-- Right: UMak info panel -->
-          <div
-            class="info-panel bg-gradient-to-br from-[#052865] via-[#003566] to-[#001d3d] text-white p-8 flex flex-col">
-            <div class="flex items-center gap-3 mb-6">
-              <img src="UMak_Logo_Registered.png" alt="UMak" class="h-10 w-10 rounded bg-white p-1" />
-              <div>
-                <h2 class="text-xl font-semibold !text-white">University of Makati Library</h2>
-                <p class="text-white text-sm opacity-80 info-muted">Noise Comfort Index</p>
-              </div>
+          <!-- Right: Dynamic wallpaper panel -->
+          <div class="relative h-full min-h-[360px]">
+            <!-- Wallpaper container with two layers for smooth crossfade -->
+            <div id="wallpaper" class="absolute inset-0 overflow-hidden rounded-none md:rounded-l-2xl">
+              <img class="wall-slide opacity-100" alt="Library wallpaper" />
+              <img class="wall-slide opacity-0" alt="Library wallpaper" />
+              <div class="absolute inset-0 bg-black/20"></div>
             </div>
-
-            <div class="space-y-4 text-white">
-              <div>
-                <h3 class="font-semibold !text-white">About</h3>
-                <p class="text-sm opacity-90 info-muted">The UMak Library provides collaborative study spaces, quiet
-                  zones, and access to digital resources to support student success.</p>
+            <!-- Optional overlay branding -->
+            <div class="relative z-[1] h-full flex items-end justify-between p-6">
+              <div class="text-white drop-shadow-md">
+                <!-- Fixed white text for brand visibility across light/dark modes -->
+                <h2 class="text-xl font-semibold !text-white dark:!text-white">University of Makati Library</h2>
+                <p class="text-sm opacity-90">Noise Comfort Index</p>
               </div>
-              <div>
-                <h3 class="font-semibold !text-white">Features</h3>
-                <ul class="text-sm list-disc pl-5 space-y-1 opacity-90 info-muted">
-                  <li>Real-time seat occupancy and reservations</li>
-                  <li>Noise Comfort Index monitoring</li>
-                  <li>Report and resolve study area concerns</li>
-                </ul>
-              </div>
-              <div>
-                <h3 class="font-semibold !text-white">Library Hours</h3>
-                <p class="text-sm opacity-90 info-muted">Mon–Fri: 8:00 AM – 7:00 PM · Sat: 9:00 AM – 5:00 PM</p>
-              </div>
-              <div class="mt-2 text-xs opacity-70 info-muted">For assistance, contact library@umak.edu.ph</div>
-            </div>
-
-            <!-- Link to How-To page -->
-            <div class="mt-6">
               <a href="how-to.html"
-                class="howto-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 border border-white/10 text-white transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"
+                class="howto-btn inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/15 border border-white/15 text-white text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H19" />
                   <path d="M20 12v6" />
                   <path d="M20 18l-8-5v-5l8 5" />
                   <path d="M4 4h16v6H4z" />
                 </svg>
-                Read: How to use the UMak Library App
+                How to use
               </a>
-            </div>
-
-            <div class="mt-auto pt-6">
-              <div class="rounded-xl bg-white/10 border border-white/10 p-4">
-                <p class="text-sm">Note: Use your UMak email (e.g., your.name@umak.edu.ph) to sign in.</p>
-              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    </div>
   </main>
 
-  <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+  <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
+    data-duration="1000" data-delay="100">© 2025 UMak Library · Noise Comfort Index</footer>
+  <script>
+    (function () {
+      function initSquares() {
+        var el = document.getElementById('squares-bg');
+        if (!el || typeof window.createSquares !== 'function') return;
+        window.createSquares(el, {
+          speed: 0.5,
+          squareSize: 40,
+          direction: 'diagonal',
+          borderColor: '#052865',
+          hoverFillColor: '#222'
+        });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSquares);
+      } else { initSquares(); }
+    })();
+  </script>
+  <script>
+    // Fade-on-scroll transitions (same behavior as Frame 15)
+    (function () {
+      var fadeElements = Array.from(document.querySelectorAll('[data-fade]'));
+      if (fadeElements.length === 0) return;
+
+      fadeElements.forEach(function (el) {
+        var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+        var easing = el.getAttribute('data-easing') || 'ease-out';
+        var blurPxAttr = el.getAttribute('data-blur-px');
+        var blurPx = parseInt(blurPxAttr || '14', 10);
+        el.style.opacity = String(initialOpacity);
+        el.style.setProperty('--fade-init', blurPx + 'px');
+        el.style.setProperty('--fade-transition', 'opacity ' + duration + 'ms ' + easing + ', filter ' + duration + 'ms ' + easing);
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var el = entry.target;
+            var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+            var blurAttr = el.getAttribute('data-blur');
+            var blurEnabled = (blurAttr !== 'false');
+            observer.unobserve(el);
+            setTimeout(function () {
+              el.style.opacity = '1';
+              if (blurEnabled) {
+                el.style.setProperty('--fade-init', '0px');
+              }
+            }, delay);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      fadeElements.forEach(function (el) { observer.observe(el); });
+    })();
+  </script>
+  <script>
+    (function () {
+      function initFadeContent() {
+        var el = document.getElementById('fade-content');
+        if (!el) return;
+        var blur = el.getAttribute('data-blur') === 'true';
+        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+        var easing = el.getAttribute('data-easing') || 'ease-out';
+        var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+
+        // set CSS variables
+        el.style.setProperty('--fade-duration', duration + 'ms');
+        el.style.setProperty('--fade-easing', easing);
+        el.style.setProperty('--fade-initial-opacity', String(initialOpacity));
+        if (blur) el.style.filter = 'blur(6px)';
+
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              // remove inline blur then reveal
+              try { el.style.filter = 'none'; } catch (_) { }
+              el.classList.add('is-visible');
+              if (io) io.disconnect();
+            }
+          });
+        }, { threshold: 0.1 });
+        io.observe(el);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initFadeContent);
+      } else {
+        initFadeContent();
+      }
+    })();
+  </script>
+
+
 
   <script>
     (function () {
@@ -574,7 +675,7 @@
                 showError('Please use a University of Makati email address (@umak.edu.ph)');
               } else {
                 hideAllMessages();
-     }
+              }
             }
           }
         });
@@ -596,6 +697,76 @@
 
     })();
   </script>
+  <script>
+    (function () {
+      var container = document.getElementById('wallpaper');
+      if (!container) return;
+      var slides = container.querySelectorAll('.wall-slide');
+      if (!slides || slides.length < 2) return;
+
+      var files = ['library1.jpg', 'library2.jpg', 'library3.jpg'];
+      var index = 0;
+      var DURATION = 1500; // ~1.5s fade
+      var INTERVAL = 2000; // 2s cycle
+
+      // Preload to avoid flicker
+      try { files.forEach(function (src) { var im = new Image(); im.src = src; }); } catch (_) { }
+
+      // Ensure sizing and performance hints
+      slides.forEach(function (img) {
+        img.style.objectFit = 'cover';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.position = 'absolute';
+        img.style.inset = '0';
+        img.style.backfaceVisibility = 'hidden';
+        img.style.willChange = 'opacity';
+        img.setAttribute('aria-hidden', 'true');
+      });
+
+      function setSrc(img, i) { img.src = files[((i % files.length) + files.length) % files.length]; }
+      // Initialize persistent front/back refs and states
+      var front = slides[0];
+      var back = slides[1];
+      setSrc(front, 0);
+      setSrc(back, 1);
+      front.classList.remove('opacity-0');
+      back.classList.add('opacity-0');
+
+      var busy = false;
+      function crossfade() {
+        if (busy) return; // prevent overlap if timer fires early
+        busy = true;
+        var next = (index + 1) % files.length;
+        // Prepare back layer with next image hidden
+        setSrc(back, next);
+        back.classList.add('opacity-0');
+
+        // Double RAF to ensure transition triggers every cycle
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            front.classList.add('opacity-0');
+            back.classList.remove('opacity-0');
+          });
+        });
+
+        // Swap refs after fade completes
+        setTimeout(function () {
+          var tmp = front; front = back; back = tmp;
+          index = next;
+          busy = false;
+        }, DURATION + 50);
+      }
+
+      setInterval(crossfade, INTERVAL);
+    })();
+  </script>
+  <style>
+    /* Smooth, GPU-friendly crossfade for wallpapers (1.5s) */
+    #wallpaper .wall-slide {
+      transition: opacity 1500ms ease-in-out;
+    }
+  </style>
 </body>
 
 </html>

@@ -8,6 +8,31 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
   <script defer src="theme.js"></script>
+  <style>
+    .fade-content {
+      opacity: var(--fade-initial-opacity, 0);
+      will-change: opacity, filter;
+      transition: opacity var(--fade-duration, 1000ms) var(--fade-easing, ease-out),
+        filter var(--fade-duration, 1000ms) var(--fade-easing, ease-out);
+    }
+
+    .fade-content.is-visible {
+      opacity: 1;
+      filter: none;
+    }
+  </style>
+  <style>
+    /* Smooth, GPU-friendly crossfade for register wallpapers (match login feel) */
+    #register-wallpaper .wall-slide {
+      transition: opacity 1500ms ease-in-out;
+    }
+
+    /* Ensure wallpaper container spans and stacks correctly */
+    #register-wallpaper {
+      position: absolute;
+      inset: 0;
+    }
+  </style>
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script>
     // Ensure Supabase is loaded before our script
@@ -18,6 +43,65 @@
         console.log('Supabase library loaded successfully');
       }
     });
+  </script>
+  <script>
+    (function () {
+      // Fixed wallpaper visibility and animation on Register frame
+      // Lightweight crossfade for register wallpaper (mirrors login)
+      function init() {
+        var container = document.getElementById('register-wallpaper');
+        if (!container) return;
+        var slides = container.querySelectorAll('.wall-slide');
+        if (!slides || slides.length < 2) return;
+
+        var files = ['library1.jpg', 'library2.jpg', 'library3.jpg'];
+        var index = 0;
+        var DURATION = 1500; // ~1.5s fade (matches login)
+        var INTERVAL = 2000; // cycle interval
+
+        try {
+          files.forEach(function (src) { var im = new Image(); im.src = src; console.log('[Register wallpaper] preload', src); });
+        } catch (_) { }
+
+        slides.forEach(function (img) {
+          img.style.objectFit = 'cover';
+          img.style.width = '100%';
+          img.style.height = '100%';
+          img.style.position = 'absolute';
+          img.style.inset = '0';
+          img.style.backfaceVisibility = 'hidden';
+          img.style.willChange = 'opacity';
+          img.setAttribute('aria-hidden', 'true');
+        });
+
+        function setSrc(img, i) { img.src = files[((i % files.length) + files.length) % files.length]; }
+        var front = slides[0];
+        var back = slides[1];
+        setSrc(front, 0); setSrc(back, 1);
+        try { console.log('[Register wallpaper] first image', front && front.src); } catch (_) { }
+        front.classList.remove('opacity-0');
+        back.classList.add('opacity-0');
+
+        var busy = false;
+        function crossfade() {
+          if (busy) return;
+          busy = true;
+          var next = (index + 1) % files.length;
+          setSrc(back, next);
+          back.classList.add('opacity-0');
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              front.classList.add('opacity-0');
+              back.classList.remove('opacity-0');
+            });
+          });
+          setTimeout(function () { var t = front; front = back; back = t; index = next; busy = false; }, DURATION + 50);
+        }
+
+        setInterval(crossfade, INTERVAL);
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+    })();
   </script>
   <script src="supabase.js"></script>
   <script src="auth-guard.js"></script>
@@ -48,114 +132,181 @@
   </header>
 
   <main class="flex-1 flex items-start justify-center py-12 px-6">
-    <div class="w-full max-w-4xl">
-      <div class="bg-white rounded-2xl shadow p-8 card-hover fade-in-up">
-        <h1 class="text-2xl font-bold mb-2 slide-in-left">Create Account</h1>
-        <p class="text-sm text-slate-500 mb-6 slide-in-right">Register to access the library dashboard</p>
+    <div class="w-full max-w-6xl">
+      <div id="fade-content" class="fade-content" data-blur="true" data-duration="1000" data-easing="ease-out"
+        data-initial-opacity="0">
+        <!-- Two-column registration card matching Login aesthetic -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2 items-stretch">
+            <!-- Left: Registration form (vertically centered) -->
+            <div class="p-8 md:p-10 flex items-center">
+              <div class="w-full">
+                <h1 class="text-2xl font-bold mb-2">Create Account</h1>
+                <p class="text-sm text-slate-500 mb-6">Register to access the library dashboard</p>
 
-        <!-- Status Messages -->
-        <div id="register-error"
-          class="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg p-3 hidden"></div>
-        <div id="register-success"
-          class="mb-4 text-sm text-green-600 bg-green-50 border border-green-100 rounded-lg p-4 hidden">
-          <div class="flex items-start">
-            <div class="flex-1">
-              <div id="success-message"></div>
+                <!-- Status Messages -->
+                <div id="register-error"
+                  class="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg p-3 hidden"></div>
+                <div id="register-success"
+                  class="mb-4 text-sm text-green-600 bg-green-50 border border-green-100 rounded-lg p-4 hidden">
+                  <div class="flex items-start">
+                    <div class="flex-1">
+                      <div id="success-message"></div>
+                    </div>
+                    <button id="close-success"
+                      class="ml-2 text-green-500 hover:text-green-700 text-lg font-bold hidden transition-all duration-300 ease-in-out">&times;</button>
+                  </div>
+                  <!-- Resend verification controls (shown after signup) -->
+                  <div id="resend-wrap" class="mt-3 hidden">
+                    <div class="flex items-center gap-3">
+                      <button id="resend-btn"
+                        class="px-3 py-2 rounded-lg bg-green-600 text-white text-sm hover:bg-green-700 transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed">Resend
+                        verification email</button>
+                      <span id="resend-timer" class="text-xs text-green-700"></span>
+                    </div>
+                    <p class="text-xs text-green-700 mt-2">For security, you can resend once every 2 minutes.</p>
+                  </div>
+                </div>
+                <div id="register-loading"
+                  class="mb-4 text-sm text-blue-600 bg-blue-50 border border-blue-100 rounded-lg p-3 hidden">
+                  <div class="flex items-center">
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                    Processing registration...
+                  </div>
+                </div>
+
+                <!-- Inputs styled to match site theme; spacing unified -->
+                <form id="register-form" class="space-y-5">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm text-slate-700 mb-1">First Name</label>
+                      <input id="reg-first" type="text"
+                        class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                        placeholder="Enter first name" required />
+                    </div>
+                    <div>
+                      <label class="block text-sm text-slate-700 mb-1">Last Name</label>
+                      <input id="reg-last" type="text"
+                        class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                        placeholder="Enter last name" required />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm text-slate-700 mb-1">Email Address</label>
+                    <input id="reg-email" type="email"
+                      class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                      placeholder="your.email@umak.edu.ph" required />
+                    <p class="text-xs text-slate-500 mt-1">Must be a University of Makati email address</p>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm text-slate-700 mb-1">Password</label>
+                    <input id="reg-pass" type="password"
+                      class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                      placeholder="Create a strong password" required minlength="6" />
+                    <p class="text-xs text-slate-500 mt-1">Minimum 6 characters</p>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm text-slate-700 mb-1">Confirm Password</label>
+                    <input id="reg-pass-confirm" type="password"
+                      class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                      placeholder="Re-enter your password" required minlength="6" />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm text-slate-700 mb-1">Student ID <span
+                        class="text-red-600">*</span></label>
+                    <input id="reg-student-id" type="text" required
+                      class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                      placeholder="Enter student ID" />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm text-slate-700 mb-1">Program <span class="text-red-600">*</span></label>
+                    <input id="reg-program" type="text" required
+                      class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                      placeholder="Enter your program" />
+                  </div>
+
+                  <div>
+                    <button type="submit"
+                      class="w-full py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed">
+                      Create Account
+                    </button>
+                  </div>
+                </form>
+
+                <div class="mt-6 text-center">
+                  <p class="text-sm text-slate-500">
+                    Already have an account?
+                    <a href="index.html"
+                      class="text-indigo-600 hover:text-indigo-700 font-medium transition-all duration-300 ease-in-out">Login
+                      here</a>
+                  </p>
+                </div>
+              </div>
             </div>
-            <button id="close-success"
-              class="ml-2 text-green-500 hover:text-green-700 text-lg font-bold hidden">&times;</button>
-          </div>
-          <!-- Resend verification controls (shown after signup) -->
-          <div id="resend-wrap" class="mt-3 hidden">
-            <div class="flex items-center gap-3">
-              <button id="resend-btn"
-                class="px-3 py-2 rounded bg-green-600 text-white text-sm hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">Resend
-                verification email</button>
-              <span id="resend-timer" class="text-xs text-green-700"></span>
-            </div>
-            <p class="text-xs text-green-700 mt-2">For security, you can resend once every 2 minutes.</p>
-          </div>
-        </div>
-        <div id="register-loading"
-          class="mb-4 text-sm text-blue-600 bg-blue-50 border border-blue-100 rounded-lg p-3 hidden">
-          <div class="flex items-center">
-            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
-            Processing registration...
-          </div>
-        </div>
 
-        <form id="register-form" class="space-y-4">
-          <div class="grid grid-cols-2 gap-4 fade-in-up stagger-1">
-            <div>
-              <label class="block text-sm text-slate-700 mb-1">First Name</label>
-              <input id="reg-first" type="text"
-                class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
-                placeholder="Enter first name" required />
-            </div>
-            <div>
-              <label class="block text-sm text-slate-700 mb-1">Last Name</label>
-              <input id="reg-last" type="text"
-                class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
-                placeholder="Enter last name" required />
+            <!-- Right: Background video (replaces rotating images) -->
+            <div class="relative min-h-[420px] md:min-h-[560px]">
+              <div id="register-wallpaper" class="absolute inset-0 overflow-hidden">
+                <!-- Background video replaced rotating images for smoother, consistent presentation -->
+                <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover">
+                  <source src="TestVideo.mp4" type="video/mp4">
+                </video>
+              </div>
+              <!-- Optional overlay branding -->
+              <div class="relative z-[1] h-full flex items-end justify-between p-6">
+                <div class="text-white drop-shadow-md">
+                  <!-- Brand title fixed to white for visibility across light/dark modes -->
+                  <h2 class="text-xl font-semibold !text-white dark:!text-white">University of Makati Library</h2>
+                  <p class="text-sm opacity-90">Create your account to get started</p>
+                </div>
+              </div>
             </div>
           </div>
-
-          <div class="fade-in-up stagger-2">
-            <label class="block text-sm text-slate-700 mb-1">Email Address</label>
-            <input id="reg-email" type="email"
-              class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
-              placeholder="your.email@umak.edu.ph" required />
-            <p class="text-xs text-slate-500 mt-1">Must be a University of Makati email address</p>
-          </div>
-
-          <div class="fade-in-up stagger-3">
-            <label class="block text-sm text-slate-700 mb-1">Password</label>
-            <input id="reg-pass" type="password"
-              class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
-              placeholder="Create a strong password" required minlength="6" />
-            <p class="text-xs text-slate-500 mt-1">Minimum 6 characters</p>
-          </div>
-
-          <div class="fade-in-up stagger-3">
-            <label class="block text-sm text-slate-700 mb-1">Confirm Password</label>
-            <input id="reg-pass-confirm" type="password"
-              class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
-              placeholder="Re-enter your password" required minlength="6" />
-          </div>
-
-          <div class="fade-in-up stagger-4">
-            <label class="block text-sm text-slate-700 mb-1">Student ID <span class="text-red-600">*</span></label>
-            <input id="reg-student-id" type="text" required
-              class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
-              placeholder="Enter student ID" />
-          </div>
-
-          <div class="fade-in-up stagger-5">
-            <label class="block text-sm text-slate-700 mb-1">Program <span class="text-red-600">*</span></label>
-            <input id="reg-program" type="text" required
-              class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
-              placeholder="Enter your program" />
-          </div>
-
-          <div class="fade-in-up stagger-6">
-            <button type="submit"
-              class="w-full py-3 rounded-lg bg-indigo-600 text-white font-semibold btn-press hover-lift transition disabled:opacity-50 disabled:cursor-not-allowed">
-              Create Account
-            </button>
-          </div>
-        </form>
-
-        <div class="mt-6 text-center fade-in-up stagger-7">
-          <p class="text-sm text-slate-500">
-            Already have an account?
-            <a href="index.html" class="text-indigo-600 hover:text-indigo-700 font-medium">Sign in here</a>
-          </p>
         </div>
       </div>
     </div>
   </main>
 
   <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
+  <script>
+    (function () {
+      function initFadeContent() {
+        var el = document.getElementById('fade-content');
+        if (!el) return;
+        var blur = el.getAttribute('data-blur') === 'true';
+        var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+        var easing = el.getAttribute('data-easing') || 'ease-out';
+        var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+
+        el.style.setProperty('--fade-duration', duration + 'ms');
+        el.style.setProperty('--fade-easing', easing);
+        el.style.setProperty('--fade-initial-opacity', String(initialOpacity));
+        if (blur) el.style.filter = 'blur(6px)';
+
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              try { el.style.filter = 'none'; } catch (_) { }
+              el.classList.add('is-visible');
+              if (io) io.disconnect();
+            }
+          });
+        }, { threshold: 0.1 });
+        io.observe(el);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initFadeContent);
+      } else {
+        initFadeContent();
+      }
+    })();
+  </script>
 
   <script>
     (function () {

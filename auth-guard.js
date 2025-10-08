@@ -188,6 +188,8 @@
 
     // Handle page visibility changes (user switches tabs)
     document.addEventListener('visibilitychange', () => {
+        // Do nothing on public pages (e.g., register/login/how-to)
+        if (isPublicPage()) return;
         if (!document.hidden) {
             // Page became visible, check authentication
             checkAuthentication().then((isAuthenticated) => {
