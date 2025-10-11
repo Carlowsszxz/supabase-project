@@ -4,7 +4,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Frame 9 - Alerts & Notifications</title>
+  <link rel="icon" type="image/png" href="UMak_Logo_Registered.png" />
+  <title>University of Makati Library - Alerts & Notifications</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
   <script defer src="theme.js"></script>
@@ -137,6 +138,7 @@
         <a href="Frame_9.html" class="nav-link active">Alerts</a>
         <a href="Frame_18.html" class="nav-link">Reports</a>
         <a href="Frame_15.html" class="nav-link">Users</a>
+        <a href="Frame_19.html" class="nav-link">Settings</a>
         <button onclick="logout()" class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
           style="color: black !important;">Logout</button>
       </nav>
@@ -147,14 +149,16 @@
       <a href="Frame_9.html" class="block py-2 text-sm nav-link active">Alerts</a>
       <a href="Frame_18.html" class="block py-2 text-sm nav-link">Reports</a>
       <a href="Frame_15.html" class="block py-2 text-sm nav-link">Users</a>
+      <a href="Frame_19.html" class="block py-2 text-sm nav-link">Settings</a>
       <button onclick="logout()"
         class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
         style="color: black !important;">Logout</button>
     </nav>
   </header>
 
-  <main class="flex-1 py-8 px-6" data-fade data-blur="true" data-blur-px="16" data-initial-opacity="0"
-    data-duration="1000" data-delay="50">
+  <!-- Scoped UI polish to #admin-alerts-root to avoid global changes -->
+  <main id="admin-alerts-root" class="flex-1 py-8 px-6" data-fade data-blur="true" data-blur-px="16"
+    data-initial-opacity="0" data-duration="1000" data-delay="50">
     <div class="max-w-7xl mx-auto">
 
       <!-- Header Section -->
@@ -178,8 +182,8 @@
       <!-- Alert Stats removed -->
 
       <!-- Filter Tabs -->
-      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-6" data-fade data-blur="true"
-        data-initial-opacity="0" data-delay="75">
+      <div class="bg-white rounded-xl p-6 md:p-8 shadow-sm border border-slate-200 mb-8 card-hover" data-fade
+        data-blur="true" data-initial-opacity="0" data-delay="75">
         <div class="flex flex-wrap gap-2">
           <button onclick="filterAlerts('unread')"
             class="filter-btn px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium">Unread</button>
@@ -188,34 +192,36 @@
 
       <!-- Alerts List -->
       <!-- Community Reports (Admin View) -->
-      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-8" data-fade data-blur="true"
-        data-initial-opacity="0" data-delay="125">
+      <div class="bg-white rounded-xl p-6 md:p-8 shadow-sm border border-slate-200 mb-8 card-hover" data-fade
+        data-blur="true" data-initial-opacity="0" data-delay="125">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold">Community Reports</h2>
+          <h2 class="text-xl font-semibold text-slate-900">Community Reports</h2>
           <button id="refreshCommunityAdmin"
             class="px-3 py-1 rounded bg-slate-200 hover:bg-slate-300 text-sm">Refresh</button>
         </div>
         <!-- Admin Post Form -->
-        <form id="adminPostForm" class="mb-6 flex flex-col md:flex-row gap-2 items-start md:items-end">
-          <input type="text" id="adminPostLocation" class="border border-slate-300 rounded px-3 py-2 w-full md:w-48"
+        <form id="adminPostForm" class="mb-6 flex flex-col md:flex-row gap-3 items-start md:items-end">
+          <input type="text" id="adminPostLocation"
+            class="border border-slate-300 rounded-lg px-3 py-2 w-full md:w-48 focus:ring-2 focus:ring-indigo-500"
             placeholder="Location (optional)">
-          <input type="text" id="adminPostNotes" class="border border-slate-300 rounded px-3 py-2 flex-1"
+          <input type="text" id="adminPostNotes"
+            class="border border-slate-300 rounded-lg px-3 py-2 flex-1 focus:ring-2 focus:ring-indigo-500"
             placeholder="Message/Notes" required>
-          <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Post as
+          <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Post as
             Admin</button>
         </form>
         <div id="communityReportsAdmin" class="space-y-3"></div>
       </div>
 
       <!-- Notification Settings -->
-      <div class="mt-8 bg-white rounded-xl p-6 shadow-sm border border-slate-200" data-fade data-blur="true"
+      <div class="mt-8 bg-white rounded-xl p-6 md:p-8 shadow-sm border border-slate-200" data-fade data-blur="true"
         data-initial-opacity="0" data-delay="175">
-        <h3 class="text-lg font-semibold mb-4">Notification Settings</h3>
+        <h3 class="text-xl font-semibold text-slate-900 mb-4">Notification Settings</h3>
         <div class="space-y-4">
           <div class="flex items-center justify-between">
             <div>
-              <div class="font-medium">Noise Level Alerts</div>
-              <div class="text-sm text-slate-500">Get notified when noise levels exceed thresholds</div>
+              <div class="text-base text-slate-800 font-medium">Noise Level Alerts</div>
+              <div class="text-sm text-slate-600">Get notified when noise levels exceed thresholds</div>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" class="sr-only peer" checked>

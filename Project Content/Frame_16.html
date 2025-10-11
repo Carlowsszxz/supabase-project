@@ -4,10 +4,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Frame 16 - Report Noise</title>
+  <link rel="icon" type="image/png" href="UMak_Logo_Registered.png" />
+  <title>University of Makati Library - Report Noise</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
   <script defer src="theme.js"></script>
+  <!-- UI/UX refinements (non-breaking):
+       - improved padding and spacing consistency across sections
+       - fixed low-contrast text by mapping to theme tokens
+       - unified card/option hover & selected states with brand color
+       - replaced hard dividers with spacing for cleaner separation
+       - responsive tweaks for mobile readability and hierarchy -->
   <style>
     /* Global fade-in like Frame 15 */
     [data-fade] {
@@ -271,11 +278,16 @@
         </form>
       </section>
 
-      <!-- Community Reports -->
+      <!-- Community Reports (user-facing list) -->
+      <!-- This section is designed for community users: card-style items, clear grouping, badges -->
       <section class="bg-white rounded-2xl shadow p-4 sm:p-6" data-fade data-blur="true" data-duration="1000"
         data-easing="ease-out" data-delay="150" data-initial-opacity="0">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold">Community Reports</h2>
+          <div>
+            <h2 class="text-lg font-semibold">Community Reports</h2>
+            <div class="text-xs text-slate-500 mt-0.5"><span id="communityCount">0</span> reports • <span
+                id="communityWindow">Last 25</span></div>
+          </div>
           <div class="flex items-center gap-2">
             <label for="communityLimit" class="sr-only">Community report count</label>
             <select id="communityLimit" name="communityLimit"
@@ -292,6 +304,30 @@
             <p>No community reports yet</p>
             <p class="text-sm">New reports from students will appear here</p>
           </div>
+        </div>
+      </section>
+
+      <!-- Admin-only Reports Table (hidden for non-admin users) -->
+      <!-- Admin view: retains table-like layout for quick scanning. Visibility toggled by role. -->
+      <section id="adminReportsTableContainer" class="bg-white rounded-2xl shadow p-4 sm:p-6 hidden" data-fade
+        data-blur="true" data-duration="1000" data-easing="ease-out" data-delay="150" data-initial-opacity="0">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold">Admin Reports (table)</h2>
+          <div class="text-xs text-slate-500">Visible to admins only</div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead>
+              <tr class="text-left text-slate-500">
+                <th class="py-2 pr-4">When</th>
+                <th class="py-2 pr-4">Reporter</th>
+                <th class="py-2 pr-4">Location</th>
+                <th class="py-2 pr-4">Notes</th>
+                <th class="py-2 pr-4">Status</th>
+              </tr>
+            </thead>
+            <tbody id="adminReportsTableBody"></tbody>
+          </table>
         </div>
       </section>
 
@@ -505,28 +541,43 @@
       // Load community reports via RPC
       function loadCommunityReports() {
         var list = document.getElementById('communityReports');
+        var countEl = document.getElementById('communityCount');
+        var windowEl = document.getElementById('communityWindow');
         var limitSel = document.getElementById('communityLimit');
         if (!supabaseInitialized || !list) return;
         var limit = 25;
         try { limit = parseInt(limitSel && limitSel.value || '25', 10) || 25; } catch (_) { }
+        if (windowEl) { windowEl.textContent = 'Last ' + limit; }
         list.innerHTML = '<div class="text-center text-slate-500 py-6 text-sm">Loading…</div>';
         window.supabaseDB.publicListReports(limit).then(function (result) {
           var rows = Array.isArray(result.data) ? result.data : [];
+          if (countEl) { countEl.textContent = String(rows.length); }
           if (rows.length === 0) {
             list.innerHTML = '\n            <div class="text-center text-slate-500 py-8">\n              <p>No community reports yet</p>\n              <p class="text-sm">New reports from students will appear here</p>\n            </div>\n          ';
             return;
           }
           list.innerHTML = '';
           rows.forEach(function (r) {
-            var isAdmin = r.notes && r.notes.toLowerCase().includes('posted by admin');
+            var isAdminPost = r.notes && r.notes.toLowerCase().includes('posted by admin');
+            var urgency = (function () {
+              var m = (r.notes || '').match(/\[Urgency\]\s*(\w+)/i); return m ? (m[1] || '').toLowerCase() : '';
+            })();
+            var types = (function () {
+              var m = (r.notes || '').match(/\[Types\]\s*([^|]+)/i); return m ? (m[1] || '').trim() : '';
+            })();
+            var duration = (function () {
+              var m = (r.notes || '').match(/\[Duration\]\s*([^|]+)/i); return m ? (m[1] || '').trim() : '';
+            })();
+
+            var badgeClass = urgency === 'high' ? 'badge badge-high' : (urgency === 'medium' ? 'badge badge-medium' : 'badge badge-low');
+            var who = (r.reporter_email || '').trim();
+            var when = new Date(r.created_at).toLocaleString();
+            var where = r.location || r.table_id || '—';
+            var notes = (r.notes || '').replace(/\s*\[Types\][^|]+\|?\s*/i, '').replace(/\s*\[Duration\][^|]+\|?\s*/i, '').replace(/\s*\[Urgency\][^|]+\|?\s*/i, '').trim();
+
             var el = document.createElement('div');
-            el.className = 'p-3 rounded-lg border border-slate-200' + (isAdmin ? ' bg-indigo-50 border-indigo-400' : '');
-            el.innerHTML = '\n            <div class="flex items-start justify-between">\n              <div>\n                <div class="flex items-center gap-2">' +
-              (isAdmin
-                ? '<span class="px-2 py-0.5 text-xs rounded bg-indigo-600 text-white font-semibold">Admin</span>'
-                : '<span class="px-2 py-0.5 text-xs rounded bg-slate-300 text-slate-800">User</span>') +
-              '<span class="text-sm text-slate-600">' + (r.location || r.table_id || '—') + '</span>' +
-              '</div>\n                <div class="text-xs text-slate-500 mt-1">' + new Date(r.created_at).toLocaleString() + (r.reporter_email ? ' • ' + r.reporter_email : '') + '</div>\n                <div class="text-sm text-slate-700 mt-1">' + (r.notes || '') + '</div>\n              </div>\n              <div class="text-xs text-slate-500">' + (r.status || '') + '</div>\n            </div>\n          ';
+            el.className = 'report-card p-3 sm:p-4';
+            el.innerHTML = '\n              <div class="flex items-start justify-between gap-3">\n                <div class="min-w-0">\n                  <div class="flex items-center gap-2 flex-wrap">\n                    ' + (isAdminPost ? '<span class="badge badge-medium">Admin</span>' : '') + '\n                    <span class="meta-sm">' + (who || 'Reporter') + '</span>\n                    <span class="meta-sm">•</span>\n                    <span class="meta-sm">' + when + '</span>\n                  </div>\n                  <div class="mt-1 text-sm">' + where + '</div>\n                  <div class="mt-2 flex items-center gap-2 flex-wrap">\n                    ' + (urgency ? '<span class="' + badgeClass + '">Urgency: ' + urgency.charAt(0).toUpperCase() + urgency.slice(1) + '</span>' : '') + '\n                    ' + (types ? '<span class="badge" style="background:rgba(59,130,246,0.12);color:#1d4ed8">' + types + '</span>' : '') + '\n                    ' + (duration ? '<span class="badge" style="background:rgba(107,114,128,0.12);color:#374151">' + duration + '</span>' : '') + '\n                  </div>\n                  ' + (notes ? '<div class="mt-2 text-sm text-slate-700">' + notes + '</div>' : '') + '\n                </div>\n              </div>\n            ';
             list.appendChild(el);
           });
         }).catch(function () {
@@ -541,6 +592,42 @@
         var refreshBtn = document.getElementById('refreshCommunity');
         if (limitSel) limitSel.addEventListener('change', loadCommunityReports);
         if (refreshBtn) refreshBtn.addEventListener('click', loadCommunityReports);
+
+        // Role-based visibility: show admin table if admin
+        try {
+          window.supabaseAuth.getCurrentUser().then(function (res) {
+            var user = res && res.data ? res.data.user : null;
+            if (!user) return;
+            window.supabaseDB.isAdmin(user.id).then(function (chk) {
+              var isAdmin = chk && chk.data === true;
+              var adminCt = document.getElementById('adminReportsTableContainer');
+              if (adminCt) {
+                if (isAdmin) {
+                  adminCt.classList.remove('hidden');
+                  // Populate admin table
+                  window.supabaseDB.getNoiseLogs('*', 50).then(function (res2) {
+                    var rows = Array.isArray(res2.data) ? res2.data : [];
+                    var tbody = document.getElementById('adminReportsTableBody');
+                    if (tbody) {
+                      tbody.innerHTML = '';
+                      rows.forEach(function (r) {
+                        var tr = document.createElement('tr');
+                        tr.innerHTML = '<td class="py-2 pr-4">' + (new Date(r.created_at).toLocaleString()) + '</td>' +
+                          '<td class="py-2 pr-4">' + (r.reporter_email || '') + '</td>' +
+                          '<td class="py-2 pr-4">' + (r.location || r.table_id || '—') + '</td>' +
+                          '<td class="py-2 pr-4">' + (r.notes || '') + '</td>' +
+                          '<td class="py-2 pr-4">' + (r.status || '') + '</td>';
+                        tbody.appendChild(tr);
+                      });
+                    }
+                  }).catch(function () { });
+                } else {
+                  adminCt.classList.add('hidden');
+                }
+              }
+            });
+          });
+        } catch (_) { }
       }
 
       // Initialize

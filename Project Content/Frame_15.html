@@ -4,15 +4,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Frame 15 - User Management</title>
+  <link rel="icon" type="image/png" href="UMak_Logo_Registered.png" />
+  <title>University of Makati Library - User Management</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
   <script defer src="theme.js"></script>
-  <script defer src="password-toggle.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="supabase.js"></script>
   <style>
-    /* First-paint blur + transition variables */
+    /* Unified fade-in animation (matched to Frame 18 for consistent UX) */
     [data-fade] {
       opacity: 0;
       --fade-init: 14px;
@@ -48,6 +48,7 @@
         <a href="Frame_9.html" class="nav-link">Alerts</a>
         <a href="Frame_18.html" class="nav-link">Reports</a>
         <a href="Frame_15.html" class="nav-link active">Users</a>
+        <a href="Frame_19.html" class="nav-link">Settings</a>
         <button onclick="logout()" class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
           style="color: black !important;">Logout</button>
       </nav>
@@ -58,6 +59,7 @@
       <a href="Frame_9.html" class="block py-2 text-sm nav-link">Alerts</a>
       <a href="Frame_18.html" class="block py-2 text-sm nav-link">Reports</a>
       <a href="Frame_15.html" class="block py-2 text-sm nav-link active">Users</a>
+      <a href="Frame_19.html" class="block py-2 text-sm nav-link">Settings</a>
       <button onclick="logout()"
         class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
         style="color: black !important;">Logout</button>
@@ -69,43 +71,36 @@
     <div class="max-w-7xl mx-auto">
 
       <!-- Users Management -->
-      <div class="mb-8" data-fade data-blur="true" data-initial-opacity="0" data-duration="900">
+      <div class="mb-8">
         <h1 class="text-3xl font-bold mb-2">Users</h1>
         <p class="text-slate-600">Search users, view details, and manage admin access</p>
       </div>
 
       <!-- Quick Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" data-fade data-blur="true" data-initial-opacity="0"
-        data-delay="75">
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover" data-fade data-blur="true"
-          data-initial-opacity="0" data-delay="0">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-1">
           <div class="text-2xl font-bold text-indigo-600" id="total-seats">25</div>
           <div class="text-sm text-slate-500">Total Seats</div>
         </div>
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover" data-fade data-blur="true"
-          data-initial-opacity="0" data-delay="50">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-2">
           <div class="text-2xl font-bold text-green-600" id="available-seats">14</div>
           <div class="text-sm text-slate-500">Available</div>
         </div>
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover" data-fade data-blur="true"
-          data-initial-opacity="0" data-delay="100">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-3">
           <div class="text-2xl font-bold text-red-600" id="occupied-seats">11</div>
           <div class="text-sm text-slate-500">Occupied</div>
         </div>
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover" data-fade data-blur="true"
-          data-initial-opacity="0" data-delay="150">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-4">
           <div class="text-2xl font-bold text-slate-600" id="occupancy-rate">44%</div>
           <div class="text-sm text-slate-500">Occupancy Rate</div>
         </div>
       </div>
 
       <!-- Tables Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6" data-fade data-blur="true"
-        data-initial-opacity="0" data-delay="200">
+      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
 
         <!-- Table 1 -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
-          data-initial-opacity="0" data-delay="0">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 bounce-in stagger-1">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">Table 1</h3>
             <div class="flex gap-2">
@@ -138,8 +133,7 @@
         </div>
 
         <!-- Table 2 -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
-          data-initial-opacity="0" data-delay="50">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 bounce-in stagger-2">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">Table 2</h3>
             <div class="flex gap-2">
@@ -172,8 +166,7 @@
         </div>
 
         <!-- Table 3 -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
-          data-initial-opacity="0" data-delay="100">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 bounce-in stagger-3">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">Table 3</h3>
             <div class="flex gap-2">
@@ -186,7 +179,7 @@
             </div>
           </div>
           <div class="grid grid-cols-5 gap-2 mb-4">
-            <button data-table="table-3" data
+            <button data-table="table-3" data-seat="1"
               class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-red-500 hover:scale-105 transition"
               onclick="toggleSeat(this)"></button>
             <button data-table="table-3" data-seat="2"
@@ -206,8 +199,7 @@
         </div>
 
         <!-- Table 4 -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
-          data-initial-opacity="0" data-delay="150">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 bounce-in stagger-4">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">Table 4</h3>
             <div class="flex gap-2">
@@ -240,8 +232,7 @@
         </div>
 
         <!-- Table 5 -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
-          data-initial-opacity="0" data-delay="200">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 bounce-in stagger-5">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">Table 5</h3>
             <div class="flex gap-2">
@@ -274,8 +265,7 @@
         </div>
 
         <!-- Global Actions -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
-          data-initial-opacity="0" data-delay="250">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <h3 class="text-lg font-semibold mb-4">Global Actions</h3>
           <div class="space-y-3">
             <button onclick="clearAllTables()"
@@ -308,8 +298,7 @@
       </div>
 
       <!-- Current Student Selection -->
-      <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
-        data-initial-opacity="0" data-delay="300">
+      <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
         <h3 class="text-lg font-semibold mb-2">Current Student Selection</h3>
         <div class="text-sm text-slate-600">
           <span id="current-selection">No active selection</span>
@@ -317,8 +306,7 @@
       </div>
 
       <!-- Legend -->
-      <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
-        data-initial-opacity="0" data-delay="350">
+      <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
         <h3 class="text-lg font-semibold mb-4">Legend</h3>
         <div class="flex flex-wrap gap-6 text-sm">
           <div class="flex items-center gap-2">
@@ -340,90 +328,11 @@
   </main>
 
   <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
-    data-delay="400">© 2025 UMak Library · Noise Comfort Index</footer>
+    data-delay="150">© 2025 UMak Library · Noise Comfort Index</footer>
   <div id="supabase-status" style="position:fixed;right:12px;bottom:12px;pointer-events:none"
     class="px-2 py-1 rounded-md text-xs bg-slate-200 text-slate-700 hidden"></div>
   <div id="toast" style="position:fixed;right:12px;bottom:48px;pointer-events:none"
     class="px-3 py-2 rounded-md text-sm bg-slate-800 text-white shadow hidden"></div>
-
-  <!-- Add User Modal -->
-  <div id="add-user-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-[90%] p-5">
-      <h3 class="text-lg font-semibold mb-3">Add User</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-        <div class="sm:col-span-2">
-          <label class="block text-sm mb-1">Email</label>
-          <input id="add_email" type="email" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
-        </div>
-        <div class="sm:col-span-2">
-          <label class="block text-sm mb-1">Temporary Password</label>
-          <input id="add_password" type="password" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
-        </div>
-        <div>
-          <label class="block text-sm mb-1">First Name</label>
-          <input id="add_first_name" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
-        </div>
-        <div>
-          <label class="block text-sm mb-1">Last Name</label>
-          <input id="add_last_name" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
-        </div>
-        <div>
-          <label class="block text-sm mb-1">Student ID</label>
-          <input id="add_student_id" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
-        </div>
-        <div>
-          <label class="block text-sm mb-1">Program</label>
-          <input id="add_program" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
-        </div>
-        <label class="flex items-center gap-2 sm:col-span-2 text-sm">
-          <input id="add_is_admin" type="checkbox" class="rounded border-slate-300" />
-          <span>Grant admin access</span>
-        </label>
-      </div>
-      <div class="flex justify-end gap-2">
-        <button id="add-user-cancel"
-          class="px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-black">Cancel</button>
-        <button id="add-user-save"
-          class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">Create</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Edit User Modal -->
-  <div id="edit-user-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-[90%] p-5">
-      <h3 class="text-lg font-semibold mb-3">Edit User</h3>
-      <input id="edit_user_id" type="hidden" />
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-        <div>
-          <label class="block text-sm mb-1">First Name</label>
-          <input id="edit_first_name" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
-        </div>
-        <div>
-          <label class="block text-sm mb-1">Last Name</label>
-          <input id="edit_last_name" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
-        </div>
-        <div>
-          <label class="block text-sm mb-1">Student ID</label>
-          <input id="edit_student_id" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
-        </div>
-        <div>
-          <label class="block text-sm mb-1">Program</label>
-          <input id="edit_program" class="w-full px-3 py-2 rounded-lg border border-slate-300" />
-        </div>
-        <label class="flex items-center gap-2 sm:col-span-2 text-sm">
-          <input id="edit_is_admin" type="checkbox" class="rounded border-slate-300" />
-          <span>Admin access</span>
-        </label>
-      </div>
-      <div class="flex justify-end gap-2">
-        <button id="edit-user-cancel"
-          class="px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-black">Cancel</button>
-        <button id="edit-user-save"
-          class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">Save</button>
-      </div>
-    </div>
-  </div>
 
   <!-- Confirm Modal -->
   <div id="confirm-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
@@ -493,9 +402,15 @@
         }
 
         const user = userResult.data.user;
-        const email = user.email ? user.email.toLowerCase() : '';
 
-        // 1) Check DB admin first
+        // Check for legacy admin credentials first
+        const email = user.email ? user.email.toLowerCase() : '';
+        if (email === 'adminlibrarian@umak.edu.ph') {
+          console.log('Legacy admin user detected, granting access');
+          return true;
+        }
+
+        // Check if user is admin in database
         const adminResult = await window.supabaseDB.isAdmin(user.id);
 
         if (adminResult.error) {
@@ -505,13 +420,7 @@
           return true;
         }
 
-        window.__currentIsAdminRPC = !!(adminResult && adminResult.data);
-        if (!window.__currentIsAdminRPC) {
-          // 2) Fallback: allow legacy email to view page, but no admin RPCs
-          if (email === 'adminlibrarian@umak.edu.ph') {
-            console.log('Legacy admin user detected (view-only).');
-            return true;
-          }
+        if (!adminResult.data) {
           console.log('User is not an admin, redirecting to student dashboard');
           window.location.href = 'Frame_4.html'; // Redirect to student dashboard
           return false;
@@ -804,59 +713,14 @@
     function initUsersPage() {
       var container = document.querySelector('main .max-w-7xl');
       if (!container) return;
-      container.innerHTML = `
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold mb-2">Users</h1>
-        <p class="text-slate-600">Search users, view details, and manage admin access</p>
-      </div>
-      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-6">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full max-w-md">
-            <input id="userSearch" placeholder="Search by email, name, student ID" class="px-3 py-2 rounded-lg border border-slate-300 w-full" />
-            <button id="searchBtn" class="px-3 py-2 rounded-lg btn-outline w-full sm:w-auto">Search</button>
-          </div>
-          <div class="flex items-center gap-2">
-            <button id="addUserBtn" class="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">Add User</button>
-            <div class="text-sm text-slate-500" id="usersStatus"></div>
-          </div>
-        </div>
-      </div>
-      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-        <div class="overflow-auto">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="text-left text-slate-500 border-b">
-                <th class="py-2 pr-3">Name</th>
-                <th class="py-2 pr-3">Email</th>
-                <th class="py-2 pr-3">Student ID</th>
-                <th class="py-2 pr-3">Program</th>
-                <th class="py-2 pr-3">Created</th>
-              
-                <th class="py-2 pr-3">Action</th>
-              </tr>
-            </thead>
-            <tbody id="usersRows">
-              <tr><td colspan="7" class="py-6 text-center text-slate-400">Loading...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      `;
+      container.innerHTML = '\n      <div class="mb-8">\n        <h1 class="text-3xl font-bold mb-2">Users</h1>\n        <p class="text-slate-600">Search users, view details, and manage admin access</p>\n      </div>\n      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-6">\n        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">\n          <div class="flex items-center gap-2">\n            <input id="userSearch" placeholder="Search by email, name, student ID" class="px-3 py-2 rounded-lg border border-slate-300 w-72" />\n            <button id="searchBtn" class="px-3 py-2 rounded-lg btn-outline">Search</button>\n          </div>\n          <div class="text-sm text-slate-500" id="usersStatus"></div>\n        </div>\n      </div>\n      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">\n        <div class="overflow-auto">\n          <table class="w-full text-sm">\n            <thead>\n              <tr class="text-left text-slate-500 border-b">\n                <th class="py-2 pr-3">Name</th>\n                <th class="py-2 pr-3">Email</th>\n                <th class="py-2 pr-3">Student ID</th>\n                <th class="py-2 pr-3">Program</th>\n                <th class="py-2 pr-3">Created</th>\n                <th class="py-2 pr-3">Admin</th>\n                <th class="py-2 pr-3">Action</th>\n              </tr>\n            </thead>\n            <tbody id="usersRows">\n              <tr><td colspan="7" class="py-6 text-center text-slate-400">Loading...</td></tr>\n            </tbody>\n          </table>\n        </div>\n      </div>\n      ';
       // Wire events
       var searchBtn = document.getElementById('searchBtn');
       if (searchBtn) searchBtn.addEventListener('click', loadUsers);
-      var addBtnRendered = document.getElementById('addUserBtn');
-      if (addBtnRendered && addModal) {
-        addBtnRendered.addEventListener('click', function () { addModal.classList.remove('hidden'); });
-      }
       var rows = document.getElementById('usersRows');
       if (rows) rows.addEventListener('click', function (e) {
         var t = e.target; if (!t || !t.getAttribute) return; var id = t.getAttribute('data-id');
         var action = t.getAttribute('data-action');
-        if (action === 'edit-user') {
-          openEditUser(id);
-          return;
-        }
         if (action === 'set-admin') {
           openConfirm('Are you sure you want to grant Admin access to this user?', function () {
             t.disabled = true;
@@ -872,17 +736,7 @@
         if (action === 'remove-user') {
           openConfirm('Are you sure you want to delete this user and ALL of their data? This action cannot be undone.', function () {
             t.disabled = true;
-            var purgeFn = (window.supabaseDB && typeof window.supabaseDB.adminPurgeUser === 'function')
-              ? window.supabaseDB.adminPurgeUser
-              : (window.supabaseDB && typeof window.supabaseDB.adminDeleteUser === 'function'
-                ? function (userId) { return window.supabaseDB.adminDeleteUser(userId); }
-                : null);
-            if (!purgeFn) {
-              showToast('Delete function not available', false);
-              t.disabled = false;
-              return;
-            }
-            purgeFn(id).then(function (res) {
+            window.supabaseDB.adminPurgeUser(id).then(function (res) {
               if (res && !res.error) {
                 showToast('User deleted successfully', true);
               } else {
@@ -912,22 +766,13 @@
         var tr = document.createElement('tr');
         tr.className = 'border-b last:border-0';
         var name = ((u.first_name || '') + ' ' + (u.last_name || '')).trim();
-        var actionParts = [];
-        actionParts.push('<button class="px-3 py-1 text-xs rounded bg-slate-200 hover:bg-slate-300" data-action="edit-user" data-id="' + u.id + '">Edit</button>');
-        // Only show admin controls if current viewer is admin
-        if (window.__currentIsAdminRPC) {
-          if (u.is_admin) {
-            actionParts.push('<button class="px-3 py-1 text-xs rounded bg-amber-600 hover:bg-amber-700 text-white" data-action="unset-admin" data-id="' + u.id + '">Remove Admin</button>');
-          } else {
-            actionParts.push('<button class="px-3 py-1 text-xs rounded bg-green-600 hover:bg-green-700 text-white" data-action="set-admin" data-id="' + u.id + '">Grant Admin</button>');
-          }
+        var actionHtml = '';
+        if (u.is_admin) {
+          actionHtml = '<button class="px-3 py-1 text-xs rounded bg-slate-200 hover:bg-slate-300 text-black" data-action="unset-admin" data-id="' + u.id + '">Remove Admin</button>';
+        } else {
+          actionHtml = '<div class="flex gap-2">\n            <button class="px-3 py-1 text-xs rounded bg-indigo-600 hover:bg-indigo-700 text-white" data-action="set-admin" data-id="' + u.id + '">Make Admin</button>\n            <button class="px-3 py-1 text-xs rounded bg-red-600 hover:bg-red-700 text-white" data-action="remove-user" data-id="' + u.id + '">Delete User</button>\n          </div>';
         }
-        // Never allow deleting admin accounts; anyone else allowed if viewer is admin
-        if (!u.is_admin && window.__currentIsAdminRPC) {
-          actionParts.push('<button class="px-3 py-1 text-xs rounded bg-red-600 hover:bg-red-700 text-white" data-action="remove-user" data-id="' + u.id + '">Delete User</button>');
-        }
-        var actionHtml = '<div class="flex gap-2">' + actionParts.join(' ') + '</div>';
-        tr.innerHTML = '\n          <td class="py-2 pr-3">' + (name || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.email || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.student_id || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.program || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.created_at ? new Date(u.created_at).toLocaleDateString() : '—') + '</td>\n        \n          <td class="py-2 pr-3">' + actionHtml + '</td>';
+        tr.innerHTML = '\n          <td class="py-2 pr-3">' + (name || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.email || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.student_id || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.program || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.created_at ? new Date(u.created_at).toLocaleDateString() : '—') + '</td>\n          <td class="py-2 pr-3">' + (u.is_admin ? '<span class="px-2 py-0.5 text-xs rounded bg-indigo-100 text-indigo-800">Admin</span>' : '') + '</td>\n          <td class="py-2 pr-3">' + actionHtml + '</td>';
         body.appendChild(tr);
       });
     }
@@ -974,102 +819,9 @@
       clearTimeout(window.__toastTimer);
       window.__toastTimer = setTimeout(function () { el.classList.add('hidden'); }, 2500);
     }
-
-    // Add/Edit user modal logic
-    var addModal = document.getElementById('add-user-modal');
-    var editModal = document.getElementById('edit-user-modal');
-    var addBtn = document.getElementById('addUserBtn');
-    if (addBtn && addModal) {
-      addBtn.addEventListener('click', function () { addModal.classList.remove('hidden'); });
-    }
-    function closeAdd() { if (addModal) addModal.classList.add('hidden'); }
-    function closeEdit() { if (editModal) editModal.classList.add('hidden'); }
-    var addCancel = document.getElementById('add-user-cancel'); if (addCancel) addCancel.addEventListener('click', closeAdd);
-    var editCancel = document.getElementById('edit-user-cancel'); if (editCancel) editCancel.addEventListener('click', closeEdit);
-
-    // Create user
-    var addSave = document.getElementById('add-user-save');
-    if (addSave) {
-      addSave.addEventListener('click', async function () {
-        try {
-          var email = (document.getElementById('add_email') || {}).value || '';
-          var password = (document.getElementById('add_password') || {}).value || '';
-          var firstName = (document.getElementById('add_first_name') || {}).value || '';
-          var lastName = (document.getElementById('add_last_name') || {}).value || '';
-          var studentId = (document.getElementById('add_student_id') || {}).value || '';
-          var program = (document.getElementById('add_program') || {}).value || '';
-          var isAdmin = !!((document.getElementById('add_is_admin') || {}).checked);
-          if (!email || !password) { showToast('Email and password are required', false); return; }
-          // Create auth user (trigger will create profile row)
-          var signRes = await window.supabaseAuth.signUp(email, password, { first_name: firstName, last_name: lastName, student_id: studentId, program: program });
-          if (signRes && signRes.error) { showToast(signRes.error.message || 'Failed to create auth user', false); return; }
-          var uid = (signRes && signRes.data && signRes.data.user && signRes.data.user.id) ? signRes.data.user.id : null;
-          if (!uid) { showToast('No user id returned', false); return; }
-          // Instantly confirm email for admin-created users
-          try { if (window.__currentIsAdminRPC) { await window.supabaseDB.adminConfirmUser(uid); } } catch (_) { }
-          // Profile creation is handled by DB trigger; no direct insert to avoid RLS
-          // Optional: grant admin
-          if (isAdmin && window.__currentIsAdminRPC) { try { await window.supabaseDB.adminSetUserAdmin(uid, true); } catch (_) { } }
-          closeAdd();
-          showToast('User created', true);
-          loadUsers();
-        } catch (e) {
-          showToast('Create failed', false);
-        }
-      });
-    }
-
-    // Open edit modal prefilled
-    function openEditUser(userId) {
-      try {
-        var row = Array.from(document.querySelectorAll('#usersRows tr')).find(function (tr) {
-          return Array.from(tr.querySelectorAll('[data-action]')).some(function (b) { return b.getAttribute('data-id') === userId; });
-        });
-        if (!row) { if (editModal) editModal.classList.remove('hidden'); return; }
-        (document.getElementById('edit_user_id') || {}).value = userId;
-        var tds = row.querySelectorAll('td');
-        (document.getElementById('edit_first_name') || {}).value = (tds[0].textContent || '').split(' ')[0] || '';
-        (document.getElementById('edit_last_name') || {}).value = (tds[0].textContent || '').split(' ')[1] || '';
-        (document.getElementById('edit_student_id') || {}).value = tds[2].textContent || '';
-        (document.getElementById('edit_program') || {}).value = tds[3].textContent || '';
-        if (editModal) editModal.classList.remove('hidden');
-      } catch (_) { if (editModal) editModal.classList.remove('hidden'); }
-    }
-
-    // Save edits
-    var editSave = document.getElementById('edit-user-save');
-    if (editSave) {
-      editSave.addEventListener('click', async function () {
-        try {
-          var uid = (document.getElementById('edit_user_id') || {}).value || '';
-          var firstName = (document.getElementById('edit_first_name') || {}).value || '';
-          var lastName = (document.getElementById('edit_last_name') || {}).value || '';
-          var studentId = (document.getElementById('edit_student_id') || {}).value || '';
-          var program = (document.getElementById('edit_program') || {}).value || '';
-          var isAdmin = !!((document.getElementById('edit_is_admin') || {}).checked);
-          if (!uid) { showToast('No user selected', false); return; }
-          var upd;
-          if (window.__currentIsAdminRPC) {
-            upd = await window.supabaseDB.adminUpdateUserProfile(uid, { first_name: firstName, last_name: lastName, student_id: studentId, program: program });
-          } else {
-            upd = await window.supabaseDB.updateUser(uid, { first_name: firstName, last_name: lastName, student_id: studentId, program: program });
-          }
-          if (upd && upd.error) { showToast(upd.error.message || 'Failed to update', false); return; }
-          // Update admin status
-          try {
-            if (window.__currentIsAdminRPC) {
-              await window.supabaseDB.adminSetUserAdmin(uid, isAdmin);
-            }
-          } catch (_) { }
-          closeEdit();
-          showToast('User updated', true);
-          loadUsers();
-        } catch (e) { showToast('Update failed', false); }
-      });
-    }
   </script>
   <script>
-    // Fade-on-scroll transitions (CSS-vars driven like other frames)
+    // Unified fade-on-scroll transitions (same timing/easing as Frame 18)
     (function () {
       var fadeElements = Array.from(document.querySelectorAll('[data-fade]'));
       if (fadeElements.length === 0) return;

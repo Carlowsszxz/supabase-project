@@ -4,9 +4,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="icon" type="image/png" href="UMak_Logo_Registered.png" />
   <meta http-equiv="Content-Security-Policy"
     content="connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.firebaseio.com https://*.googleapis.com https://www.gstatic.com wss://*.firebaseio.com;" />
-  <title>Frame 6 - Admin Dashboard</title>
+  <title>University of Makati Library - Admin Dashboard</title>
   <script>
     (function () {
       var originalWarn = console.warn;
@@ -25,6 +26,12 @@
   <script defer src="theme.js"></script>
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
+  <!-- UI polish (non-breaking):
+       - aligned header and filter spacing for clarity
+       - card-based grouping for stats and table controls
+       - improved contrast using theme tokens for dark/light
+       - consistent radius/shadows/hover across admin elements
+       - responsive gap tuning for dense grids -->
   <style>
     /* Ensure initial blur/opacity applies on first paint, even before JS */
     [data-fade] {
@@ -65,6 +72,7 @@
         <a href="Frame_9.html" class="nav-link">Alerts</a>
         <a href="Frame_18.html" class="nav-link">Reports</a>
         <a href="Frame_15.html" class="nav-link">Users</a>
+        <a href="Frame_19.html" class="nav-link">Settings</a>
         <button onclick="logout()" class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
           style="color: black !important;">Logout</button>
       </nav>
@@ -75,6 +83,7 @@
       <a href="Frame_9.html" class="block py-2 text-sm nav-link">Alerts</a>
       <a href="Frame_18.html" class="block py-2 text-sm nav-link">Reports</a>
       <a href="Frame_15.html" class="block py-2 text-sm nav-link">Users</a>
+      <a href="Frame_19.html" class="block py-2 text-sm nav-link">Settings</a>
       <button id="logoutBtnMobile"
         class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition text-left">Logout</button>
     </nav>

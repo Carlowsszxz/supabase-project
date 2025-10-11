@@ -4,7 +4,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Frame 7 - Activity Log</title>
+  <link rel="icon" type="image/png" href="UMak_Logo_Registered.png" />
+  <title>University of Makati Library - Activity Log</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
   <script defer src="theme.js"></script>
@@ -47,6 +48,7 @@
         <a href="Frame_9.html" class="nav-link">Alerts</a>
         <a href="Frame_18.html" class="nav-link">Reports</a>
         <a href="Frame_15.html" class="nav-link">Users</a>
+        <a href="Frame_19.html" class="nav-link">Settings</a>
 
         <button onclick="logout()" class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
           style="color: black !important;">Logout</button>
@@ -58,14 +60,16 @@
       <a href="Frame_9.html" class="block py-2 text-sm nav-link">Alerts</a>
       <a href="Frame_18.html" class="block py-2 text-sm nav-link">Reports</a>
       <a href="Frame_15.html" class="block py-2 text-sm nav-link">Users</a>
+      <a href="Frame_19.html" class="block py-2 text-sm nav-link">Settings</a>
       <button onclick="logout()"
         class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
         style="color: black !important;">Logout</button>
     </nav>
   </header>
 
-  <main class="flex-1 py-8 px-6" data-fade data-blur="true" data-blur-px="16" data-initial-opacity="0"
-    data-duration="1000" data-delay="50">
+  <!-- UI/UX refinements are scoped to #admin-log-root to avoid global changes -->
+  <main id="admin-log-root" class="flex-1 py-8 px-6" data-fade data-blur="true" data-blur-px="16"
+    data-initial-opacity="0" data-duration="1000" data-delay="50">
     <div class="max-w-7xl mx-auto">
 
       <!-- Header Section -->
@@ -89,8 +93,8 @@
       </div>
 
       <!-- Filter Controls -->
-      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-6 card-hover" data-fade data-blur="true"
-        data-initial-opacity="0" data-delay="50">
+      <div class="bg-white rounded-xl p-6 md:p-8 shadow-sm border border-slate-200 mb-8 card-hover" data-fade
+        data-blur="true" data-initial-opacity="0" data-delay="50">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-2">Date Range</label>
@@ -207,10 +211,10 @@
       <!-- Activity Timeline -->
       <div class="bg-white rounded-xl shadow-sm border border-slate-200" data-fade data-blur="true"
         data-initial-opacity="0" data-delay="200">
-        <div class="p-6 border-b border-slate-200">
-          <h3 class="text-lg font-semibold">Activity Timeline</h3>
+        <div class="p-6 md:p-8 border-b border-slate-200">
+          <h3 class="text-xl font-semibold text-slate-900">Activity Timeline</h3>
         </div>
-        <div class="p-6">
+        <div class="p-6 md:p-8">
           <div class="space-y-4" id="activityTimeline">
             <!-- Sample activities -->
             <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-lg">

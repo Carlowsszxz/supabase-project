@@ -4,8 +4,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="icon" type="image/png" href="UMak_Logo_Registered.png" />
   <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://*.supabase.co wss://*.supabase.co;" />
-  <title>Frame 18 - Reports</title>
+  <title>University of Makati Library - Reports</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
   <script defer src="theme.js"></script>
@@ -48,6 +49,7 @@
         <a href="Frame_9.html" class="nav-link">Alerts</a>
         <a href="Frame_18.html" class="nav-link active">Reports</a>
         <a href="Frame_15.html" class="nav-link">Users</a>
+        <a href="Frame_19.html" class="nav-link">Settings</a>
         <button onclick="logout()" id="logoutBtn"
           class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
           style="color: black !important;">Logout</button>
@@ -59,14 +61,16 @@
       <a href="Frame_9.html" class="block py-2 text-sm nav-link">Alerts</a>
       <a href="Frame_18.html" class="block py-2 text-sm nav-link active">Reports</a>
       <a href="Frame_15.html" class="block py-2 text-sm nav-link">Users</a>
+      <a href="Frame_19.html" class="block py-2 text-sm nav-link">Settings</a>
       <button onclick="logout()"
         class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition"
         style="color: black !important;">Logout</button>
     </nav>
   </header>
 
-  <main class="flex-1 py-8 px-6" data-fade data-blur="true" data-blur-px="16" data-initial-opacity="0"
-    data-duration="1000" data-delay="50">
+  <!-- Scoped UI/UX refinements to #admin-reports-root; visuals only, no logic changes -->
+  <main id="admin-reports-root" class="flex-1 py-8 px-6" data-fade data-blur="true" data-blur-px="16"
+    data-initial-opacity="0" data-duration="1000" data-delay="50">
     <div class="max-w-7xl mx-auto">
       <div class="mb-8" data-fade data-blur="true" data-initial-opacity="0" data-duration="900">
         <h1 class="text-3xl font-bold mb-2">Student Reports</h1>
@@ -74,12 +78,13 @@
         <div id="supabase-status" class="mt-2 text-xs text-slate-500"></div>
       </div>
 
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6" data-fade data-blur="true"
-        data-initial-opacity="0" data-delay="75">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 mb-8 card-hover" data-fade
+        data-blur="true" data-initial-opacity="0" data-delay="75">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
           <div class="flex items-center gap-2 text-sm">
             <label class="text-slate-600">Filter:</label>
-            <select id="filterType" class="px-3 py-2 rounded-lg border border-slate-300">
+            <select id="filterType"
+              class="px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500">
               <option value="all">All</option>
               <option value="critical">Critical</option>
               <option value="warning">Warning</option>
@@ -88,8 +93,10 @@
             </select>
           </div>
           <div class="flex items-center gap-2 text-sm">
-            <button id="refreshBtn" class="px-3 py-2 rounded-lg btn-outline">Refresh</button>
-            <button id="deleteAllBtn" class="px-3 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white">Delete All
+            <button id="refreshBtn" class="px-3 py-2 h-10 rounded-lg btn-outline">Refresh</button>
+            <button id="deleteAllBtn"
+              class="px-3 py-2 h-10 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-all duration-200 ease-in-out">Delete
+              All
               Messages</button>
           </div>
         </div>

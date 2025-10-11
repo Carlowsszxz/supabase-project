@@ -1,83 +1,216 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Frame 14 - Forgot Password</title>
+  <link rel="icon" type="image/png" href="UMak_Logo_Registered.png" />
+  <title>University of Makati Library - Forgot Password</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
   <script defer src="theme.js"></script>
+  <style>
+    .fade-content {
+      opacity: var(--fade-initial-opacity, 0);
+      will-change: opacity, filter;
+      transition: opacity var(--fade-duration, 1000ms) var(--fade-easing, ease-out),
+        filter var(--fade-duration, 1000ms) var(--fade-easing, ease-out);
+    }
+
+    .fade-content.is-visible {
+      opacity: 1;
+      filter: none;
+    }
+
+    /* Global fade-in system */
+    [data-fade] {
+      opacity: 0;
+      --fade-init: 14px;
+      --fade-filter: none;
+      filter: var(--fade-filter) !important;
+      transition: opacity var(--fade-duration, 1000ms) var(--fade-easing, ease-out),
+        filter var(--fade-duration, 1000ms) var(--fade-easing, ease-out) !important;
+      will-change: opacity, filter;
+    }
+
+    [data-fade]:not([data-blur="false"]) {
+      --fade-filter: blur(var(--fade-init));
+    }
+
+    [data-fade].is-visible {
+      opacity: 1;
+      filter: none !important;
+    }
+  </style>
 </head>
+
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
-  <header class="site-header">
+  <header class="site-header" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
-      <a href="index.html" class="brand-title text-2xl font-semibold mr-auto">University of Makati Library</a>
+      <a href="index.html" class="brand-title text-xl md:text-2xl font-semibold mr-auto">University of Makati
+        Library</a>
+      <button id="mobile-menu-btn"
+        class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+        aria-label="Open main menu" aria-expanded="false">
+        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
       <nav class="hidden md:flex items-center gap-4 text-sm">
-        <a href="Frame_6.html" class="nav-link">Dashboard</a>
-        <a href="Frame_7.html" class="nav-link">Log</a>
-        <a href="Frame_9.html" class="nav-link">Alerts</a>
+        <a href="index.html" class="nav-link">Login</a>
+        <a href="Frame_5.html" class="nav-link">Register</a>
       </nav>
     </div>
+    <nav id="mobile-menu" class="md:hidden hidden px-6 pb-3">
+      <a href="index.html" class="block py-2 text-sm nav-link">Login</a>
+      <a href="Frame_5.html" class="block py-2 text-sm nav-link">Register</a>
+    </nav>
   </header>
-  
-  <main class="flex-1 flex items-start justify-center py-12 px-6">
+
+  <main class="flex-1 flex items-start justify-center py-12 px-6" data-fade data-blur="true" data-initial-opacity="0"
+    data-duration="1000" data-delay="50">
     <div class="w-full max-w-md">
 
-<div class="bg-white rounded-2xl shadow p-8">
-  <div class="text-center mb-6">
-    <h1 class="text-2xl font-bold mb-2">Reset your password</h1>
-    <p class="text-sm text-slate-500">Enter your email address and we'll send you a link to reset your password.</p>
-  </div>
-  
-  <form id="reset-form" class="space-y-6">
-    <div>
-      <label class="block text-sm font-medium text-slate-700 mb-2">Email address</label>
-      <input 
-        type="email" 
-        class="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2" 
-        placeholder="you@example.com"
-        required
-      />
-    </div>
-    
-    <div>
-      <button type="submit" class="w-full py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition">
-        Send reset link
-      </button>
-    </div>
-  </form>
-  
-  <div class="mt-6 text-center">
-    <p class="text-sm text-slate-500">
-      Remember your password? 
-      <a href="index.html" class="text-indigo-600 hover:text-indigo-700">Back to sign in</a>
-    </p>
-  </div>
-  
-  <div class="mt-6 p-4 bg-blue-50 rounded-lg">
-    <div class="flex items-start">
-      <svg class="w-5 h-5 text-blue-400 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-      </svg>
-      <div class="text-sm text-blue-700">
-        <p class="font-medium mb-1">Check your email</p>
-        <p>We'll send you a secure link to reset your password. The link will expire in 1 hour for security.</p>
+      <div class="bg-white rounded-2xl shadow p-8">
+        <div class="text-center mb-6">
+          <h1 class="text-2xl font-bold mb-2">Reset your password</h1>
+          <p class="text-sm text-slate-500">Enter your email address and we'll send you a link to reset your password.
+          </p>
+        </div>
+
+        <form id="reset-form" class="space-y-6">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Email address</label>
+            <input type="email"
+              class="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2"
+              placeholder="you@example.com" required />
+          </div>
+
+          <div>
+            <button type="submit"
+              class="w-full py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition">
+              Send reset link
+            </button>
+          </div>
+        </form>
+
+        <div class="mt-6 text-center">
+          <p class="text-sm text-slate-500">
+            Remember your password?
+            <a href="index.html" class="text-indigo-600 hover:text-indigo-700">Back to sign in</a>
+          </p>
+        </div>
+
+        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+          <div class="flex items-start">
+            <svg class="w-5 h-5 text-blue-400 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clip-rule="evenodd"></path>
+            </svg>
+            <div class="text-sm text-blue-700">
+              <p class="font-medium mb-1">Check your email</p>
+              <p>We'll send you a secure link to reset your password. The link will expire in 1 hour for security.</p>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
 
     </div>
   </main>
-  
+
   <footer class="text-center text-xs text-slate-500 py-3">© 2025 UMak Library · Noise Comfort Index</footer>
   <!-- Firebase Auth -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script src="supabase.js"></script>`n  <script src="auth-guard.js"></script>
+  <script src="supabase.js"></script>
+  <script src="auth-guard.js"></script>
   <script src="password-toggle.js"></script>
   <script>
-    (function(){
+    (function () {
+      function initFadeContent() {
+        var elements = document.querySelectorAll('[data-fade]');
+        if (!elements.length) return;
+
+        elements.forEach(function (el) {
+          var blur = el.getAttribute('data-blur') === 'true';
+          var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
+          var easing = el.getAttribute('data-easing') || 'ease-out';
+          var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
+          var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
+
+          // Set CSS custom properties for smooth transitions
+          el.style.setProperty('--fade-duration', duration + 'ms');
+          el.style.setProperty('--fade-easing', easing);
+          el.style.setProperty('--fade-initial-opacity', String(initialOpacity));
+
+          // Set initial blur state
+          if (blur) {
+            el.style.setProperty('--fade-filter', 'blur(6px)');
+            el.style.filter = 'blur(6px)';
+          } else {
+            el.style.setProperty('--fade-filter', 'none');
+            el.style.filter = 'none';
+          }
+
+          var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                setTimeout(function () {
+                  // Add the is-visible class to trigger CSS transition
+                  el.classList.add('is-visible');
+                }, delay);
+                io.unobserve(el);
+              }
+            });
+          }, { threshold: 0.1 });
+          io.observe(el);
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initFadeContent);
+      } else {
+        initFadeContent();
+      }
+
+      // Fallback: ensure content is visible after 2 seconds
+      setTimeout(function () {
+        var fadeElements = document.querySelectorAll('[data-fade]');
+        fadeElements.forEach(function (el) {
+          // Use CSS transition by adding is-visible class
+          el.classList.add('is-visible');
+        });
+      }, 2000);
+    })();
+  </script>
+  <script>
+    // Mobile menu toggle
+    (function () {
+      try {
+        var mobileBtn = document.getElementById('mobile-menu-btn');
+        var mobileMenu = document.getElementById('mobile-menu');
+        var header = document.querySelector('header.site-header');
+        if (mobileBtn && mobileMenu && header) {
+          mobileBtn.addEventListener('click', function () {
+            var isHidden = mobileMenu.classList.contains('hidden');
+            if (isHidden) {
+              header.classList.add('menu-open');
+              mobileMenu.classList.remove('hidden');
+              mobileBtn.setAttribute('aria-expanded', 'true');
+            } else {
+              header.classList.remove('menu-open');
+              mobileMenu.classList.add('hidden');
+              mobileBtn.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
+      } catch (_) { }
+    })();
+  </script>
+  <script>
+    (function () {
       // Initialize Supabase
       var supabaseInitialized = false;
       try {
@@ -87,28 +220,28 @@
         } else {
           console.error('Supabase initialization failed');
         }
-      } catch(err) {
+      } catch (err) {
         console.error('Supabase error:', err);
       }
 
       var form = document.getElementById('reset-form');
       if (form && supabaseInitialized) {
-        form.addEventListener('submit', function(e){
+        form.addEventListener('submit', function (e) {
           e.preventDefault();
           var email = document.querySelector('#reset-form input[type="email"]');
           var val = email && email.value || '';
-          
+
           // Use Supabase password reset
-          window.supabaseAuth.resetPassword(val).then(function(result){
+          window.supabaseAuth.resetPassword(val).then(function (result) {
             if (result.error) throw result.error;
-            try{ alert('Password reset email sent.'); }catch(_){ }
-          }).catch(function(err){ 
-            try{ alert(err.message); }catch(_){ console.error(err); } 
+            try { alert('Password reset email sent.'); } catch (_) { }
+          }).catch(function (err) {
+            try { alert(err.message); } catch (_) { console.error(err); }
           });
         });
       }
     })();
   </script>
 </body>
-</html>
 
+</html>
