@@ -71,9 +71,61 @@
         data-duration="1000" data-delay="50">
         <div class="max-w-7xl mx-auto">
             <div class="mb-8">
-                <h1 class="text-3xl font-bold mb-2">Settings</h1>
-                <p class="text-slate-600">Configure Noise Thresholds, NCI behavior, and LCD display options</p>
+                <h1 class="text-3xl font-bold mb-2">IoT Monitoring & Settings</h1>
+                <p class="text-slate-600">Monitor IoT devices, configure noise thresholds, and manage system settings
+                </p>
                 <div id="supabase-status" class="mt-2 text-xs text-slate-500"></div>
+            </div>
+
+            <!-- IoT Device Status Overview -->
+            <div class="mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold">IoT Device Status</h2>
+                        <button id="refreshDevices"
+                            class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm">
+                            Refresh
+                        </button>
+                    </div>
+                    <div id="deviceStatusGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Device status cards will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time Noise Monitoring -->
+            <div class="mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold">Real-time Noise Monitoring</h2>
+                        <div class="flex items-center gap-2">
+                            <span id="lastUpdate" class="text-sm text-slate-500">Last update: --</span>
+                            <button id="toggleAutoRefresh"
+                                class="px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm">
+                                Auto Refresh: ON
+                            </button>
+                        </div>
+                    </div>
+                    <div id="noiseMonitoringGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Noise monitoring cards will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- RFID Activity Monitor -->
+            <div class="mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold">RFID Activity Monitor</h2>
+                        <button id="clearRfidLog"
+                            class="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm">
+                            Clear Log
+                        </button>
+                    </div>
+                    <div id="rfidActivityLog" class="max-h-64 overflow-y-auto space-y-2">
+                        <!-- RFID activity entries will be populated here -->
+                    </div>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -429,13 +481,276 @@
                 }
             })();
 
+            // IoT Monitoring Functions
+            let autoRefreshInterval = null;
+            let isAutoRefreshOn = true;
+
+            // Load and display IoT device status
+            async function loadDeviceStatus() {
+                try {
+                    const { data: devices, error } = await supabase
+                        .from('iot_devices')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
+                    if (error) {
+                        console.error('Error loading devices:', error);
+                        return;
+                    }
+
+                    const deviceGrid = document.getElementById('deviceStatusGrid');
+                    if (!deviceGrid) return;
+
+                    deviceGrid.innerHTML = devices.map(device => `
+                        <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-medium text-slate-900">${device.device_name}</h3>
+                                <span class="px-2 py-1 rounded-full text-xs font-medium ${device.status === 'active' ? 'bg-green-100 text-green-800' :
+                            device.status === 'inactive' ? 'bg-red-100 text-red-800' :
+                                'bg-yellow-100 text-yellow-800'
+                        }">
+                                    ${device.status}
+                                </span>
+                            </div>
+                            <div class="text-sm text-slate-600 space-y-1">
+                                <div>Type: ${device.device_type}</div>
+                                <div>Location: ${device.location || 'N/A'}</div>
+                                <div>Last seen: ${new Date(device.last_seen).toLocaleString()}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                } catch (error) {
+                    console.error('Error in loadDeviceStatus:', error);
+                }
+            }
+
+            // Load and display real-time noise monitoring
+            async function loadNoiseMonitoring() {
+                try {
+                    const { data: readings, error } = await supabase
+                        .from('noise_readings')
+                        .select(`
+                            *,
+                            iot_devices!inner(device_name, location)
+                        `)
+                        .order('timestamp', { ascending: false })
+                        .limit(20);
+
+                    if (error) {
+                        console.error('Error loading noise readings:', error);
+                        return;
+                    }
+
+                    const noiseGrid = document.getElementById('noiseMonitoringGrid');
+                    if (!noiseGrid) return;
+
+                    // Group readings by device
+                    const groupedReadings = readings.reduce((acc, reading) => {
+                        const deviceId = reading.device_id;
+                        if (!acc[deviceId]) {
+                            acc[deviceId] = {
+                                device: reading.iot_devices,
+                                readings: []
+                            };
+                        }
+                        acc[deviceId].readings.push(reading);
+                        return acc;
+                    }, {});
+
+                    noiseGrid.innerHTML = Object.values(groupedReadings).map(group => {
+                        const latestReading = group.readings[0];
+                        const avgNoise = group.readings.reduce((sum, r) => sum + r.noise_level, 0) / group.readings.length;
+                        const comfortIndex = latestReading.comfort_index;
+
+                        return `
+                            <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="font-medium text-slate-900">${group.device.device_name}</h3>
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium ${comfortIndex >= 0.7 ? 'bg-green-100 text-green-800' :
+                                comfortIndex >= 0.4 ? 'bg-yellow-100 text-yellow-800' :
+                                    'bg-red-100 text-red-800'
+                            }">
+                                        ${(comfortIndex * 100).toFixed(0)}% Comfort
+                                    </span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-slate-600">Current:</span>
+                                        <span class="font-medium">${latestReading.noise_level.toFixed(1)} dB</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-slate-600">Average:</span>
+                                        <span class="font-medium">${avgNoise.toFixed(1)} dB</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-slate-600">Quality:</span>
+                                        <span class="font-medium capitalize">${latestReading.reading_quality}</span>
+                                    </div>
+                                    <div class="text-xs text-slate-500">
+                                        ${new Date(latestReading.timestamp).toLocaleString()}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    // Update last update time
+                    const lastUpdateEl = document.getElementById('lastUpdate');
+                    if (lastUpdateEl) {
+                        lastUpdateEl.textContent = `Last update: ${new Date().toLocaleTimeString()}`;
+                    }
+                } catch (error) {
+                    console.error('Error in loadNoiseMonitoring:', error);
+                }
+            }
+
+            // Load RFID activity log
+            async function loadRFIDActivity() {
+                try {
+                    const { data: events, error } = await supabase
+                        .from('rfid_events')
+                        .select(`
+                            *,
+                            iot_devices!inner(device_name, location)
+                        `)
+                        .order('timestamp', { ascending: false })
+                        .limit(50);
+
+                    if (error) {
+                        console.error('Error loading RFID events:', error);
+                        return;
+                    }
+
+                    const rfidLog = document.getElementById('rfidActivityLog');
+                    if (!rfidLog) return;
+
+                    rfidLog.innerHTML = events.map(event => `
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 rounded-full ${event.event_type === 'check_in' ? 'bg-green-500' :
+                            event.event_type === 'check_out' ? 'bg-red-500' :
+                                'bg-blue-500'
+                        }"></div>
+                                <div>
+                                    <div class="font-medium text-slate-900">
+                                        ${event.event_type === 'check_in' ? 'Check-in' :
+                            event.event_type === 'check_out' ? 'Check-out' :
+                                'Scan'} - Card ${event.card_id}
+                                    </div>
+                                    <div class="text-sm text-slate-600">
+                                        ${event.iot_devices.device_name} • ${event.iot_devices.location}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-slate-600">
+                                    ${new Date(event.timestamp).toLocaleString()}
+                                </div>
+                                ${event.session_duration ?
+                            `<div class="text-xs text-slate-500">${event.session_duration} min session</div>` :
+                            ''
+                        }
+                            </div>
+                        </div>
+                    `).join('');
+                } catch (error) {
+                    console.error('Error in loadRFIDActivity:', error);
+                }
+            }
+
+            // Toggle auto refresh
+            function toggleAutoRefresh() {
+                const button = document.getElementById('toggleAutoRefresh');
+                if (!button) return;
+
+                isAutoRefreshOn = !isAutoRefreshOn;
+
+                if (isAutoRefreshOn) {
+                    button.textContent = 'Auto Refresh: ON';
+                    button.className = 'px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm';
+                    startAutoRefresh();
+                } else {
+                    button.textContent = 'Auto Refresh: OFF';
+                    button.className = 'px-3 py-1.5 rounded-lg bg-gray-600 hover:bg-gray-700 text-white text-sm';
+                    stopAutoRefresh();
+                }
+            }
+
+            // Start auto refresh
+            function startAutoRefresh() {
+                if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+                autoRefreshInterval = setInterval(async () => {
+                    await loadNoiseMonitoring();
+                    await loadRFIDActivity();
+                }, 5000); // Refresh every 5 seconds
+            }
+
+            // Stop auto refresh
+            function stopAutoRefresh() {
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                    autoRefreshInterval = null;
+                }
+            }
+
+            // Clear RFID log
+            async function clearRFIDLog() {
+                if (confirm('Are you sure you want to clear the RFID activity log?')) {
+                    try {
+                        const { error } = await supabase
+                            .from('rfid_events')
+                            .delete()
+                            .neq('id', 0); // Delete all records
+
+                        if (error) {
+                            console.error('Error clearing RFID log:', error);
+                            alert('Error clearing log');
+                        } else {
+                            await loadRFIDActivity();
+                            alert('RFID log cleared successfully');
+                        }
+                    } catch (error) {
+                        console.error('Error in clearRFIDLog:', error);
+                        alert('Error clearing log');
+                    }
+                }
+            }
+
+            // Wire IoT monitoring UI
+            function wireIOTMonitoring() {
+                const refreshDevicesBtn = document.getElementById('refreshDevices');
+                const toggleAutoRefreshBtn = document.getElementById('toggleAutoRefresh');
+                const clearRfidLogBtn = document.getElementById('clearRfidLog');
+
+                if (refreshDevicesBtn) {
+                    refreshDevicesBtn.addEventListener('click', loadDeviceStatus);
+                }
+
+                if (toggleAutoRefreshBtn) {
+                    toggleAutoRefreshBtn.addEventListener('click', toggleAutoRefresh);
+                }
+
+                if (clearRfidLogBtn) {
+                    clearRfidLogBtn.addEventListener('click', clearRFIDLog);
+                }
+            }
+
             // Init (ensure fade starts after successful admin verification)
             (async function init() {
                 var allowed = await checkAdminAccess();
                 if (!allowed) return;
                 wireUI();
                 bindActions();
+                wireIOTMonitoring();
                 await loadSettings();
+
+                // Load IoT data
+                await loadDeviceStatus();
+                await loadNoiseMonitoring();
+                await loadRFIDActivity();
+
+                // Start auto refresh
+                startAutoRefresh();
             })();
         })();
     </script>

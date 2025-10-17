@@ -65,6 +65,334 @@
     [data-fade]:not([data-blur="false"]) {
       --fade-filter: blur(var(--fade-init));
     }
+
+    /* Chair status markers on floor plan - Soft Modern Style */
+    .chair-square {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      border: 2px solid #2f2f2f;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      box-shadow:
+        0 0 8px rgba(0, 0, 0, 0.3),
+        0 0 16px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      z-index: 10;
+      transform-origin: center center;
+      will-change: transform;
+      background: #2f2f2f;
+    }
+
+    .chair-square:hover {
+      transform: scale(1.1);
+      box-shadow:
+        0 0 12px rgba(0, 0, 0, 0.4),
+        0 0 24px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      border-color: #3a3a3a;
+      background: #3a3a3a;
+    }
+
+    .chair-square:active {
+      transform: scale(1.05);
+      transition: all 0.15s ease;
+      box-shadow:
+        0 0 6px rgba(0, 0, 0, 0.5),
+        0 0 12px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    /* Available state - green glow */
+    .chair-square.available {
+      background: #2f2f2f;
+      border-color: #10b981;
+      box-shadow:
+        0 0 8px rgba(16, 185, 129, 0.6),
+        0 0 16px rgba(16, 185, 129, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .chair-square.available:hover {
+      border-color: #059669;
+      background: #3a3a3a;
+      box-shadow:
+        0 0 12px rgba(16, 185, 129, 0.8),
+        0 0 24px rgba(16, 185, 129, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* Occupied state - red glow */
+    .chair-square.occupied {
+      background: #2f2f2f;
+      border-color: #ef4444;
+      box-shadow:
+        0 0 8px rgba(239, 68, 68, 0.6),
+        0 0 16px rgba(239, 68, 68, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .chair-square.occupied:hover {
+      border-color: #dc2626;
+      background: #3a3a3a;
+      box-shadow:
+        0 0 12px rgba(239, 68, 68, 0.8),
+        0 0 24px rgba(239, 68, 68, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* Individual size classes for different chair sizes */
+    .chair-square.size-micro {
+      width: 8px;
+      height: 8px;
+      border-radius: 3px;
+      border-width: 1px;
+    }
+
+    .chair-square.size-tiny {
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+      border-width: 1px;
+    }
+
+    .chair-square.size-small {
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      border-width: 2px;
+    }
+
+    .chair-square.size-medium {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      border-width: 2px;
+    }
+
+    .chair-square.size-large {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border-width: 3px;
+    }
+
+    .chair-square.size-extra-large {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border-width: 3px;
+    }
+
+    /* Floor plan content container for unified zooming */
+    #floor-plan-content {
+      transform-origin: center center;
+      transition: transform 0.3s ease;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    /* Dragging state */
+    #floor-plan-content.dragging {
+      cursor: grabbing;
+      transition: none;
+    }
+
+    /* Map container for overflow handling */
+    #map-container {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 320px;
+      /* Fixed height to prevent layout shifts */
+    }
+
+    /* Ensure floor plan image scales properly */
+    #floor-plan-content img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    /* Chair positioning relative to the content container */
+    .chair-square {
+      position: absolute;
+      transform-origin: center center;
+      will-change: transform;
+      transition: transform 0.1s ease;
+      /* Ensure chairs scale with the container */
+      transform: scale(1);
+    }
+
+    /* Ensure chairs scale with browser zoom */
+    @media (min-resolution: 1.5dppx) {
+      .chair-square {
+        transform: scale(1);
+      }
+    }
+
+    @media (min-resolution: 2dppx) {
+      .chair-square {
+        transform: scale(1);
+      }
+    }
+
+    /* Prevent layout shifts during zoom */
+    #map-container {
+      contain: layout style;
+    }
+
+    #floor-plan-content {
+      contain: layout style;
+    }
+
+    /* Mobile photo viewer styles */
+    @media (max-width: 768px) {
+
+      /* Hide zoom controls on mobile - use native photo viewer behavior */
+      .zoom-controls {
+        display: none !important;
+      }
+
+      /* Make floor plan behave like a photo */
+      #map-container {
+        height: 60vh !important;
+        min-height: 300px;
+        max-height: 500px;
+        touch-action: pan-x pan-y;
+        -webkit-overflow-scrolling: touch;
+        overflow: hidden;
+        position: relative;
+      }
+
+      #floor-plan-content {
+        width: 100% !important;
+        height: 100% !important;
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        /* Ensure chairs scale with the container */
+        transform-origin: center center;
+      }
+
+      #floor-plan-content img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+        object-position: center !important;
+        pointer-events: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+      }
+
+      /* Scale chairs for mobile */
+      .chair-square {
+        width: 16px;
+        height: 16px;
+        border-radius: 5px;
+        border-width: 2px;
+        pointer-events: auto;
+        touch-action: manipulation;
+        /* Ensure chairs stay aligned with the image */
+        transform-origin: center center;
+        will-change: auto;
+        transition: all 0.2s ease;
+        box-shadow:
+          0 0 6px rgba(0, 0, 0, 0.3),
+          0 0 12px rgba(0, 0, 0, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        background: #2f2f2f;
+        border-color: #2f2f2f;
+      }
+
+      /* Make chairs more visible on mobile */
+      .chair-square.size-micro {
+        width: 12px;
+        height: 12px;
+        border-radius: 4px;
+        border-width: 1px;
+      }
+
+      .chair-square.size-tiny {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+        border-width: 1px;
+      }
+
+      .chair-square.size-small {
+        width: 16px;
+        height: 16px;
+        border-radius: 5px;
+        border-width: 2px;
+      }
+
+      .chair-square.size-medium {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+        border-width: 2px;
+      }
+
+      .chair-square.size-large {
+        width: 24px;
+        height: 24px;
+        border-radius: 8px;
+        border-width: 3px;
+      }
+
+      .chair-square.size-extra-large {
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
+        border-width: 3px;
+      }
+    }
+
+    .chair-square.size-micro {
+      width: 6px;
+      height: 6px;
+      border-radius: 2px;
+      border-width: 1px;
+    }
+
+    .chair-square.size-tiny {
+      width: 8px;
+      height: 8px;
+      border-radius: 3px;
+      border-width: 1px;
+    }
+
+    .chair-square.size-small {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      border-width: 1px;
+    }
+
+    .chair-square.size-large {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      border-width: 3px;
+    }
+
+    .chair-square.size-extra-large {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border-width: 3px;
+    }
+    }
   </style>
 </head>
 
@@ -135,12 +463,538 @@
 
         <!-- Map Container Section -->
         <div class="mb-6">
-          <h2 class="text-xl font-semibold mb-3">Library Floor Plan</h2>
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-xl font-semibold">Library Floor Plan</h2>
+          </div>
+
+
+          <!-- Zoom Controls - Outside the map container -->
+          <div class="zoom-controls flex justify-center sm:justify-end mb-4">
+            <div class="flex gap-1 sm:gap-2">
+              <button id="zoom-in-btn"
+                class="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg shadow-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors"
+                title="Zoom In">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                  </path>
+                </svg>
+              </button>
+              <button id="zoom-out-btn"
+                class="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg shadow-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors"
+                title="Zoom Out">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6"></path>
+                </svg>
+              </button>
+              <button id="zoom-reset-btn"
+                class="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg shadow-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors"
+                title="Reset Zoom">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                  </path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
           <div id="map-container" data-fade data-blur="true" data-duration="1000" data-easing="ease-out" data-delay="0"
             data-initial-opacity="0"
-            class="relative h-80 rounded-lg border border-slate-200 bg-white flex items-center justify-center overflow-hidden">
-            <img src="FloorPlan.png" alt="Library Floor Plan" class="max-w-full max-h-full object-contain" data-fade
-              data-blur="true" data-delay="150" data-initial-opacity="0">
+            class="relative h-80 rounded-lg border border-slate-200 bg-white flex items-center justify-center overflow-hidden"
+            style="height: 320px;">
+            <!-- Floor Plan Content Container - This will be zoomed as one unit -->
+            <div id="floor-plan-content"
+              class="relative w-full h-full flex items-center justify-center transition-transform duration-300 ease-in-out">
+              <img src="FloorPlan.png" alt="Library Floor Plan" class="max-w-full max-h-full object-contain" data-fade
+                data-blur="true" data-delay="150" data-initial-opacity="0">
+
+
+              <!-- Chair Status Markers -->
+              <!-- 
+              ===========================================
+              INDIVIDUAL CHAIR POSITIONING & SIZING GUIDE
+              ===========================================
+              
+              POSITIONING: Each chair can be positioned independently by modifying the 'style' attribute.
+              Format: style="top: [Y]px; left: [X]px;"
+              
+              SIZING: Each chair can be sized independently by adding size classes to the 'class' attribute.
+              Available sizes: size-micro (8px), size-tiny (12px), size-small (16px), size-medium (24px), size-large (32px), size-extra-large (40px)
+              
+              TO ADJUST A CHAIR:
+              1. Find the chair you want to modify (e.g., "chair-1-marker")
+              2. Change the 'top' value to move it up/down
+              3. Change the 'left' value to move it left/right
+              4. Add size class to change the square size
+              5. Save the file and refresh the page
+              
+              EXAMPLES:
+              Position: style="top: 120px; left: 200px;"
+              Size: class="chair-square size-large"
+              -->
+
+              <!-- Table 1 Chairs (8 chairs per table) -->
+              <!-- Chair 1-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-1-1-marker" data-chair="chair-1-1"
+                style="top: 95px; left: 617px;" title="Chair 1-1 - Click to select"></div>
+              <!-- Chair 1-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-1-2-marker" data-chair="chair-1-2"
+                style="top: 95px; left: 634px;" title="Chair 1-2 - Click to select"></div>
+              <!-- Chair 1-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-1-3-marker" data-chair="chair-1-3"
+                style="top: 95px; left: 651px;" title="Chair 1-3 - Click to select"></div>
+              <!-- Chair 1-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-1-4-marker" data-chair="chair-1-4"
+                style="top: 114px; left: 668px;" title="Chair 1-4 - Click to select"></div>
+              <!-- Chair 1-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-1-5-marker" data-chair="chair-1-5"
+                style="top: 133px; left: 651px;" title="Chair 1-5 - Click to select"></div>
+              <!-- Chair 1-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-1-6-marker" data-chair="chair-1-6"
+                style="top: 133px; left: 634px;" title="Chair 1-6 - Click to select"></div>
+              <!-- Chair 1-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-1-7-marker" data-chair="chair-1-7"
+                style="top: 133px; left: 617px;" title="Chair 1-7 - Click to select"></div>
+              <!-- Chair 1-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-1-8-marker" data-chair="chair-1-8"
+                style="top: 114px; left: 598px;" title="Chair 1-8 - Click to select"></div>
+
+              <!-- Table 2 Chairs (8 chairs per table) -->
+              <!-- Chair 2-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-2-1-marker" data-chair="chair-2-1"
+                style="top: 165px; left: 617px;" title="Chair 2-1 - Click to select"></div>
+              <!-- Chair 2-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-2-2-marker" data-chair="chair-2-2"
+                style="top: 165px; left: 635px;" title="Chair 2-2 - Click to select"></div>
+              <!-- Chair 2-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-2-3-marker" data-chair="chair-2-3"
+                style="top: 165px; left: 651px;" title="Chair 2-3 - Click to select"></div>
+              <!-- Chair 2-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-2-4-marker" data-chair="chair-2-4"
+                style="top: 185px; left: 668px;" title="Chair 2-4 - Click to select"></div>
+              <!-- Chair 2-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-2-5-marker" data-chair="chair-2-5"
+                style="top: 205px; left: 651px;" title="Chair 2-5 - Click to select"></div>
+              <!-- Chair 2-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-2-6-marker" data-chair="chair-2-6"
+                style="top: 205px; left: 635px;" title="Chair 2-6 - Click to select"></div>
+              <!-- Chair 2-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-2-7-marker" data-chair="chair-2-7"
+                style="top: 205px; left: 617px;" title="Chair 2-7 - Click to select"></div>
+              <!-- Chair 2-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-2-8-marker" data-chair="chair-2-8"
+                style="top: 185px; left: 598px;" title="Chair 2-8 - Click to select"></div>
+
+              <!-- Table 3 Chairs (8 chairs per table) -->
+              <!-- Chair 3-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-3-1-marker" data-chair="chair-3-1"
+                style="top: 238px; left: 617px;" title="Chair 3-1 - Click to select"></div>
+              <!-- Chair 3-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-3-2-marker" data-chair="chair-3-2"
+                style="top: 238px; left: 634px;" title="Chair 3-2 - Click to select"></div>
+              <!-- Chair 3-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-3-3-marker" data-chair="chair-3-3"
+                style="top: 238px; left: 651px;" title="Chair 3-3 - Click to select"></div>
+              <!-- Chair 3-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-3-4-marker" data-chair="chair-3-4"
+                style="top: 258px; left: 668px;" title="Chair 3-4 - Click to select"></div>
+              <!-- Chair 3-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-3-5-marker" data-chair="chair-3-5"
+                style="top: 277px; left: 651px;" title="Chair 3-5 - Click to select"></div>
+              <!-- Chair 3-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-3-6-marker" data-chair="chair-3-6"
+                style="top: 277px; left: 634px;" title="Chair 3-6 - Click to select"></div>
+              <!-- Chair 3-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-3-7-marker" data-chair="chair-3-7"
+                style="top: 277px; left: 617px;" title="Chair 3-7 - Click to select"></div>
+              <!-- Chair 3-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-3-8-marker" data-chair="chair-3-8"
+                style="top: 258px; left: 598px;" title="Chair 3-8 - Click to select"></div>
+
+              <!-- Table 4 Chairs (8 chairs per table) -->
+              <!-- Chair 4-1 marker - Top left -->
+              <div class="chair-square size-micro" id="chair-4-1-marker" data-chair="chair-4-1"
+                style="top: 238px; left: 505.5px;" title="Chair 4-1 - Click to select"></div>
+              <!-- Chair 4-2 marker - Top center -->
+              <div class="chair-square size-micro" id="chair-4-2-marker" data-chair="chair-4-2"
+                style="top: 238px; left: 523px;" title="Chair 4-2 - Click to select"></div>
+              <!-- Chair 4-3 marker - Top right -->
+              <div class="chair-square size-micro" id="chair-4-3-marker" data-chair="chair-4-3"
+                style="top: 238px; left: 540px;" title="Chair 4-3 - Click to select"></div>
+              <!-- Chair 4-4 marker - Right side (moved from left side) -->
+              <div class="chair-square size-micro" id="chair-4-4-marker" data-chair="chair-4-4"
+                style="top: 258px; left: 556px;" title="Chair 4-4 - Click to select"></div>
+              <!-- Chair 4-5 marker - Bottom right -->
+              <div class="chair-square size-micro" id="chair-4-5-marker" data-chair="chair-4-5"
+                style="top: 278px; left: 540px;" title="Chair 4-5 - Click to select"></div>
+              <!-- Chair 4-6 marker - Bottom center -->
+              <div class="chair-square size-micro" id="chair-4-6-marker" data-chair="chair-4-6"
+                style="top: 278px; left: 523px;" title="Chair 4-6 - Click to select"></div>
+              <!-- Chair 4-7 marker - Bottom left -->
+              <div class="chair-square size-micro" id="chair-4-7-marker" data-chair="chair-4-7"
+                style="top: 278px; left: 505.5px;" title="Chair 4-7 - Click to select"></div>
+              <!-- Chair 4-8 marker - Left side (moved from right side) -->
+              <div class="chair-square size-micro" id="chair-4-8-marker" data-chair="chair-4-8"
+                style="top: 258px; left: 487px;" title="Chair 4-8 - Click to select"></div>
+
+              <!-- Table 5 Chairs (8 chairs per table) -->
+              <!-- Chair 5-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-5-1-marker" data-chair="chair-5-1"
+                style="top: 165px; left: 505.5px;" title="Chair 5-1 - Click to select"></div>
+              <!-- Chair 5-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-5-2-marker" data-chair="chair-5-2"
+                style="top: 165px; left: 523px;" title="Chair 5-2 - Click to select"></div>
+              <!-- Chair 5-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-5-3-marker" data-chair="chair-5-3"
+                style="top: 165px; left: 540px;" title="Chair 5-3 - Click to select"></div>
+              <!-- Chair 5-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-5-4-marker" data-chair="chair-5-4"
+                style="top: 185.5px; left: 556px;" title="Chair 5-4 - Click to select"></div>
+              <!-- Chair 5-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-5-5-marker" data-chair="chair-5-5"
+                style="top: 205px; left: 540px;" title="Chair 5-5 - Click to select"></div>
+              <!-- Chair 5-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-5-6-marker" data-chair="chair-5-6"
+                style="top: 205px; left: 523px;" title="Chair 5-6 - Click to select"></div>
+              <!-- Chair 5-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-5-7-marker" data-chair="chair-5-7"
+                style="top: 205px; left: 505.5px;" title="Chair 5-7 - Click to select"></div>
+              <!-- Chair 5-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-5-8-marker" data-chair="chair-5-8"
+                style="top: 185px; left: 487px;" title="Chair 5-8 - Click to select"></div>
+
+              <!-- Table 6 Chairs (8 chairs per table) -->
+              <!-- Chair 6-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-6-1-marker" data-chair="chair-6-1"
+                style="top: 95px; left: 505.5px;" title="Chair 6-1 - Click to select"></div>
+              <!-- Chair 6-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-6-2-marker" data-chair="chair-6-2"
+                style="top: 95px; left: 523px;" title="Chair 6-2 - Click to select"></div>
+              <!-- Chair 6-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-6-3-marker" data-chair="chair-6-3"
+                style="top: 95px; left: 540px;" title="Chair 6-3 - Click to select"></div>
+              <!-- Chair 6-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-6-4-marker" data-chair="chair-6-4"
+                style="top: 114px; left: 556px;" title="Chair 6-4 - Click to select"></div>
+              <!-- Chair 6-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-6-5-marker" data-chair="chair-6-5"
+                style="top: 133px; left: 540px;" title="Chair 6-5 - Click to select"></div>
+              <!-- Chair 6-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-6-6-marker" data-chair="chair-6-6"
+                style="top: 133px; left: 523px;" title="Chair 6-6 - Click to select"></div>
+              <!-- Chair 6-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-6-7-marker" data-chair="chair-6-7"
+                style="top: 133px; left: 505.5px;" title="Chair 6-7 - Click to select"></div>
+              <!-- Chair 6-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-6-8-marker" data-chair="chair-6-8"
+                style="top: 114px; left: 487px;" title="Chair 6-8 - Click to select"></div>
+
+              <!-- Table 7 Chairs (8 chairs per table) -->
+              <!-- Chair 7-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-7-1-marker" data-chair="chair-7-1"
+                style="top: 27px; left: 505.5px;" title="Chair 7-1 - Click to select"></div>
+              <!-- Chair 7-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-7-2-marker" data-chair="chair-7-2"
+                style="top: 27px; left: 523px;" title="Chair 7-2 - Click to select"></div>
+              <!-- Chair 7-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-7-3-marker" data-chair="chair-7-3"
+                style="top: 27px; left: 540px;" title="Chair 7-3 - Click to select"></div>
+              <!-- Chair 7-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-7-4-marker" data-chair="chair-7-4"
+                style="top: 46px; left: 556px;" title="Chair 7-4 - Click to select"></div>
+              <!-- Chair 7-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-7-5-marker" data-chair="chair-7-5"
+                style="top: 65px; left: 540px;" title="Chair 7-5 - Click to select"></div>
+              <!-- Chair 7-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-7-6-marker" data-chair="chair-7-6"
+                style="top: 65px; left: 523px;" title="Chair 7-6 - Click to select"></div>
+              <!-- Chair 7-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-7-7-marker" data-chair="chair-7-7"
+                style="top: 65px; left: 505.5px;" title="Chair 7-7 - Click to select"></div>
+              <!-- Chair 7-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-7-8-marker" data-chair="chair-7-8"
+                style="top: 46px; left: 487px;" title="Chair 7-8 - Click to select"></div>
+
+              <!-- Table 8 Chairs (8 chairs per table) -->
+              <!-- Chair 8-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-8-1-marker" data-chair="chair-8-1"
+                style="top: 238px; left: 392px;" title="Chair 8-1 - Click to select"></div>
+              <!-- Chair 8-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-8-2-marker" data-chair="chair-8-2"
+                style="top: 238px; left: 410px;" title="Chair 8-2 - Click to select"></div>
+              <!-- Chair 8-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-8-3-marker" data-chair="chair-8-3"
+                style="top: 238px; left: 427px;" title="Chair 8-3 - Click to select"></div>
+              <!-- Chair 8-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-8-4-marker" data-chair="chair-8-4"
+                style="top: 258px; left: 444px;" title="Chair 8-4 - Click to select"></div>
+              <!-- Chair 8-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-8-5-marker" data-chair="chair-8-5"
+                style="top: 278px; left: 427px;" title="Chair 8-5 - Click to select"></div>
+              <!-- Chair 8-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-8-6-marker" data-chair="chair-8-6"
+                style="top: 278px; left: 410px;" title="Chair 8-6 - Click to select"></div>
+              <!-- Chair 8-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-8-7-marker" data-chair="chair-8-7"
+                style="top: 278px; left: 392px;" title="Chair 8-7 - Click to select"></div>
+              <!-- Chair 8-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-8-8-marker" data-chair="chair-8-8"
+                style="top: 258px; left: 373px;" title="Chair 8-8 - Click to select"></div>
+
+              <!-- Table 9 Chairs (8 chairs per table) -->
+              <!-- Chair 9-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-9-1-marker" data-chair="chair-9-1"
+                style="top: 165px; left: 392px;" title="Chair 9-1 - Click to select"></div>
+              <!-- Chair 9-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-9-2-marker" data-chair="chair-9-2"
+                style="top: 165px; left: 410px;" title="Chair 9-2 - Click to select"></div>
+              <!-- Chair 9-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-9-3-marker" data-chair="chair-9-3"
+                style="top: 165px; left: 427px;" title="Chair 9-3 - Click to select"></div>
+              <!-- Chair 9-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-9-4-marker" data-chair="chair-9-4"
+                style="top: 185px; left: 444px;" title="Chair 9-4 - Click to select"></div>
+              <!-- Chair 9-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-9-5-marker" data-chair="chair-9-5"
+                style="top: 205px; left: 427px;" title="Chair 9-5 - Click to select"></div>
+              <!-- Chair 9-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-9-6-marker" data-chair="chair-9-6"
+                style="top: 205px; left: 410px;" title="Chair 9-6 - Click to select"></div>
+              <!-- Chair 9-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-9-7-marker" data-chair="chair-9-7"
+                style="top: 205px; left: 392px;" title="Chair 9-7 - Click to select"></div>
+              <!-- Chair 9-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-9-8-marker" data-chair="chair-9-8"
+                style="top: 185px; left: 373px;" title="Chair 9-8 - Click to select"></div>
+
+              <!-- Table 10 Chairs (8 chairs per table) -->
+              <!-- Chair 10-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-10-1-marker" data-chair="chair-10-1"
+                style="top: 95px; left: 392px;" title="Chair 10-1 - Click to select"></div>
+              <!-- Chair 10-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-10-2-marker" data-chair="chair-10-2"
+                style="top: 95px; left: 410px;" title="Chair 10-2 - Click to select"></div>
+              <!-- Chair 10-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-10-3-marker" data-chair="chair-10-3"
+                style="top: 95px; left: 427px;" title="Chair 10-3 - Click to select"></div>
+              <!-- Chair 10-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-10-4-marker" data-chair="chair-10-4"
+                style="top: 114px; left: 444px;" title="Chair 10-4 - Click to select"></div>
+              <!-- Chair 10-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-10-5-marker" data-chair="chair-10-5"
+                style="top: 133px; left: 427px;" title="Chair 10-5 - Click to select"></div>
+              <!-- Chair 10-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-10-6-marker" data-chair="chair-10-6"
+                style="top: 133px; left: 410px;" title="Chair 10-6 - Click to select"></div>
+              <!-- Chair 10-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-10-7-marker" data-chair="chair-10-7"
+                style="top: 133px; left: 392px;" title="Chair 10-7 - Click to select"></div>
+              <!-- Chair 10-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-10-8-marker" data-chair="chair-10-8"
+                style="top: 114px; left: 373px;" title="Chair 10-8 - Click to select"></div>
+
+              <!-- Table 11 Chairs (8 chairs per table) -->
+              <!-- Chair 11-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-11-1-marker" data-chair="chair-11-1"
+                style="top: 27px; left: 392px;" title="Chair 11-1 - Click to select"></div>
+              <!-- Chair 11-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-11-2-marker" data-chair="chair-11-2"
+                style="top: 27px; left: 410px;" title="Chair 11-2 - Click to select"></div>
+              <!-- Chair 11-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-11-3-marker" data-chair="chair-11-3"
+                style="top: 27px; left: 427px;" title="Chair 11-3 - Click to select"></div>
+              <!-- Chair 11-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-11-4-marker" data-chair="chair-11-4"
+                style="top: 46px; left: 444px;" title="Chair 11-4 - Click to select"></div>
+              <!-- Chair 11-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-11-5-marker" data-chair="chair-11-5"
+                style="top: 65px; left: 427px;" title="Chair 11-5 - Click to select"></div>
+              <!-- Chair 11-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-11-6-marker" data-chair="chair-11-6"
+                style="top: 65px; left: 410px;" title="Chair 11-6 - Click to select"></div>
+              <!-- Chair 11-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-11-7-marker" data-chair="chair-11-7"
+                style="top: 65px; left: 392px;" title="Chair 11-7 - Click to select"></div>
+              <!-- Chair 11-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-11-8-marker" data-chair="chair-11-8"
+                style="top: 46px; left: 373px;" title="Chair 11-8 - Click to select"></div>
+
+              <!-- Table 12 Chairs (8 chairs per table) -->
+              <!-- Chair 12-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-12-1-marker" data-chair="chair-12-1"
+                style="top: 238px; left: 289px;" title="Chair 12-1 - Click to select"></div>
+              <!-- Chair 12-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-12-2-marker" data-chair="chair-12-2"
+                style="top: 238px; left: 307px;" title="Chair 12-2 - Click to select"></div>
+              <!-- Chair 12-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-12-3-marker" data-chair="chair-12-3"
+                style="top: 238px; left: 324px;" title="Chair 12-3 - Click to select"></div>
+              <!-- Chair 12-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-12-4-marker" data-chair="chair-12-4"
+                style="top: 258px; left: 340px;" title="Chair 12-4 - Click to select"></div>
+              <!-- Chair 12-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-12-5-marker" data-chair="chair-12-5"
+                style="top: 278px; left: 324px;" title="Chair 12-5 - Click to select"></div>
+              <!-- Chair 12-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-12-6-marker" data-chair="chair-12-6"
+                style="top: 278px; left: 307px;" title="Chair 12-6 - Click to select"></div>
+              <!-- Chair 12-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-12-7-marker" data-chair="chair-12-7"
+                style="top: 278px; left: 289px;" title="Chair 12-7 - Click to select"></div>
+              <!-- Chair 12-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-12-8-marker" data-chair="chair-12-8"
+                style="top: 258px; left: 270px;" title="Chair 12-8 - Click to select"></div>
+
+              <!-- Table 13 Chairs (8 chairs per table) -->
+              <!-- Chair 13-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-13-1-marker" data-chair="chair-13-1"
+                style="top: 165px; left: 289px;" title="Chair 13-1 - Click to select"></div>
+              <!-- Chair 13-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-13-2-marker" data-chair="chair-13-2"
+                style="top: 165px; left: 307px;" title="Chair 13-2 - Click to select"></div>
+              <!-- Chair 13-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-13-3-marker" data-chair="chair-13-3"
+                style="top: 165px; left: 324px;" title="Chair 13-3 - Click to select"></div>
+              <!-- Chair 13-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-13-4-marker" data-chair="chair-13-4"
+                style="top: 185px; left: 340px;" title="Chair 13-4 - Click to select"></div>
+              <!-- Chair 13-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-13-5-marker" data-chair="chair-13-5"
+                style="top: 205px; left: 324px;" title="Chair 13-5 - Click to select"></div>
+              <!-- Chair 13-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-13-6-marker" data-chair="chair-13-6"
+                style="top: 205px; left: 307px;" title="Chair 13-6 - Click to select"></div>
+              <!-- Chair 13-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-13-7-marker" data-chair="chair-13-7"
+                style="top: 205px; left: 289px;" title="Chair 13-7 - Click to select"></div>
+              <!-- Chair 13-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-13-8-marker" data-chair="chair-13-8"
+                style="top: 185px; left: 270px;" title="Chair 13-8 - Click to select"></div>
+
+              <!-- Table 14 Chairs (8 chairs per table) -->
+              <!-- Chair 14-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-14-1-marker" data-chair="chair-14-1"
+                style="top: 95px; left: 289px;" title="Chair 14-1 - Click to select"></div>
+              <!-- Chair 14-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-14-2-marker" data-chair="chair-14-2"
+                style="top: 95px; left: 307px;" title="Chair 14-2 - Click to select"></div>
+              <!-- Chair 14-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-14-3-marker" data-chair="chair-14-3"
+                style="top: 95px; left: 324px;" title="Chair 14-3 - Click to select"></div>
+              <!-- Chair 14-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-14-4-marker" data-chair="chair-14-4"
+                style="top: 114px; left: 340px;" title="Chair 14-4 - Click to select"></div>
+              <!-- Chair 14-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-14-5-marker" data-chair="chair-14-5"
+                style="top: 133px; left: 324px;" title="Chair 14-5 - Click to select"></div>
+              <!-- Chair 14-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-14-6-marker" data-chair="chair-14-6"
+                style="top: 133px; left: 307px;" title="Chair 14-6 - Click to select"></div>
+              <!-- Chair 14-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-14-7-marker" data-chair="chair-14-7"
+                style="top: 133px; left: 289px;" title="Chair 14-7 - Click to select"></div>
+              <!-- Chair 14-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-14-8-marker" data-chair="chair-14-8"
+                style="top: 114px; left: 270px;" title="Chair 14-8 - Click to select"></div>
+
+              <!-- Table 15 Chairs (6 chairs per table - KEEP AT 6) -->
+              <!-- Chair 15-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-15-1-marker" data-chair="chair-15-1"
+                style="top: 25px; left: 306px;" title="Chair 15-1 - Click to select"></div>
+              <!-- Chair 15-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-15-2-marker" data-chair="chair-15-2"
+                style="top: 35px; left: 325px;" title="Chair 15-2 - Click to select"></div>
+              <!-- Chair 15-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-15-3-marker" data-chair="chair-15-3"
+                style="top: 57px; left: 325px;" title="Chair 15-3 - Click to select"></div>
+              <!-- Chair 15-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-15-4-marker" data-chair="chair-15-4"
+                style="top: 67px; left: 306px;" title="Chair 15-4 - Click to select"></div>
+              <!-- Chair 15-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-15-5-marker" data-chair="chair-15-5"
+                style="top: 57.5px; left: 286px;" title="Chair 15-5 - Click to select"></div>
+              <!-- Chair 15-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-15-6-marker" data-chair="chair-15-6"
+                style="top: 35px; left: 286px;" title="Chair 15-6 - Click to select"></div>
+
+              <!-- Table 16 Chairs (8 chairs per table) -->
+              <!-- Chair 16-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-16-1-marker" data-chair="chair-16-1"
+                style="top: 238px; left: 182px;" title="Chair 16-1 - Click to select"></div>
+              <!-- Chair 16-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-16-2-marker" data-chair="chair-16-2"
+                style="top: 238px; left: 199px;" title="Chair 16-2 - Click to select"></div>
+              <!-- Chair 16-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-16-3-marker" data-chair="chair-16-3"
+                style="top: 238px; left: 217px;" title="Chair 16-3 - Click to select"></div>
+              <!-- Chair 16-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-16-4-marker" data-chair="chair-16-4"
+                style="top: 258px; left: 232px;" title="Chair 16-4 - Click to select"></div>
+              <!-- Chair 16-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-16-5-marker" data-chair="chair-16-5"
+                style="top: 278px; left: 217px;" title="Chair 16-5 - Click to select"></div>
+              <!-- Chair 16-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-16-6-marker" data-chair="chair-16-6"
+                style="top: 278px; left: 199px;" title="Chair 16-6 - Click to select"></div>
+              <!-- Chair 16-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-16-7-marker" data-chair="chair-16-7"
+                style="top: 278px; left: 182px;" title="Chair 16-7 - Click to select"></div>
+              <!-- Chair 16-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-16-8-marker" data-chair="chair-16-8"
+                style="top: 258px; left: 163px;" title="Chair 16-8 - Click to select"></div>
+
+              <!-- Table 17 Chairs (8 chairs per table) -->
+              <!-- Chair 17-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-17-1-marker" data-chair="chair-17-1"
+                style="top: 165px; left: 182px;" title="Chair 17-1 - Click to select"></div>
+              <!-- Chair 17-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-17-2-marker" data-chair="chair-17-2"
+                style="top: 165px; left: 199px;" title="Chair 17-2 - Click to select"></div>
+              <!-- Chair 17-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-17-3-marker" data-chair="chair-17-3"
+                style="top: 165px; left: 217px;" title="Chair 17-3 - Click to select"></div>
+              <!-- Chair 17-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-17-4-marker" data-chair="chair-17-4"
+                style="top: 185px; left: 232px;" title="Chair 17-4 - Click to select"></div>
+              <!-- Chair 17-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-17-5-marker" data-chair="chair-17-5"
+                style="top: 205px; left: 217px;" title="Chair 17-5 - Click to select"></div>
+              <!-- Chair 17-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-17-6-marker" data-chair="chair-17-6"
+                style="top: 205px; left: 199px;" title="Chair 17-6 - Click to select"></div>
+              <!-- Chair 17-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-17-7-marker" data-chair="chair-17-7"
+                style="top: 205px; left: 182px;" title="Chair 17-7 - Click to select"></div>
+              <!-- Chair 17-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-17-8-marker" data-chair="chair-17-8"
+                style="top: 185px; left: 163px;" title="Chair 17-8 - Click to select"></div>
+
+              <!-- Table 18 Chairs (8 chairs per table) -->
+              <!-- Chair 18-1 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-18-1-marker" data-chair="chair-18-1"
+                style="top: 95px; left: 182px;" title="Chair 18-1 - Click to select"></div>
+              <!-- Chair 18-2 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-18-2-marker" data-chair="chair-18-2"
+                style="top: 95px; left: 199px;" title="Chair 18-2 - Click to select"></div>
+              <!-- Chair 18-3 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-18-3-marker" data-chair="chair-18-3"
+                style="top: 95px; left: 217px;" title="Chair 18-3 - Click to select"></div>
+              <!-- Chair 18-4 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-18-4-marker" data-chair="chair-18-4"
+                style="top: 114px; left: 232px;" title="Chair 18-4 - Click to select"></div>
+              <!-- Chair 18-5 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-18-5-marker" data-chair="chair-18-5"
+                style="top: 133px; left: 217px;" title="Chair 18-5 - Click to select"></div>
+              <!-- Chair 18-6 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-18-6-marker" data-chair="chair-18-6"
+                style="top: 133px; left: 199px;" title="Chair 18-6 - Click to select"></div>
+              <!-- Chair 18-7 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-18-7-marker" data-chair="chair-18-7"
+                style="top: 133px; left: 182px;" title="Chair 18-7 - Click to select"></div>
+              <!-- Chair 18-8 marker - INDIVIDUAL POSITION: top=100px, left=100px, SIZE: micro -->
+              <div class="chair-square size-micro" id="chair-18-8-marker" data-chair="chair-18-8"
+                style="top: 114px; left: 163px;" title="Chair 18-8 - Click to select"></div>
+            </div> <!-- End of floor-plan-content container -->
           </div>
         </div>
 
@@ -152,649 +1006,649 @@
 
               <!-- Table 1 -->
               <div id="table-1"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 1
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 2 -->
               <div id="table-2"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 2
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 3 -->
               <div id="table-3"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 3
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 4 -->
               <div id="table-4"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 4
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 5 -->
               <div id="table-5"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 5
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 6 -->
               <div id="table-6"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 6
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 7 -->
               <div id="table-7"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 7
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 8 -->
               <div id="table-8"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 8
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 9 -->
               <div id="table-9"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 9
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 10 -->
               <div id="table-10"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 10
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 11 -->
               <div id="table-11"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 11
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 12 -->
               <div id="table-12"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 12
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 13 -->
               <div id="table-13"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 13
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 14 -->
               <div id="table-14"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 14
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 15 -->
               <div id="table-15"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 15
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 16 -->
               <div id="table-16"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 16
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 17 -->
               <div id="table-17"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 17
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
               <!-- Table 18 -->
               <div id="table-18"
-                class="table-wrapper relative w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 18
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: -20px;"></button>
+                    style="top: -25px; left: 25px;"></button>
                   <button data-seat="2"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: -20px;"></button>
+                    style="top: -25px; left: 98px;"></button>
                   <button data-seat="3"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: -20px;"></button>
+                    style="top: -25px; left: 171px;"></button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 25%; top: calc(100% + 20px);"></button>
+                    style="top: 60px; left: 220px;"></button>
                   <button data-seat="5"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 50%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 171px;"></button>
                   <button data-seat="6"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: 75%; top: calc(100% + 20px);"></button>
+                    style="top: 155px; left: 98px;"></button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: -20px; top: 50%;"></button>
+                    style="top: 155px; left: 25px;"></button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
                     class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="left: calc(100% + 20px); top: 50%;"></button>
+                    style="top: 60px; left: -25px;"></button>
                 </div>
               </div>
 
@@ -866,6 +1720,470 @@
         }
       });
 
+      // Initialize floor plan markers
+      function initializeFloorPlanMarkers() {
+        var chairMarkers = document.querySelectorAll('.chair-square');
+
+        chairMarkers.forEach(function (marker) {
+          // Set initial state to available (green)
+          marker.classList.add('available');
+          marker.classList.remove('occupied');
+        });
+      }
+
+      // Initialize markers on page load
+      initializeFloorPlanMarkers();
+
+
+
+      // Setup zoom controls for floor plan
+      function setupZoomControls() {
+        var zoomInBtn = document.getElementById('zoom-in-btn');
+        var zoomOutBtn = document.getElementById('zoom-out-btn');
+        var zoomResetBtn = document.getElementById('zoom-reset-btn');
+        var floorPlanContent = document.getElementById('floor-plan-content');
+
+        if (!zoomInBtn || !zoomOutBtn || !zoomResetBtn || !floorPlanContent) return;
+
+        var currentZoom = 1;
+        var minZoom = 0.5;
+        var maxZoom = 3;
+        var zoomStep = 0.25;
+
+        function updateZoom() {
+          // Zoom the entire content container (floor plan + chairs) as one unit
+          floorPlanContent.style.transform = 'scale(' + currentZoom + ')';
+
+          // Update drag functionality with new zoom level
+          if (window.updateZoomLevel) {
+            window.updateZoomLevel(currentZoom);
+          }
+        }
+
+        function zoomIn() {
+          if (currentZoom < maxZoom) {
+            currentZoom = Math.min(currentZoom + zoomStep, maxZoom);
+            updateZoom();
+          }
+        }
+
+        function zoomOut() {
+          if (currentZoom > minZoom) {
+            currentZoom = Math.max(currentZoom - zoomStep, minZoom);
+            updateZoom();
+          }
+        }
+
+        function resetZoom() {
+          currentZoom = 1;
+          updateZoom();
+
+          // Reset drag position when zooming out to 1x
+          if (window.resetDragPosition) {
+            window.resetDragPosition();
+          }
+        }
+
+        // Add event listeners
+        zoomInBtn.addEventListener('click', zoomIn);
+        zoomOutBtn.addEventListener('click', zoomOut);
+        zoomResetBtn.addEventListener('click', resetZoom);
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+          // Custom zoom shortcuts (without Ctrl/Cmd to avoid browser zoom conflicts)
+          if (e.key === 'z' && !e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            zoomIn();
+          } else if (e.key === 'x' && !e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            zoomOut();
+          } else if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            resetZoom();
+          }
+        });
+
+        // Add wheel zoom support for custom controls only
+        var mapContainer = document.getElementById('map-container');
+        if (mapContainer) {
+          mapContainer.addEventListener('wheel', function (e) {
+            // Only allow zoom via wheel when not using Ctrl/Cmd (to avoid browser zoom)
+            if (!e.ctrlKey && !e.metaKey) {
+              e.preventDefault();
+              if (e.deltaY < 0) {
+                zoomIn();
+              } else {
+                zoomOut();
+              }
+            }
+          }, { passive: false });
+        }
+      }
+
+
+      // Initialize zoom controls
+      setupZoomControls();
+
+      // Handle browser zoom to keep chairs aligned
+      function setupBrowserZoomHandling() {
+        var floorPlanContent = document.getElementById('floor-plan-content');
+        var chairs = document.querySelectorAll('.chair-square');
+
+        if (!floorPlanContent || !chairs.length) return;
+
+        // Store original positions
+        var originalPositions = {};
+        chairs.forEach(function (chair) {
+          originalPositions[chair.id] = {
+            top: chair.style.top,
+            left: chair.style.left
+          };
+        });
+
+        // Handle browser zoom changes
+        function handleBrowserZoom() {
+          var currentZoom = window.devicePixelRatio || 1;
+
+          // Apply the same scale to chairs as the content container
+          chairs.forEach(function (chair) {
+            var original = originalPositions[chair.id];
+            if (original) {
+              // Maintain original positions but scale with the container
+              chair.style.top = original.top;
+              chair.style.left = original.left;
+              chair.style.transform = 'scale(' + currentZoom + ')';
+            }
+          });
+        }
+
+        // Listen for zoom events
+        window.addEventListener('resize', handleBrowserZoom);
+        window.addEventListener('orientationchange', handleBrowserZoom);
+
+        // Monitor for zoom changes
+        var lastZoom = window.devicePixelRatio || 1;
+        setInterval(function () {
+          var currentZoom = window.devicePixelRatio || 1;
+          if (Math.abs(currentZoom - lastZoom) > 0.1) {
+            lastZoom = currentZoom;
+            handleBrowserZoom();
+          }
+        }, 100);
+      }
+
+      // Initialize browser zoom handling
+      setupBrowserZoomHandling();
+
+      // Disable browser zoom while keeping custom controls
+      function disableBrowserZoom() {
+        // Prevent zoom via keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+          // Disable Ctrl/Cmd + Plus/Minus/0
+          if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+        });
+
+        // Prevent zoom via mouse wheel with Ctrl/Cmd
+        document.addEventListener('wheel', function (e) {
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+        }, { passive: false });
+
+        // Prevent zoom via touch gestures (pinch zoom)
+        document.addEventListener('touchstart', function (e) {
+          if (e.touches.length > 1) {
+            e.preventDefault();
+          }
+        }, { passive: false });
+
+        document.addEventListener('touchmove', function (e) {
+          if (e.touches.length > 1) {
+            e.preventDefault();
+          }
+        }, { passive: false });
+
+        // Prevent zoom via double-tap
+        var lastTouchEnd = 0;
+        document.addEventListener('touchend', function (e) {
+          var now = (new Date()).getTime();
+          if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+          }
+          lastTouchEnd = now;
+        }, { passive: false });
+
+        // Set viewport meta tag to prevent zoom
+        var viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+        } else {
+          var meta = document.createElement('meta');
+          meta.name = 'viewport';
+          meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+          document.head.appendChild(meta);
+        }
+      }
+
+      // Initialize browser zoom disabling
+      disableBrowserZoom();
+
+      // Add drag functionality for zoomed floor plan
+      function setupDragFunctionality() {
+        var floorPlanContent = document.getElementById('floor-plan-content');
+        var mapContainer = document.getElementById('map-container');
+
+        if (!floorPlanContent || !mapContainer) return;
+
+        var isDragging = false;
+        var startX, startY;
+        var currentX = 0, currentY = 0;
+        var currentZoom = 1;
+        var isZoomed = false;
+
+        // Update zoom level tracking
+        function updateZoomLevel(zoom) {
+          currentZoom = zoom;
+          isZoomed = zoom > 1.1; // Consider zoomed if more than 10% above 1x
+
+          // Update cursor based on zoom state
+          if (isZoomed) {
+            floorPlanContent.style.cursor = 'grab';
+          } else {
+            floorPlanContent.style.cursor = 'default';
+          }
+        }
+
+        // Mouse events
+        floorPlanContent.addEventListener('mousedown', function (e) {
+          if (!isZoomed) return;
+
+          isDragging = true;
+          startX = e.clientX - currentX;
+          startY = e.clientY - currentY;
+          floorPlanContent.classList.add('dragging');
+          e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function (e) {
+          if (!isDragging || !isZoomed) return;
+
+          currentX = e.clientX - startX;
+          currentY = e.clientY - startY;
+
+          // Apply translation along with existing scale
+          floorPlanContent.style.transform = 'scale(' + currentZoom + ') translate(' + (currentX / currentZoom) + 'px, ' + (currentY / currentZoom) + 'px)';
+        });
+
+        document.addEventListener('mouseup', function () {
+          if (isDragging) {
+            isDragging = false;
+            floorPlanContent.classList.remove('dragging');
+          }
+        });
+
+        // Touch events for mobile
+        floorPlanContent.addEventListener('touchstart', function (e) {
+          if (!isZoomed || e.touches.length !== 1) return;
+
+          isDragging = true;
+          startX = e.touches[0].clientX - currentX;
+          startY = e.touches[0].clientY - currentY;
+          floorPlanContent.classList.add('dragging');
+          e.preventDefault();
+        }, { passive: false });
+
+        document.addEventListener('touchmove', function (e) {
+          if (!isDragging || !isZoomed || e.touches.length !== 1) return;
+
+          currentX = e.touches[0].clientX - startX;
+          currentY = e.touches[0].clientY - startY;
+
+          // Apply translation along with existing scale
+          floorPlanContent.style.transform = 'scale(' + currentZoom + ') translate(' + (currentX / currentZoom) + 'px, ' + (currentY / currentZoom) + 'px)';
+          e.preventDefault();
+        }, { passive: false });
+
+        document.addEventListener('touchend', function () {
+          if (isDragging) {
+            isDragging = false;
+            floorPlanContent.classList.remove('dragging');
+          }
+        });
+
+        // Reset position when zoom changes
+        function resetDragPosition() {
+          currentX = 0;
+          currentY = 0;
+          floorPlanContent.style.transform = 'scale(' + currentZoom + ')';
+        }
+
+        // Expose functions for zoom controls
+        window.updateZoomLevel = updateZoomLevel;
+        window.resetDragPosition = resetDragPosition;
+      }
+
+      // Initialize drag functionality
+      setupDragFunctionality();
+
+      // Mobile photo viewer functionality
+      setupMobilePhotoViewer();
+
+
+      // Mobile photo viewer with touch gestures
+      function setupMobilePhotoViewer() {
+        var floorPlanContent = document.getElementById('floor-plan-content');
+        var mapContainer = document.getElementById('map-container');
+
+        if (!floorPlanContent || !mapContainer) return;
+
+        // Check if mobile
+        function isMobile() {
+          return window.innerWidth <= 768;
+        }
+
+        if (!isMobile()) return; // Only apply on mobile
+
+        var currentScale = 1;
+        var currentX = 0;
+        var currentY = 0;
+        var isDragging = false;
+        var startX, startY;
+        var lastTouchDistance = 0;
+        var initialDistance = 0;
+        var isPinching = false;
+
+        // Touch start
+        floorPlanContent.addEventListener('touchstart', function (e) {
+          if (e.touches.length === 1) {
+            // Single touch - start dragging
+            isDragging = true;
+            startX = e.touches[0].clientX - currentX;
+            startY = e.touches[0].clientY - currentY;
+            floorPlanContent.style.cursor = 'grabbing';
+          } else if (e.touches.length === 2) {
+            // Two touches - start pinch zoom
+            isPinching = true;
+            isDragging = false;
+            var touch1 = e.touches[0];
+            var touch2 = e.touches[1];
+            initialDistance = Math.sqrt(
+              Math.pow(touch2.clientX - touch1.clientX, 2) +
+              Math.pow(touch2.clientY - touch1.clientY, 2)
+            );
+            lastTouchDistance = initialDistance;
+          }
+        }, { passive: false });
+
+        // Touch move
+        floorPlanContent.addEventListener('touchmove', function (e) {
+          e.preventDefault();
+
+          if (isPinching && e.touches.length === 2) {
+            // Pinch zoom
+            var touch1 = e.touches[0];
+            var touch2 = e.touches[1];
+            var currentDistance = Math.sqrt(
+              Math.pow(touch2.clientX - touch1.clientX, 2) +
+              Math.pow(touch2.clientY - touch1.clientY, 2)
+            );
+
+            if (lastTouchDistance > 0) {
+              var scale = currentDistance / lastTouchDistance;
+              var newScale = currentScale * scale;
+
+              // Limit zoom range
+              newScale = Math.max(0.5, Math.min(3, newScale));
+
+              if (newScale !== currentScale) {
+                currentScale = newScale;
+                updateTransform();
+              }
+            }
+
+            lastTouchDistance = currentDistance;
+          } else if (isDragging && e.touches.length === 1) {
+            // Single touch drag
+            currentX = e.touches[0].clientX - startX;
+            currentY = e.touches[0].clientY - startY;
+            updateTransform();
+          }
+        }, { passive: false });
+
+        // Touch end
+        floorPlanContent.addEventListener('touchend', function (e) {
+          isDragging = false;
+          isPinching = false;
+          floorPlanContent.style.cursor = 'grab';
+
+          // Snap back to bounds if needed
+          if (currentScale < 1) {
+            currentScale = 1;
+            currentX = 0;
+            currentY = 0;
+            updateTransform();
+          }
+
+          // Reset chair transforms when not zoomed
+          if (currentScale === 1) {
+            var chairs = document.querySelectorAll('.chair-square');
+            chairs.forEach(function (chair) {
+              chair.style.transform = '';
+            });
+          }
+        }, { passive: false });
+
+        // Double tap to reset zoom
+        floorPlanContent.addEventListener('touchend', function (e) {
+          if (e.changedTouches.length === 1) {
+            var now = new Date().getTime();
+            if (now - (floorPlanContent.lastTouchEnd || 0) < 300) {
+              // Double tap detected
+              currentScale = 1;
+              currentX = 0;
+              currentY = 0;
+              updateTransform();
+
+              // Reset chair transforms
+              var chairs = document.querySelectorAll('.chair-square');
+              chairs.forEach(function (chair) {
+                chair.style.transform = '';
+              });
+            }
+            floorPlanContent.lastTouchEnd = now;
+          }
+        }, { passive: false });
+
+        // Update transform
+        function updateTransform() {
+          var transform = 'scale(' + currentScale + ') translate(' + (currentX / currentScale) + 'px, ' + (currentY / currentScale) + 'px)';
+          floorPlanContent.style.transform = transform;
+
+          // Apply inverse transform to chairs so they stay aligned
+          var chairs = document.querySelectorAll('.chair-square');
+          chairs.forEach(function (chair) {
+            chair.style.transform = 'scale(' + (1 / currentScale) + ') translate(' + (-currentX / currentScale) + 'px, ' + (-currentY / currentScale) + 'px)';
+          });
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', function () {
+          if (!isMobile()) {
+            // Reset if no longer mobile
+            currentScale = 1;
+            currentX = 0;
+            currentY = 0;
+            updateTransform();
+          }
+        });
+      }
+
       // Status display
       function showStatus(text, ok) {
         var el = document.getElementById('supabase-status');
@@ -889,6 +2207,7 @@
             console.log('Supabase initialized successfully');
             loadInitialData();
             subscribeToChanges();
+            setupMarkerClickHandlers();
           } else {
             showStatus('Supabase initialization failed', false);
             console.error('Supabase initialization failed');
@@ -897,6 +2216,36 @@
           showStatus('Supabase init error: ' + (e && e.message ? e.message : 'unknown'), false);
           console.error('Supabase init error:', e);
         }
+      }
+
+      // Setup click handlers for floor plan markers
+      function setupMarkerClickHandlers() {
+        var chairMarkers = document.querySelectorAll('.chair-square');
+
+        chairMarkers.forEach(function (marker) {
+          var chairId = marker.getAttribute('data-chair');
+          if (chairId) {
+            marker.addEventListener('click', function () {
+              // Parse chair ID (e.g., "chair-1-1" -> table 1, chair 1)
+              var chairParts = chairId.split('-');
+              if (chairParts.length < 3) return;
+
+              var tableNumber = parseInt(chairParts[1]);
+              var chairNumber = parseInt(chairParts[2]);
+
+              // Find the corresponding table
+              var correspondingTable = 'table-' + tableNumber;
+
+              if (TABLE_IDS.includes(correspondingTable)) {
+                var select = document.getElementById('table-select');
+                if (select) {
+                  select.value = correspondingTable;
+                  showTable(correspondingTable);
+                }
+              }
+            });
+          }
+        });
       }
 
       // Load initial data
@@ -974,6 +2323,48 @@
           Object.keys(seats).forEach(function (seatNum) {
             updateSeat(tableId, parseInt(seatNum, 10), !!seats[seatNum]);
           });
+        });
+        // Update floor plan markers
+        updateFloorPlanMarkers();
+      }
+
+      // Update floor plan markers based on seat occupancy
+      function updateFloorPlanMarkers() {
+        // Get all chair markers
+        var chairMarkers = document.querySelectorAll('.chair-square');
+
+        chairMarkers.forEach(function (marker) {
+          var chairId = marker.getAttribute('data-chair');
+          if (!chairId) return;
+
+          // Parse chair ID (e.g., "chair-1-1" -> table 1, chair 1)
+          var chairParts = chairId.split('-');
+          if (chairParts.length < 3) return;
+
+          var tableNumber = parseInt(chairParts[1]);
+          var chairNumber = parseInt(chairParts[2]);
+
+          // Check if this specific chair is occupied
+          var isOccupied = false;
+
+          // Find the corresponding table in occupancy state
+          var tableId = 'table-' + tableNumber;
+          if (occupancyState[tableId] && occupancyState[tableId].seats) {
+            var seats = occupancyState[tableId].seats;
+            // Check if this specific seat is occupied
+            if (seats[chairNumber] === true) {
+              isOccupied = true;
+            }
+          }
+
+          // Update marker color based on occupancy
+          if (isOccupied) {
+            marker.classList.remove('available');
+            marker.classList.add('occupied');
+          } else {
+            marker.classList.remove('occupied');
+            marker.classList.add('available');
+          }
         });
       }
 
