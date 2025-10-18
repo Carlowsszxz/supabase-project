@@ -15,6 +15,36 @@
   <script src="supabase.js"></script>
   <script src="auth-guard.js"></script>
   <style>
+    /* Prevent horizontal scrollbar */
+    html,
+    body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
+    body {
+      position: relative;
+    }
+
+    /* Ensure all containers respect viewport width */
+    main,
+    .max-w-4xl,
+    .container {
+      max-width: 100%;
+      overflow-x: hidden;
+      box-sizing: border-box;
+    }
+
+    /* Ensure all children don't cause overflow */
+    * {
+      box-sizing: border-box;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
     .seat-group {
       /* Global seat group offset - adjust these values to move all seats together */
       transform: translate(-20px, -20px);
@@ -393,10 +423,177 @@
       border-width: 3px;
     }
     }
+
+    /* Library-themed cursor follower - subtle and calm */
+    .cursor-follower {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(1);
+      transition: opacity 200ms ease-out;
+      will-change: transform, opacity;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      background: radial-gradient(circle, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.05) 50%, rgba(0, 0, 0, 0.02) 100%);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      opacity: 0;
+      z-index: 1;
+      /* Behind text and UI elements */
+    }
+
+    /* Dark mode - keep white cursor follower */
+    @media (prefers-color-scheme: dark) {
+      .cursor-follower {
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.02) 100%);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      }
+    }
+
+    /* Manual dark mode class support */
+    .dark .cursor-follower {
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.02) 100%);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* Hide on small screens and touch devices */
+    @media (max-width: 640px) {
+      .cursor-follower {
+        display: none;
+      }
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .cursor-follower {
+        display: none !important;
+      }
+    }
+
+    /* Responsive map messages */
+    .responsive-message {
+      display: none;
+      padding: 3rem 1.5rem;
+      text-align: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 1rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      margin: 2rem auto;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    @media (min-width: 640px) {
+      .responsive-message {
+        padding: 3rem 2rem;
+      }
+    }
+
+    .responsive-message h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .responsive-message p {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.95;
+      max-width: 500px;
+      margin: 0 auto;
+      word-wrap: break-word;
+    }
+
+    @media (max-width: 640px) {
+      .responsive-message h3 {
+        font-size: 1.25rem;
+      }
+
+      .responsive-message p {
+        font-size: 0.875rem;
+      }
+
+      .responsive-message svg {
+        width: 48px;
+        height: 48px;
+      }
+    }
+
+    .responsive-message svg {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1.5rem;
+      opacity: 0.9;
+    }
+
+    /* Ensure map section doesn't cause overflow when hidden */
+    #map-section {
+      max-width: 100%;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    /* Prevent zoom controls and map container from causing overflow */
+    .zoom-controls {
+      max-width: 100%;
+      overflow: visible;
+    }
+
+    #map-container {
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    #floor-plan-content {
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Mobile message - show on screens smaller than 768px */
+    @media (max-width: 767px) {
+      #mobile-message {
+        display: block;
+      }
+
+      #map-section {
+        display: none !important;
+        visibility: hidden;
+        height: 0;
+        overflow: hidden;
+      }
+    }
+
+    /* Small desktop message - show when window width is between 768px and 1023px */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      #small-window-message {
+        display: block;
+      }
+
+      #map-section {
+        display: none !important;
+        visibility: hidden;
+        height: 0;
+        overflow: hidden;
+      }
+    }
+
+    /* Show map only on desktop with reasonable width */
+    @media (min-width: 1024px) {
+      #map-section {
+        display: block;
+        visibility: visible;
+        height: auto;
+      }
+    }
   </style>
 </head>
 
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+  <div id="cursor-follower" class="cursor-follower" aria-hidden="true"></div>
   <header class="site-header" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
@@ -461,8 +658,31 @@
           </div>
         </div>
 
+        <!-- Responsive Messages -->
+        <!-- Mobile View Message -->
+        <div id="mobile-message" class="responsive-message">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+          <h3>Mobile View Detected</h3>
+          <p>Sorry, our map currently works best on desktop. Please use the dropdown menu above to browse available
+            occupancies.</p>
+        </div>
+
+        <!-- Small Window Message -->
+        <div id="small-window-message" class="responsive-message">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+          </svg>
+          <h3>Window Too Small</h3>
+          <p>Please resize your window to view the map properly. For the best experience, maximize your browser window
+            or use a larger screen.</p>
+        </div>
+
         <!-- Map Container Section -->
-        <div class="mb-6">
+        <div id="map-section" class="mb-6">
           <div class="flex items-center justify-between mb-3">
             <h2 class="text-xl font-semibold">Library Floor Plan</h2>
           </div>
@@ -1011,32 +1231,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -1047,32 +1267,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -1083,32 +1303,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -1119,32 +1339,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -1155,32 +1375,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -1191,32 +1411,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -1227,32 +1447,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -1263,32 +1483,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -1299,32 +1519,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -1335,32 +1555,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -1371,32 +1591,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -1407,32 +1627,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -1443,32 +1663,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -1479,68 +1699,59 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
               <!-- Table 15 -->
               <div id="table-15"
-                class="table-wrapper absolute w-48 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
+                class="table-wrapper absolute w-32 h-32 rounded-full bg-white border border-slate-200 flex items-center justify-center text-sm text-slate-600 hidden">
                 Table 15
                 <div class="seat-group absolute inset-0">
-                  <!-- Top row: 3 seats -->
+                  <!-- 6 seats arranged in a circle around the table -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -20px; left: 50%;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 20px; left: 112%;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
-                  <!-- Bottom row: 3 seats -->
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 95px; left: 112%;">3</button>
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 150px; left: 50%;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 95px; left: -12%;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
-                  <!-- Left side: 1 seat -->
-                  <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
-                  <!-- Right side: 1 seat -->
-                  <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 20px; left: -12%;">6</button>
                 </div>
               </div>
 
@@ -1551,32 +1762,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -1587,32 +1798,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -1623,32 +1834,32 @@
                 <div class="seat-group absolute inset-0">
                   <!-- Top row: 3 seats -->
                   <button data-seat="1"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 25px;">1</button>
                   <button data-seat="2"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 98px;">2</button>
                   <button data-seat="3"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: -25px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: -25px; left: 171px;">3</button>
                   <!-- Bottom row: 3 seats -->
                   <button data-seat="4"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: 220px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: 220px;">4</button>
                   <button data-seat="5"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 171px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 171px;">5</button>
                   <button data-seat="6"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 98px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 98px;">6</button>
                   <!-- Left side: 1 seat -->
                   <button data-seat="7"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 155px; left: 25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 155px; left: 25px;">7</button>
                   <!-- Right side: 1 seat -->
                   <button data-seat="8"
-                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2"
-                    style="top: 60px; left: -25px;"></button>
+                    class="seat absolute w-8 h-8 rounded-full bg-green-300 ring-2 ring-white -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-xs font-semibold text-white"
+                    style="top: 60px; left: -25px;">8</button>
                 </div>
               </div>
 
@@ -2583,6 +2794,52 @@
       }
       if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', handleLogout);
       if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+    })();
+  </script>
+  <script>
+    // Library-themed cursor follower
+    (function () {
+      const follower = document.getElementById('cursor-follower');
+      if (!follower) return;
+
+      // Hide on touch devices
+      const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+      if (isTouch) { follower.style.display = 'none'; return; }
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        follower.style.display = 'none'; return;
+      }
+
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let posX = mouseX;
+      let posY = mouseY;
+      const ease = 0.08; // Slower, more gentle movement for library theme
+      let isVisible = false;
+
+      // Gentle fade in/out on mouse movement
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!isVisible) {
+          follower.style.opacity = '0.6';
+          isVisible = true;
+        }
+      }, { passive: true });
+
+      // Fade out when mouse leaves window
+      window.addEventListener('mouseleave', () => {
+        follower.style.opacity = '0';
+        isVisible = false;
+      });
+
+      // Smooth following animation
+      function animate() {
+        posX += (mouseX - posX) * ease;
+        posY += (mouseY - posY) * ease;
+        follower.style.transform = `translate(${posX}px, ${posY}px) translate(-50%, -50%)`;
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
     })();
   </script>
 </body>

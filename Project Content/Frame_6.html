@@ -47,6 +47,177 @@
     [data-fade]:not([data-blur="false"]) {
       --fade-filter: blur(var(--fade-init));
     }
+
+    /* Enhanced seat button styles for better visibility and UX */
+    .seat-btn {
+      position: relative;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Enhanced text visibility with white text and shadow */
+    .seat-btn {
+      color: white !important;
+      text-shadow:
+        0 0 3px rgba(0, 0, 0, 0.8),
+        0 1px 2px rgba(0, 0, 0, 0.6),
+        1px 0 0 rgba(0, 0, 0, 0.5),
+        -1px 0 0 rgba(0, 0, 0, 0.5),
+        0 1px 0 rgba(0, 0, 0, 0.5),
+        0 -1px 0 rgba(0, 0, 0, 0.5);
+      font-weight: 700;
+      letter-spacing: 0.025em;
+    }
+
+    /* Dark mode text visibility - white text with dark shadow */
+    @media (prefers-color-scheme: dark) {
+      .seat-btn {
+        color: white !important;
+        text-shadow:
+          0 0 3px rgba(0, 0, 0, 0.8),
+          0 1px 2px rgba(0, 0, 0, 0.6),
+          1px 0 0 rgba(0, 0, 0, 0.5),
+          -1px 0 0 rgba(0, 0, 0, 0.5),
+          0 1px 0 rgba(0, 0, 0, 0.5),
+          0 -1px 0 rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    /* Manual dark mode support - white text with dark shadow */
+    .dark .seat-btn {
+      color: white !important;
+      text-shadow:
+        0 0 3px rgba(0, 0, 0, 0.8),
+        0 1px 2px rgba(0, 0, 0, 0.6),
+        1px 0 0 rgba(0, 0, 0, 0.5),
+        -1px 0 0 rgba(0, 0, 0, 0.5),
+        0 1px 0 rgba(0, 0, 0, 0.5),
+        0 -1px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    /* Enhanced hover effects */
+    .seat-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 10;
+    }
+
+    /* Active/pressed state */
+    .seat-btn:active {
+      transform: scale(0.95);
+      transition: transform 0.1s ease;
+    }
+
+    /* Focus state for accessibility */
+    .seat-btn:focus {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+
+    /* Seat state styles */
+    .seat-btn.occupied {
+      background-color: #ef4444 !important;
+      border-color: #dc2626 !important;
+      color: white !important;
+      text-shadow:
+        0 0 2px rgba(0, 0, 0, 0.5),
+        0 1px 1px rgba(0, 0, 0, 0.3);
+    }
+
+    .seat-btn.available {
+      background-color: #10b981 !important;
+      border-color: #059669 !important;
+      color: white !important;
+      text-shadow:
+        0 0 2px rgba(0, 0, 0, 0.5),
+        0 1px 1px rgba(0, 0, 0, 0.3);
+    }
+
+    .seat-btn.reserved {
+      background-color: #f59e0b !important;
+      border-color: #d97706 !important;
+      color: white !important;
+      text-shadow:
+        0 0 2px rgba(0, 0, 0, 0.5),
+        0 1px 1px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Tooltip styles */
+    .seat-tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 20;
+      margin-bottom: 4px;
+    }
+
+    .seat-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid transparent;
+      border-top-color: rgba(0, 0, 0, 0.9);
+    }
+
+    .seat-btn:hover .seat-tooltip {
+      opacity: 1;
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+      .seat-btn {
+        min-width: 44px;
+        min-height: 44px;
+        font-size: 12px;
+      }
+
+      .seat-btn:hover {
+        transform: scale(1.05);
+      }
+    }
+
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+      .seat-btn {
+        border-width: 3px;
+        font-weight: 900;
+      }
+
+      .seat-btn.occupied {
+        background-color: #dc2626 !important;
+        border-color: #991b1b !important;
+      }
+
+      .seat-btn.available {
+        background-color: #059669 !important;
+        border-color: #047857 !important;
+      }
+    }
+
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+      .seat-btn {
+        transition: none;
+      }
+
+      .seat-btn:hover {
+        transform: none;
+      }
+    }
   </style>
 </head>
 </head>
@@ -169,7 +340,10 @@
           <div class="grid grid-cols-4 gap-2 mb-4">
             <button data-table="table-1" data-seat="1"
               class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition flex items-center justify-center text-xs font-semibold text-slate-700"
-              onclick="toggleSeat(this)">1</button>
+              onclick="toggleSeat(this)">
+              1
+              <div class="seat-tooltip">Seat 1 - Available</div>
+            </button>
             <button data-table="table-1" data-seat="2"
               class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition flex items-center justify-center text-xs font-semibold text-slate-700"
               onclick="toggleSeat(this)">2</button>
@@ -754,7 +928,7 @@
                 All</button>
             </div>
           </div>
-          <div class="grid grid-cols-4 gap-2 mb-4">
+          <div class="grid grid-cols-3 gap-2 mb-4">
             <button data-table="table-15" data-seat="1"
               class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition flex items-center justify-center text-xs font-semibold text-slate-700"
               onclick="toggleSeat(this)">1</button>
@@ -773,14 +947,8 @@
             <button data-table="table-15" data-seat="6"
               class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition flex items-center justify-center text-xs font-semibold text-slate-700"
               onclick="toggleSeat(this)">6</button>
-            <button data-table="table-15" data-seat="7"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition flex items-center justify-center text-xs font-semibold text-slate-700"
-              onclick="toggleSeat(this)">7</button>
-            <button data-table="table-15" data-seat="8"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition flex items-center justify-center text-xs font-semibold text-slate-700"
-              onclick="toggleSeat(this)">8</button>
           </div>
-          <div class="text-sm text-slate-500">Occupancy: <span id="table-15-count">0</span>/8 seats</div>
+          <div class="text-sm text-slate-500">Occupancy: <span id="table-15-count">0</span>/6 seats</div>
         </div>
 
         <!-- Table 16 -->
@@ -944,13 +1112,15 @@
       // Simple state management
       var TABLE_IDS = ['table-1', 'table-2', 'table-3', 'table-4', 'table-5', 'table-6', 'table-7', 'table-8', 'table-9', 'table-10', 'table-11', 'table-12', 'table-13', 'table-14', 'table-15', 'table-16', 'table-17', 'table-18'];
       var SEATS_PER_TABLE = 8;
+      var TABLE_15_SEATS = 6; // Table 15 has only 6 seats
       var occupancyState = {};
       var supabaseInitialized = false;
 
       // Initialize state
       TABLE_IDS.forEach(function (id) {
         occupancyState[id] = { seats: {} };
-        for (var i = 1; i <= SEATS_PER_TABLE; i++) {
+        var seatsToInitialize = (id === 'table-15') ? TABLE_15_SEATS : SEATS_PER_TABLE;
+        for (var i = 1; i <= seatsToInitialize; i++) {
           occupancyState[id].seats[i] = false;
         }
       });
@@ -999,7 +1169,8 @@
             // Clear existing state
             TABLE_IDS.forEach(function (id) {
               occupancyState[id] = { seats: {} };
-              for (var i = 1; i <= SEATS_PER_TABLE; i++) {
+              var seatsToInitialize = (id === 'table-15') ? TABLE_15_SEATS : SEATS_PER_TABLE;
+              for (var i = 1; i <= seatsToInitialize; i++) {
                 occupancyState[id].seats[i] = false;
               }
             });
@@ -1084,7 +1255,8 @@
 
       // Update global stats
       function updateStats() {
-        var totalSeats = TABLE_IDS.length * SEATS_PER_TABLE;
+        // Calculate total seats accounting for Table 15 having only 6 seats
+        var totalSeats = (TABLE_IDS.length - 1) * SEATS_PER_TABLE + TABLE_15_SEATS;
         // Derive occupied from DOM to match visible state (red buttons)
         var occupiedSeats = document.querySelectorAll('.seat-btn.bg-red-500').length;
 
@@ -1140,7 +1312,8 @@
       // Clear all seats for a table
       function clearAllSeats(tableId) {
         console.log('Clearing all seats for table:', tableId);
-        for (var i = 1; i <= SEATS_PER_TABLE; i++) {
+        var seatsToClear = (tableId === 'table-15') ? TABLE_15_SEATS : SEATS_PER_TABLE;
+        for (var i = 1; i <= seatsToClear; i++) {
           occupancyState[tableId].seats[i] = false;
           updateSeat(tableId, i, false);
 
@@ -1157,7 +1330,8 @@
       // Occupy all seats for a table
       function occupyAllSeats(tableId) {
         console.log('Occupying all seats for table:', tableId);
-        for (var i = 1; i <= SEATS_PER_TABLE; i++) {
+        var seatsToOccupy = (tableId === 'table-15') ? TABLE_15_SEATS : SEATS_PER_TABLE;
+        for (var i = 1; i <= seatsToOccupy; i++) {
           occupancyState[tableId].seats[i] = true;
           updateSeat(tableId, i, true);
 
@@ -1418,6 +1592,135 @@
       }, { threshold: 0.1 });
 
       fadeElements.forEach(function (el) { observer.observe(el); });
+    })();
+  </script>
+  <script>
+    // Enhanced seat functionality with tooltips and better UX
+    (function () {
+      // Initialize tooltips for all seat buttons
+      function initializeSeatTooltips() {
+        const seatButtons = document.querySelectorAll('.seat-btn');
+        seatButtons.forEach(function (button) {
+          const tableId = button.getAttribute('data-table');
+          const seatNum = button.getAttribute('data-seat');
+          const tooltip = button.querySelector('.seat-tooltip');
+
+          if (!tooltip) {
+            // Create tooltip if it doesn't exist
+            const tooltipDiv = document.createElement('div');
+            tooltipDiv.className = 'seat-tooltip';
+            // Set initial tooltip text based on current state
+            if (button.classList.contains('bg-red-300') || button.classList.contains('bg-red-400') ||
+              button.classList.contains('bg-red-500') || button.classList.contains('occupied')) {
+              tooltipDiv.textContent = `Seat ${seatNum} - Occupied`;
+            } else if (button.classList.contains('bg-orange-300') || button.classList.contains('bg-orange-400') ||
+              button.classList.contains('bg-orange-500') || button.classList.contains('reserved')) {
+              tooltipDiv.textContent = `Seat ${seatNum} - Reserved`;
+            } else {
+              tooltipDiv.textContent = `Seat ${seatNum} - Available`;
+            }
+            button.appendChild(tooltipDiv);
+          }
+
+          // Add enhanced hover effects
+          button.addEventListener('mouseenter', function () {
+            updateTooltipText(button);
+          });
+
+          // Add touch support for mobile
+          button.addEventListener('touchstart', function (e) {
+            e.preventDefault();
+            updateTooltipText(button);
+            // Show tooltip briefly on touch
+            const tooltip = button.querySelector('.seat-tooltip');
+            if (tooltip) {
+              tooltip.style.opacity = '1';
+              setTimeout(function () {
+                tooltip.style.opacity = '0';
+              }, 1500);
+            }
+          });
+        });
+      }
+
+      // Update tooltip text based on seat state
+      function updateTooltipText(button) {
+        const tooltip = button.querySelector('.seat-tooltip');
+        if (!tooltip) return;
+
+        const tableId = button.getAttribute('data-table');
+        const seatNum = button.getAttribute('data-seat');
+
+        // Check for occupied state (red background)
+        if (button.classList.contains('bg-red-300') || button.classList.contains('bg-red-400') ||
+          button.classList.contains('bg-red-500') || button.classList.contains('occupied')) {
+          tooltip.textContent = `Seat ${seatNum} - Occupied`;
+        }
+        // Check for reserved state (orange background)
+        else if (button.classList.contains('bg-orange-300') || button.classList.contains('bg-orange-400') ||
+          button.classList.contains('bg-orange-500') || button.classList.contains('reserved')) {
+          tooltip.textContent = `Seat ${seatNum} - Reserved`;
+        }
+        // Check for available state (green background)
+        else if (button.classList.contains('bg-green-300') || button.classList.contains('bg-green-400') ||
+          button.classList.contains('bg-green-500') || button.classList.contains('available')) {
+          tooltip.textContent = `Seat ${seatNum} - Available`;
+        }
+        // Default fallback
+        else {
+          tooltip.textContent = `Seat ${seatNum} - Available`;
+        }
+      }
+
+      // Enhanced seat state management
+      function enhanceSeatStates() {
+        const seatButtons = document.querySelectorAll('.seat-btn');
+        seatButtons.forEach(function (button) {
+          // Add keyboard navigation support
+          button.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              toggleSeat(button);
+            }
+          });
+
+          // Add visual feedback for focus
+          button.addEventListener('focus', function () {
+            button.style.outline = '2px solid #3b82f6';
+            button.style.outlineOffset = '2px';
+          });
+
+          button.addEventListener('blur', function () {
+            button.style.outline = 'none';
+            button.style.outlineOffset = '0';
+          });
+        });
+      }
+
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+          initializeSeatTooltips();
+          enhanceSeatStates();
+        });
+      } else {
+        initializeSeatTooltips();
+        enhanceSeatStates();
+      }
+
+      // Override the existing updateSeat function to include tooltip updates
+      const originalUpdateSeat = window.updateSeat;
+      if (originalUpdateSeat) {
+        window.updateSeat = function (tableId, seatNum, isOccupied) {
+          originalUpdateSeat(tableId, seatNum, isOccupied);
+
+          // Update tooltip after state change
+          const button = document.querySelector(`[data-table="${tableId}"][data-seat="${seatNum}"]`);
+          if (button) {
+            updateTooltipText(button);
+          }
+        };
+      }
     })();
   </script>
 </body>

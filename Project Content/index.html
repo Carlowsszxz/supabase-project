@@ -47,6 +47,91 @@
     [data-fade]:not([data-blur="false"]) {
       --fade-filter: blur(var(--fade-init));
     }
+
+    /* Library-themed cursor follower - subtle and calm */
+    .cursor-follower {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(1);
+      transition: opacity 200ms ease-out;
+      will-change: transform, opacity;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      background: radial-gradient(circle, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.05) 50%, rgba(0, 0, 0, 0.02) 100%);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      opacity: 0;
+      z-index: 1;
+      /* Behind text and UI elements */
+    }
+
+    /* Dark mode - keep white cursor follower */
+    @media (prefers-color-scheme: dark) {
+      .cursor-follower {
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.02) 100%);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      }
+    }
+
+    /* Manual dark mode class support */
+    .dark .cursor-follower {
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.02) 100%);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* Hide on small screens and touch devices */
+    @media (max-width: 640px) {
+      .cursor-follower {
+        display: none;
+      }
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .cursor-follower {
+        display: none !important;
+      }
+    }
+
+    /* Paper-textured background with subtle parallax */
+    .paper-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 120%;
+      height: 120%;
+      background-color: #f9f9f9;
+      background-image:
+        radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.02) 1px, transparent 0),
+        linear-gradient(45deg, rgba(0, 0, 0, 0.01) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.01) 75%),
+        linear-gradient(-45deg, rgba(0, 0, 0, 0.01) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.01) 75%);
+      background-size: 20px 20px, 40px 40px, 40px 40px;
+      background-position: 0 0, 0 0, 20px 20px;
+      pointer-events: none;
+      z-index: -1;
+      will-change: transform;
+      transition: transform 0.1s ease-out;
+    }
+
+    /* Disable parallax on mobile and touch devices */
+    @media (max-width: 768px) {
+      .paper-background {
+        transform: none !important;
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .paper-background {
+        transform: none !important;
+      }
+    }
   </style>
 
   <script defer src="theme.js"></script>
@@ -68,6 +153,8 @@
 </head>
 
 <body class="text-slate-900 min-h-screen flex flex-col relative">
+  <div id="cursor-follower" class="cursor-follower" aria-hidden="true"></div>
+  <div id="paper-background" class="paper-background" aria-hidden="true"></div>
   <header class="site-header" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
@@ -768,6 +855,104 @@
       transition: opacity 1500ms ease-in-out;
     }
   </style>
+  <script>
+    (function () {
+      const follower = document.getElementById('cursor-follower');
+      if (!follower) return;
+
+      // Hide on touch devices
+      const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+      if (isTouch) { follower.style.display = 'none'; return; }
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        follower.style.display = 'none'; return;
+      }
+
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let posX = mouseX;
+      let posY = mouseY;
+      const ease = 0.08; // Slower, more gentle movement for library theme
+      let isVisible = false;
+
+      // Gentle fade in/out on mouse movement
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!isVisible) {
+          follower.style.opacity = '0.6';
+          isVisible = true;
+        }
+      }, { passive: true });
+
+      // Fade out when mouse leaves window
+      window.addEventListener('mouseleave', () => {
+        follower.style.opacity = '0';
+        isVisible = false;
+      });
+
+      // Smooth following animation
+      function animate() {
+        posX += (mouseX - posX) * ease;
+        posY += (mouseY - posY) * ease;
+        follower.style.transform = `translate(${posX}px, ${posY}px) translate(-50%, -50%)`;
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+    })();
+  </script>
+  <script>
+    // Subtle parallax paper background effect
+    (function () {
+      const paperBg = document.getElementById('paper-background');
+      if (!paperBg) return;
+
+      // Hide parallax on touch devices and mobile
+      const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+      const isMobile = window.innerWidth <= 768;
+      if (isTouch || isMobile) {
+        paperBg.style.display = 'none';
+        return;
+      }
+
+      // Respect reduced motion preference
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+      }
+
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let targetX = 0;
+      let targetY = 0;
+      const parallaxStrength = 0.02; // Very subtle movement
+      const ease = 0.05; // Smooth following
+
+      // Update mouse position
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        // Calculate subtle offset (opposite direction for parallax effect)
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        targetX = (mouseX - centerX) * parallaxStrength;
+        targetY = (mouseY - centerY) * parallaxStrength;
+      }, { passive: true });
+
+      // Smooth parallax animation
+      function updateParallax() {
+        const currentX = parseFloat(paperBg.style.transform.match(/translateX\(([^)]+)\)/) || [0, 0])[1] || 0;
+        const currentY = parseFloat(paperBg.style.transform.match(/translateY\(([^)]+)\)/) || [0, 0])[1] || 0;
+
+        const newX = currentX + (targetX - currentX) * ease;
+        const newY = currentY + (targetY - currentY) * ease;
+
+        paperBg.style.transform = `translate(${newX}px, ${newY}px)`;
+        requestAnimationFrame(updateParallax);
+      }
+
+      requestAnimationFrame(updateParallax);
+    })();
+  </script>
 </body>
 
 </html>

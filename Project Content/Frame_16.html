@@ -29,10 +29,189 @@
     [data-fade]:not([data-blur="false"]) {
       --fade-filter: blur(var(--fade-init));
     }
+
+    /* Library-themed cursor follower - subtle and calm */
+    .cursor-follower {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(1);
+      transition: opacity 200ms ease-out;
+      will-change: transform, opacity;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      background: radial-gradient(circle, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.05) 50%, rgba(0, 0, 0, 0.02) 100%);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      opacity: 0;
+      z-index: 1;
+      /* Behind text and UI elements */
+    }
+
+    /* Dark mode - keep white cursor follower */
+    @media (prefers-color-scheme: dark) {
+      .cursor-follower {
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.02) 100%);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      }
+    }
+
+    /* Manual dark mode class support */
+    .dark .cursor-follower {
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.02) 100%);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* Hide on small screens and touch devices */
+    @media (max-width: 640px) {
+      .cursor-follower {
+        display: none;
+      }
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .cursor-follower {
+        display: none !important;
+      }
+    }
+
+    /* Confirmation Modal Styles */
+    .confirmation-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 1rem;
+    }
+
+    .confirmation-modal {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+      overflow: hidden;
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .confirmation-modal-header {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .confirmation-modal-header svg {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+
+    .confirmation-modal-header h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .confirmation-modal-body {
+      padding: 1.5rem;
+      color: #334155;
+      line-height: 1.6;
+    }
+
+    .confirmation-modal-body p {
+      margin: 0 0 1rem 0;
+    }
+
+    .confirmation-modal-body .warning-text {
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      color: #991b1b;
+      margin-top: 1rem;
+    }
+
+    .confirmation-modal-footer {
+      padding: 1rem 1.5rem;
+      background: #f8fafc;
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .confirmation-modal-footer button {
+      padding: 0.625rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+      font-size: 0.875rem;
+    }
+
+    .confirmation-modal-footer .btn-cancel {
+      background: white;
+      color: #64748b;
+      border: 1px solid #cbd5e1;
+    }
+
+    .confirmation-modal-footer .btn-cancel:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+
+    .confirmation-modal-footer .btn-confirm {
+      background: #ef4444;
+      color: white;
+    }
+
+    .confirmation-modal-footer .btn-confirm:hover {
+      background: #dc2626;
+    }
+
+    @media (max-width: 640px) {
+      .confirmation-modal-header h3 {
+        font-size: 1.125rem;
+      }
+
+      .confirmation-modal-footer {
+        flex-direction: column-reverse;
+      }
+
+      .confirmation-modal-footer button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+  <div id="cursor-follower" class="cursor-follower" aria-hidden="true"></div>
   <header class="site-header" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" data-fade data-blur="true"
@@ -338,6 +517,31 @@
     data-duration="1000" data-delay="100">© 2025 UMak Library · Noise Comfort Index</footer>
   <div id="supabase-status" class="px-2 py-1 rounded-md text-xs bg-slate-200 text-slate-700 hidden"></div>
 
+  <!-- Confirmation Modal -->
+  <div id="confirmationModal" class="confirmation-modal-overlay hidden">
+    <div class="confirmation-modal">
+      <div class="confirmation-modal-header">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <h3>Confirm Report Submission</h3>
+      </div>
+      <div class="confirmation-modal-body">
+        <p>Are you sure you want to submit this noise report?</p>
+        <div class="warning-text">
+          <strong>⚠️ Important Notice:</strong><br>
+          If the admin discovers that this report is invalid or falsified, sanctions may apply. Please ensure all
+          information provided is accurate and truthful.
+        </div>
+      </div>
+      <div class="confirmation-modal-footer">
+        <button type="button" id="cancelConfirmation" class="btn-cancel">Cancel</button>
+        <button type="button" id="confirmSubmission" class="btn-confirm">Yes, Submit Report</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Success Modal -->
   <div id="successModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
     <div class="bg-white rounded-xl p-6 w-full max-w-md">
@@ -463,6 +667,37 @@
           if (!duration) { alert('Please select duration'); return; }
           if (!urgency) { alert('Please select urgency level'); return; }
 
+          // Show confirmation modal
+          var confirmationModal = document.getElementById('confirmationModal');
+          confirmationModal.classList.remove('hidden');
+
+          // Wait for user confirmation
+          return; // Don't submit yet
+        });
+
+        // Handle confirmation modal
+        var confirmationModal = document.getElementById('confirmationModal');
+        var cancelConfirmation = document.getElementById('cancelConfirmation');
+        var confirmSubmission = document.getElementById('confirmSubmission');
+
+        // Cancel button - hide modal
+        cancelConfirmation.addEventListener('click', function () {
+          confirmationModal.classList.add('hidden');
+        });
+
+        // Confirm button - actually submit the form
+        confirmSubmission.addEventListener('click', async function () {
+          // Hide confirmation modal
+          confirmationModal.classList.add('hidden');
+
+          // Get form data again
+          var noiseLevel = document.querySelector('input[name="noiseLevel"]:checked');
+          var location = document.getElementById('location').value;
+          var noiseTypes = Array.from(document.querySelectorAll('input[name="noiseType"]:checked')).map(function (cb) { return cb.value; });
+          var duration = document.getElementById('duration').value;
+          var description = document.getElementById('description').value;
+          var urgency = document.querySelector('input[name="urgency"]:checked');
+
           submitBtn.disabled = true;
           submitBtn.textContent = 'Submitting...';
 
@@ -495,6 +730,15 @@
             if (level >= 4.5) return 'critical';
             if (level >= 3) return 'warning';
             return 'info';
+          }
+        });
+      }
+
+      // Close modal when clicking outside
+      if (confirmationModal) {
+        confirmationModal.addEventListener('click', function (e) {
+          if (e.target === confirmationModal) {
+            confirmationModal.classList.add('hidden');
           }
         });
       }
@@ -744,6 +988,52 @@
       transform: translateY(-1px);
     }
   </style>
+  <script>
+    // Library-themed cursor follower
+    (function () {
+      const follower = document.getElementById('cursor-follower');
+      if (!follower) return;
+
+      // Hide on touch devices
+      const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+      if (isTouch) { follower.style.display = 'none'; return; }
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        follower.style.display = 'none'; return;
+      }
+
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let posX = mouseX;
+      let posY = mouseY;
+      const ease = 0.08; // Slower, more gentle movement for library theme
+      let isVisible = false;
+
+      // Gentle fade in/out on mouse movement
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!isVisible) {
+          follower.style.opacity = '0.6';
+          isVisible = true;
+        }
+      }, { passive: true });
+
+      // Fade out when mouse leaves window
+      window.addEventListener('mouseleave', () => {
+        follower.style.opacity = '0';
+        isVisible = false;
+      });
+
+      // Smooth following animation
+      function animate() {
+        posX += (mouseX - posX) * ease;
+        posY += (mouseY - posY) * ease;
+        follower.style.transform = `translate(${posX}px, ${posY}px) translate(-50%, -50%)`;
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+    })();
+  </script>
 </body>
 
 </html>
