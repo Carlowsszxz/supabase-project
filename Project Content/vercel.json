@@ -1,15 +1,60 @@
 {
-    "redirects": [
-        {
-            "source": "/:path.html",
-            "destination": "/:path",
-            "permanent": true
-        }
-    ],
     "rewrites": [
         {
-            "source": "/:path",
-            "destination": "/:path.html"
+            "source": "/login",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/register",
+            "destination": "/Frame_5.html"
+        },
+        {
+            "source": "/map",
+            "destination": "/Frame_8.html"
+        },
+        {
+            "source": "/profile",
+            "destination": "/Frame_11.html"
+        },
+        {
+            "source": "/report",
+            "destination": "/Frame_16.html"
+        },
+        {
+            "source": "/admin",
+            "destination": "/Frame_19.html"
+        }
+    ],
+    "redirects": [
+        {
+            "source": "/index.html",
+            "destination": "/login",
+            "permanent": true
+        },
+        {
+            "source": "/Frame_5.html",
+            "destination": "/register",
+            "permanent": true
+        },
+        {
+            "source": "/Frame_8.html",
+            "destination": "/map",
+            "permanent": true
+        },
+        {
+            "source": "/Frame_11.html",
+            "destination": "/profile",
+            "permanent": true
+        },
+        {
+            "source": "/Frame_16.html",
+            "destination": "/report",
+            "permanent": true
+        },
+        {
+            "source": "/Frame_19.html",
+            "destination": "/admin",
+            "permanent": true
         }
     ]
 }
