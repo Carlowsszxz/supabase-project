@@ -368,6 +368,69 @@
           <!-- Right Column -->
           <div class="space-y-6">
 
+            <!-- Noise Level Monitor -->
+            <div class="card">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="card-title">Table Noise Level</h2>
+                <div class="text-xs text-slate-500" id="noiseTableLabel">—</div>
+              </div>
+
+              <!-- Vertical Noise Bar -->
+              <div class="flex items-end gap-4 h-48">
+                <!-- The Bar Container -->
+                <div class="relative w-16 h-full bg-slate-100 rounded-lg overflow-hidden shadow-inner">
+                  <!-- Background gradient markers -->
+                  <div class="absolute inset-0 flex flex-col">
+                    <div class="flex-1 bg-gradient-to-b from-red-50 to-red-100"></div>
+                    <div class="flex-1 bg-gradient-to-b from-yellow-50 to-yellow-100"></div>
+                    <div class="flex-1 bg-gradient-to-b from-green-50 to-green-100"></div>
+                  </div>
+
+                  <!-- Animated noise level fill -->
+                  <div id="noiseLevelFill"
+                    class="absolute bottom-0 left-0 right-0 transition-all duration-500 ease-out rounded-t-lg"
+                    style="height: 25%; background: linear-gradient(to top, #10b981, #34d399);">
+                  </div>
+
+                  <!-- Level markers -->
+                  <div class="absolute inset-0 flex flex-col justify-between py-2 px-1 pointer-events-none">
+                    <div class="text-[10px] font-bold text-red-600">🔴</div>
+                    <div class="text-[10px] font-bold text-yellow-600">🟡</div>
+                    <div class="text-[10px] font-bold text-green-600">🟢</div>
+                  </div>
+                </div>
+
+                <!-- Level Info -->
+                <div class="flex-1 space-y-3">
+                  <div class="space-y-1">
+                    <div class="flex items-baseline gap-2">
+                      <div id="noiseValue" class="text-3xl font-bold text-slate-800">42</div>
+                      <div class="text-sm text-slate-500">dB</div>
+                    </div>
+                    <div id="noiseStatus" class="text-sm font-medium text-green-600">🟢 Quiet</div>
+                  </div>
+
+                  <div class="space-y-2 text-xs text-slate-600">
+                    <div class="flex items-center gap-2">
+                      <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                      <span>0-50 dB: Quiet</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                      <span>50-70 dB: Moderate</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                      <span>70+ dB: Noisy</span>
+                    </div>
+                  </div>
+
+                  <div class="text-xs text-slate-400 italic" id="noiseTimestamp">
+                    Updated just now
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <!-- Study Goals -->
             <div class="card">
@@ -413,7 +476,6 @@
   </main>
   <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
     data-duration="1000" data-delay="100">© 2025 UMak Library · Noise Comfort Index</footer>
-  <div id="supabase-status" class="px-2 py-1 rounded-md text-xs bg-slate-200 text-slate-700 hidden"></div>
 
   <!-- Seat Selection Modal -->
   <div id="seatModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4">
@@ -490,36 +552,18 @@
         if (el) el.value = val != null ? String(val) : '';
       }
 
-      // Supabase init with status
-      function showStatus(text, ok) {
-        var el = document.getElementById('supabase-status');
-        if (!el) return;
-        el.textContent = text || '';
-        if (text) {
-          el.classList.remove('hidden');
-          el.classList.remove('bg-red-200', 'text-red-700');
-          el.classList.remove('bg-green-200', 'text-green-700');
-          if (ok) {
-            el.classList.add('bg-green-200', 'text-green-700');
-          } else {
-            el.classList.add('bg-red-200', 'text-red-700');
-          }
-        } else {
-          el.classList.add('hidden');
-        }
-      }
 
       // Initialize Supabase
       var supabaseInitialized = false;
       try {
         if (initSupabase()) {
           supabaseInitialized = true;
-          showStatus('Supabase: Connected', true);
+          console.log('Supabase: Connected');
         } else {
-          showStatus('Supabase: Error', false);
+          console.error('Supabase: Error');
         }
       } catch (err) {
-        showStatus('Supabase: Error', false);
+        console.error('Supabase: Error', err);
       }
 
       function populateFromProfile(profile, user) {
@@ -979,6 +1023,172 @@
         requestAnimationFrame(animate);
       }
       requestAnimationFrame(animate);
+    })();
+  </script>
+
+  <script>
+    // Noise Level Monitoring System with Realistic Simulation
+    (function () {
+      var noiseLevelFill = document.getElementById('noiseLevelFill');
+      var noiseValue = document.getElementById('noiseValue');
+      var noiseStatus = document.getElementById('noiseStatus');
+      var noiseTableLabel = document.getElementById('noiseTableLabel');
+      var noiseTimestamp = document.getElementById('noiseTimestamp');
+
+      if (!noiseLevelFill || !noiseValue || !noiseStatus) return;
+
+      // Get user's current table from profile data
+      var currentTable = 'Table 18'; // Default for demo
+      var currentTableId = 'table-18';
+
+      // Try to get actual seat info if user is checked in
+      setTimeout(function () {
+        var currentSeatEl = document.getElementById('currentSeat');
+        if (currentSeatEl && currentSeatEl.textContent !== '—') {
+          var seatText = currentSeatEl.textContent;
+          // Extract table number if format is like "Table 1, Seat 3"
+          var match = seatText.match(/Table (\d+)/i);
+          if (match) {
+            currentTable = 'Table ' + match[1];
+            currentTableId = 'table-' + match[1];
+          }
+        }
+        noiseTableLabel.textContent = currentTable;
+      }, 500);
+
+      // Noise simulation variables
+      var currentNoiseLevel = 42; // Start at quiet level (42 dB)
+      var targetNoiseLevel = 42;
+      var baselineNoise = 38; // Library baseline (very quiet)
+      var maxNoise = 85; // Maximum noise level
+
+      // Time-based patterns (library is quieter in morning, noisier in afternoon)
+      function getTimeBasedBaseline() {
+        var hour = new Date().getHours();
+        if (hour >= 8 && hour < 10) return 40; // Early morning - very quiet
+        if (hour >= 10 && hour < 12) return 45; // Late morning - quiet
+        if (hour >= 12 && hour < 14) return 55; // Lunch time - moderate
+        if (hour >= 14 && hour < 16) return 50; // Early afternoon - moderate
+        if (hour >= 16 && hour < 18) return 52; // Late afternoon - moderate
+        if (hour >= 18 && hour < 20) return 48; // Evening - quiet
+        return 42; // Default
+      }
+
+      // Update noise level with realistic variations
+      function updateNoiseLevel() {
+        var timeBaseline = getTimeBasedBaseline();
+
+        // Random events (someone talking, chair moving, etc.)
+        var eventChance = Math.random();
+        if (eventChance < 0.02) {
+          // 2% chance: Someone talking nearby (spike)
+          targetNoiseLevel = timeBaseline + Math.random() * 20 + 10;
+        } else if (eventChance < 0.05) {
+          // 3% chance: Activity increase (moderate)
+          targetNoiseLevel = timeBaseline + Math.random() * 10;
+        } else if (eventChance < 0.15) {
+          // 10% chance: Slight activity
+          targetNoiseLevel = timeBaseline + Math.random() * 5;
+        } else {
+          // Normal ambient noise with small variations
+          targetNoiseLevel = timeBaseline + (Math.random() - 0.5) * 4;
+        }
+
+        // Clamp target
+        targetNoiseLevel = Math.max(baselineNoise, Math.min(maxNoise, targetNoiseLevel));
+
+        // Smooth transition to target (simulates gradual changes)
+        var smoothing = 0.15;
+        currentNoiseLevel += (targetNoiseLevel - currentNoiseLevel) * smoothing;
+
+        // Add tiny random fluctuations for realism
+        currentNoiseLevel += (Math.random() - 0.5) * 1;
+
+        // Clamp final value
+        currentNoiseLevel = Math.max(baselineNoise, Math.min(maxNoise, currentNoiseLevel));
+      }
+
+      // Update visual display
+      function updateDisplay() {
+        var level = Math.round(currentNoiseLevel);
+        var percentage = Math.min(100, Math.max(0, ((level - 30) / (85 - 30)) * 100));
+
+        // Update value display
+        noiseValue.textContent = level;
+
+        // Update bar height
+        noiseLevelFill.style.height = percentage + '%';
+
+        // Update colors and status based on level
+        var status, statusColor, gradient;
+        if (level < 50) {
+          status = '🟢 Quiet';
+          statusColor = 'text-green-600';
+          gradient = 'linear-gradient(to top, #10b981, #34d399)';
+        } else if (level < 70) {
+          status = '🟡 Moderate';
+          statusColor = 'text-yellow-600';
+          gradient = 'linear-gradient(to top, #f59e0b, #fbbf24)';
+        } else {
+          status = '🔴 Noisy';
+          statusColor = 'text-red-600';
+          gradient = 'linear-gradient(to top, #ef4444, #f87171)';
+        }
+
+        noiseStatus.textContent = status;
+        noiseStatus.className = 'text-sm font-medium ' + statusColor;
+        noiseLevelFill.style.background = gradient;
+
+        // Update timestamp
+        updateTimestamp();
+      }
+
+      // Update timestamp
+      var lastUpdate = Date.now();
+      function updateTimestamp() {
+        var now = Date.now();
+        var seconds = Math.floor((now - lastUpdate) / 1000);
+        if (seconds < 5) {
+          noiseTimestamp.textContent = 'Updated just now';
+        } else if (seconds < 60) {
+          noiseTimestamp.textContent = 'Updated ' + seconds + 's ago';
+        } else {
+          var minutes = Math.floor(seconds / 60);
+          noiseTimestamp.textContent = 'Updated ' + minutes + 'm ago';
+        }
+      }
+
+      // Main animation loop
+      function animate() {
+        updateNoiseLevel();
+        updateDisplay();
+        requestAnimationFrame(animate);
+      }
+
+      // Start animation
+      animate();
+
+      // Reset timestamp every second
+      setInterval(function () {
+        lastUpdate = Date.now();
+      }, 1000);
+
+      // Simulate getting data from Supabase every 3 seconds
+      // (This is where real IoT data would be fetched)
+      setInterval(function () {
+        // In production, replace this with:
+        // window.supabaseDB.getNoiseLevel(currentTableId).then(function(result) {
+        //   if (result && result.data) {
+        //     targetNoiseLevel = result.data.noise_level;
+        //   }
+        // });
+
+        // For now, just add some random variation
+        var variation = (Math.random() - 0.5) * 10;
+        targetNoiseLevel = Math.max(baselineNoise, Math.min(maxNoise, targetNoiseLevel + variation));
+      }, 3000);
+
+      console.log('Noise Level Monitor initialized for ' + currentTable);
     })();
   </script>
 </body>
