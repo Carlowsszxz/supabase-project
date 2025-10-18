@@ -46,6 +46,11 @@
             "permanent": true
         },
         {
+            "source": "/how-to.html",
+            "destination": "/how",
+            "permanent": true
+        },
+        {
             "source": "/Frame_11.html",
             "destination": "/profile",
             "permanent": true
@@ -63,3 +68,4 @@
     ]
 
 }
+
