@@ -9,6 +9,10 @@
             "destination": "/Frame_5.html"
         },
         {
+            "source": "/how",
+            "destination": "/how-to.html"
+        },
+        {
             "source": "/map",
             "destination": "/Frame_8.html"
         },
@@ -57,4 +61,5 @@
             "permanent": true
         }
     ]
+
 }
