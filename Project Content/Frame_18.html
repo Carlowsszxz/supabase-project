@@ -75,7 +75,6 @@
       <div class="mb-8" data-fade data-blur="true" data-initial-opacity="0" data-duration="900">
         <h1 class="text-3xl font-bold mb-2">Student Reports</h1>
         <p class="text-slate-600">View and handle submitted noise reports</p>
-        <div id="supabase-status" class="mt-2 text-xs text-slate-500"></div>
       </div>
 
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 mb-8 card-hover" data-fade
@@ -146,12 +145,6 @@
       var filterSel = document.getElementById('filterType');
       var refreshBtn = document.getElementById('refreshBtn');
 
-      function showStatus(text, ok) {
-        var el = document.getElementById('supabase-status');
-        if (!el) return;
-        el.textContent = text || '';
-        el.className = 'mt-2 text-xs ' + (ok ? 'text-green-600' : 'text-red-600');
-      }
 
       function fmtTime(ts) {
         try { return new Date(ts).toLocaleString(); } catch (_) { return '—'; }
@@ -218,7 +211,6 @@
           renderRows(applyFilter(data));
         }).catch(function (err) {
           console.error('Failed to fetch reports:', err);
-          showStatus('Failed to load reports', false);
         });
       }
 
@@ -303,7 +295,7 @@
         try {
           var ok = await initSupabaseWithRetry();
           supabaseInitialized = !!ok;
-          showStatus(ok ? 'Connected to Supabase' : 'Supabase not available', !!ok);
+          console.log(ok ? 'Connected to Supabase' : 'Supabase not available');
           var allowed = await checkAdminAccess();
           if (!allowed) { window.location.replace('index.html?from=reports'); return; }
           wireEvents();
@@ -312,7 +304,7 @@
           setInterval(fetchReports, 5000);
         } catch (e) {
           console.error(e);
-          showStatus('Initialization error', false);
+          console.error('Initialization error');
         }
       })();
 
@@ -331,9 +323,9 @@
               }
             }
             fetchReports();
-            showStatus('All messages deleted.', true);
+            console.log('All messages deleted.');
           } catch (e) {
-            showStatus('Failed to delete all: ' + (e && e.message ? e.message : e), false);
+            console.error('Failed to delete all:', e);
           }
         });
       }

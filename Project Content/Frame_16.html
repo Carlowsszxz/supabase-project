@@ -79,12 +79,245 @@
       }
     }
 
+    /* Enhanced card styles for modern, student-friendly design */
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 1.25rem;
+      box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.08),
+        0 1px 3px rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      position: relative;
+      overflow: hidden;
+      will-change: transform, box-shadow;
+      transform: translateZ(0);
+      cursor: pointer;
+    }
+
+    /* Touch device support */
+    @media (hover: none) and (pointer: coarse) {
+      .card:active {
+        transform: translateY(-2px) translateZ(0) !important;
+        box-shadow:
+          0 8px 25px rgba(0, 0, 0, 0.15),
+          0 4px 12px rgba(0, 0, 0, 0.1),
+          0 2px 6px rgba(0, 0, 0, 0.05) !important;
+        border-color: rgba(59, 130, 246, 0.3) !important;
+        background: rgba(255, 255, 255, 0.98) !important;
+        z-index: 10 !important;
+      }
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+      transform: translateZ(0);
+    }
+
+    .card:hover {
+      transform: translateY(-3px) translateZ(0) !important;
+      box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.2),
+        0 6px 20px rgba(0, 0, 0, 0.15),
+        0 3px 10px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(59, 130, 246, 0.1) !important;
+      border-color: rgba(59, 130, 246, 0.3) !important;
+      background: rgba(255, 255, 255, 0.98) !important;
+      z-index: 10 !important;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text-primary, #1e293b);
+      letter-spacing: -0.025em;
+      line-height: 1.3;
+    }
+
+    .meta {
+      color: var(--text-secondary, #64748b);
+      font-size: 0.875rem;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+
+    /* Enhanced button styles */
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: var(--text-primary, #1e293b);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      will-change: background-color, border-color, transform;
+      transform: translateZ(0);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateY(-2px) translateZ(0) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Enhanced form elements */
+    .noise-level-option,
+    .urgency-option {
+      transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+      will-change: transform, box-shadow;
+    }
+
+    .noise-level-option:hover,
+    .urgency-option:hover {
+      transform: translateY(-1px) translateZ(0);
+    }
+
+    /* Enhanced select and input elements */
+    select,
+    input,
+    textarea {
+      transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+      will-change: border-color, box-shadow;
+    }
+
+    /* Dark mode support for enhanced cards */
+    @media (prefers-color-scheme: dark) {
+      .card {
+        background: rgba(15, 23, 42, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow:
+          0 2px 8px rgba(0, 0, 0, 0.25),
+          0 1px 3px rgba(0, 0, 0, 0.15);
+      }
+
+      .card::before {
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      }
+
+      .card:hover {
+        transform: translateY(-3px) translateZ(0) !important;
+        box-shadow:
+          0 12px 35px rgba(0, 0, 0, 0.5),
+          0 6px 20px rgba(0, 0, 0, 0.4),
+          0 3px 10px rgba(0, 0, 0, 0.3),
+          0 0 0 1px rgba(59, 130, 246, 0.2) !important;
+        border-color: rgba(59, 130, 246, 0.4) !important;
+        background: rgba(15, 23, 42, 0.98) !important;
+        z-index: 10 !important;
+      }
+
+      /* Touch device support for dark mode */
+      @media (hover: none) and (pointer: coarse) {
+        .card:active {
+          transform: translateY(-2px) translateZ(0) !important;
+          box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.4),
+            0 4px 12px rgba(0, 0, 0, 0.3),
+            0 2px 6px rgba(0, 0, 0, 0.2) !important;
+          border-color: rgba(59, 130, 246, 0.4) !important;
+          background: rgba(15, 23, 42, 0.98) !important;
+          z-index: 10 !important;
+        }
+      }
+
+      .btn-outline {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: var(--text-primary, #f1f5f9);
+      }
+
+      .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px) translateZ(0) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+      }
+    }
+
+    /* Manual dark mode class support */
+    .dark .card {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.25),
+        0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    .dark .card::before {
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    }
+
+    .dark .card:hover {
+      transform: translateY(-3px) translateZ(0) !important;
+      box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.5),
+        0 6px 20px rgba(0, 0, 0, 0.4),
+        0 3px 10px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(59, 130, 246, 0.2) !important;
+      border-color: rgba(59, 130, 246, 0.4) !important;
+      background: rgba(15, 23, 42, 0.98) !important;
+      z-index: 10 !important;
+    }
+
+    .dark .btn-outline {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-primary, #f1f5f9);
+    }
+
+    .dark .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px) translateZ(0) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    /* Respect reduced motion for all enhanced elements */
+    @media (prefers-reduced-motion: reduce) {
+      .card {
+        transition: none !important;
+      }
+
+      .card:hover {
+        transform: none !important;
+      }
+
+      .btn-outline {
+        transition: none !important;
+      }
+
+      .btn-outline:hover {
+        transform: none !important;
+      }
+
+      .noise-level-option,
+      .urgency-option {
+        transition: none !important;
+      }
+
+      .noise-level-option:hover,
+      .urgency-option:hover {
+        transform: none !important;
+      }
+
+      select,
+      input,
+      textarea {
+        transition: none !important;
+      }
+    }
+
     /* Confirmation Modal Styles */
     .confirmation-modal-overlay {
       position: fixed;
       inset: 0;
-      background-color: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(4px);
+      background-color: rgba(0, 0, 0, 0.6);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -93,12 +326,18 @@
     }
 
     .confirmation-modal {
-      background: white;
-      border-radius: 1rem;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 1.25rem;
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        0 4px 16px rgba(0, 0, 0, 0.1);
       max-width: 500px;
       width: 100%;
       overflow: hidden;
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+      will-change: transform;
+      transform: translateZ(0);
       animation: modalSlideIn 0.3s ease-out;
     }
 
@@ -207,11 +446,212 @@
         width: 100%;
       }
     }
+
+    /* Dark mode support for confirmation modal */
+    @media (prefers-color-scheme: dark) {
+      .confirmation-modal {
+        background: rgba(15, 23, 42, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.4),
+          0 4px 16px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    .dark .confirmation-modal {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Content Validation Warning Styles */
+    .validation-warning {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-left: 4px solid #ef4444;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-top: 0.75rem;
+      display: none;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .validation-warning.show {
+      display: block;
+    }
+
+    .validation-warning-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .validation-warning-icon {
+      width: 20px;
+      height: 20px;
+      color: #ef4444;
+      flex-shrink: 0;
+    }
+
+    .validation-warning-title {
+      font-weight: 600;
+      color: #991b1b;
+      font-size: 0.875rem;
+    }
+
+    .validation-warning-message {
+      color: #991b1b;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .validation-warning-actions {
+      margin-top: 0.75rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .validation-warning-actions button {
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.375rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .validation-warning-actions .btn-edit {
+      background: #ef4444;
+      color: white;
+    }
+
+    .validation-warning-actions .btn-edit:hover {
+      background: #dc2626;
+    }
+
+    .validation-warning-actions .btn-dismiss {
+      background: #f3f4f6;
+      color: #6b7280;
+      border: 1px solid #d1d5db;
+    }
+
+    .validation-warning-actions .btn-dismiss:hover {
+      background: #e5e7eb;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Highlight invalid text */
+    .textarea-invalid {
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+    }
+
+    @media (max-width: 640px) {
+      .validation-warning-actions {
+        flex-direction: column;
+      }
+
+      .validation-warning-actions button {
+        width: 100%;
+      }
+    }
+
+    /* Library background with blur effect */
+    .library-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f0f0f0;
+      /* Fallback color in case image doesn't load */
+      background-image: url('librarybg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: blur(6px);
+      -webkit-filter: blur(6px);
+      transform: scale(1.05);
+      /* Slightly larger to hide blur edges */
+      pointer-events: none;
+      opacity: 0.7;
+      /* Make background darker by reducing opacity */
+      z-index: -2;
+    }
+
+    /* Dark mode support for library background */
+    @media (prefers-color-scheme: dark) {
+      .library-background {
+        filter: blur(6px) brightness(0.7);
+        -webkit-filter: blur(6px) brightness(0.7);
+      }
+    }
+
+    /* Manual dark mode class support */
+    .dark .library-background {
+      filter: blur(6px) brightness(0.7);
+      -webkit-filter: blur(6px) brightness(0.7);
+    }
+
+    /* Override theme.css and Tailwind body background to show library background */
+    body.bg-slate-50 {
+      background-color: transparent !important;
+    }
+
+    body {
+      background-color: transparent !important;
+    }
+
+    /* Enhanced footer with frosted glass effect */
+    .footer-glass {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+      color: #374151;
+      font-weight: 500;
+    }
+
+    /* Dark mode footer */
+    @media (prefers-color-scheme: dark) {
+      .footer-glass {
+        background: rgba(15, 23, 42, 0.85);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+        color: #e5e7eb;
+      }
+    }
+
+    /* Manual dark mode class support */
+    .dark .footer-glass {
+      background: rgba(15, 23, 42, 0.85);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+      color: #e5e7eb;
+    }
   </style>
 </head>
 
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
   <div id="cursor-follower" class="cursor-follower" aria-hidden="true"></div>
+  <div id="library-background" class="library-background" aria-hidden="true"></div>
   <header class="site-header" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" data-fade data-blur="true"
@@ -248,8 +688,8 @@
     <div class="w-full max-w-4xl">
 
       <!-- Report Header -->
-      <section class="bg-white rounded-2xl shadow p-4 sm:p-6 mb-6" data-fade data-blur="true" data-duration="900"
-        data-easing="ease-out" data-delay="0" data-initial-opacity="0">
+      <section class="card mb-6" data-fade data-blur="true" data-duration="900" data-easing="ease-out" data-delay="0"
+        data-initial-opacity="0">
         <div class="flex items-start gap-4">
           <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center order-1 ml-[5px]">
             <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -259,8 +699,8 @@
             </svg>
           </div>
           <div class="flex-1 order-2" data-fade data-blur="true" data-delay="50" data-initial-opacity="0">
-            <h1 class="text-2xl font-semibold mb-2">Report Noise Disturbance</h1>
-            <p class="text-slate-600">Help maintain a quiet study environment by reporting noise issues. Your reports
+            <h1 class="card-title">Report Noise Disturbance</h1>
+            <p class="meta">Help maintain a quiet study environment by reporting noise issues. Your reports
               help librarians take appropriate action.</p>
             <p class="text-xs text-slate-500 mt-1">Note: Once a librarian resolves your complaint, it will be removed
               from your recent reports list.</p>
@@ -269,8 +709,8 @@
       </section>
 
       <!-- Noise Report Form -->
-      <section class="bg-white rounded-2xl shadow p-4 sm:p-6 mb-6" data-fade data-blur="true" data-duration="950"
-        data-easing="ease-out" data-delay="75" data-initial-opacity="0">
+      <section class="card mb-6" data-fade data-blur="true" data-duration="950" data-easing="ease-out" data-delay="75"
+        data-initial-opacity="0">
         <form id="noiseReportForm" class="space-y-6">
           <!-- Noise Level -->
           <div>
@@ -412,6 +852,25 @@
             <textarea id="description" rows="4"
               class="w-full rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none p-3"
               placeholder="Describe the noise disturbance in detail..."></textarea>
+
+            <!-- Content Validation Warning -->
+            <div id="validationWarning" class="validation-warning">
+              <div class="validation-warning-header">
+                <svg class="validation-warning-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <div class="validation-warning-title">Inappropriate Language Detected</div>
+              </div>
+              <div class="validation-warning-message">
+                Your report contains inappropriate language. Please revise it before submitting to maintain a respectful
+                environment.
+              </div>
+              <div class="validation-warning-actions">
+                <button type="button" id="editContentBtn" class="btn-edit">Edit Content</button>
+                <button type="button" id="dismissWarningBtn" class="btn-dismiss">Dismiss</button>
+              </div>
+            </div>
           </div>
 
           <!-- Urgency -->
@@ -459,8 +918,8 @@
 
       <!-- Community Reports (user-facing list) -->
       <!-- This section is designed for community users: card-style items, clear grouping, badges -->
-      <section class="bg-white rounded-2xl shadow p-4 sm:p-6" data-fade data-blur="true" data-duration="1000"
-        data-easing="ease-out" data-delay="150" data-initial-opacity="0">
+      <section class="card" data-fade data-blur="true" data-duration="1000" data-easing="ease-out" data-delay="150"
+        data-initial-opacity="0">
         <div class="flex items-center justify-between mb-4">
           <div>
             <h2 class="text-lg font-semibold">Community Reports</h2>
@@ -488,8 +947,8 @@
 
       <!-- Admin-only Reports Table (hidden for non-admin users) -->
       <!-- Admin view: retains table-like layout for quick scanning. Visibility toggled by role. -->
-      <section id="adminReportsTableContainer" class="bg-white rounded-2xl shadow p-4 sm:p-6 hidden" data-fade
-        data-blur="true" data-duration="1000" data-easing="ease-out" data-delay="150" data-initial-opacity="0">
+      <section id="adminReportsTableContainer" class="card hidden" data-fade data-blur="true" data-duration="1000"
+        data-easing="ease-out" data-delay="150" data-initial-opacity="0">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-semibold">Admin Reports (table)</h2>
           <div class="text-xs text-slate-500">Visible to admins only</div>
@@ -513,9 +972,8 @@
     </div>
   </main>
 
-  <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
+  <footer class="footer-glass text-center text-xs py-4" data-fade data-blur="true" data-initial-opacity="0"
     data-duration="1000" data-delay="100">© 2025 UMak Library · Noise Comfort Index</footer>
-  <div id="supabase-status" class="px-2 py-1 rounded-md text-xs bg-slate-200 text-slate-700 hidden"></div>
 
   <!-- Confirmation Modal -->
   <div id="confirmationModal" class="confirmation-modal-overlay hidden">
@@ -568,36 +1026,18 @@
 
   <script>
     (function () {
-      // Supabase init with status
-      function showStatus(text, ok) {
-        var el = document.getElementById('supabase-status');
-        if (!el) return;
-        el.textContent = text || '';
-        if (text) {
-          el.classList.remove('hidden');
-          el.classList.remove('bg-red-200', 'text-red-700');
-          el.classList.remove('bg-green-200', 'text-green-700');
-          if (ok) {
-            el.classList.add('bg-green-200', 'text-green-700');
-          } else {
-            el.classList.add('bg-red-200', 'text-red-700');
-          }
-        } else {
-          el.classList.add('hidden');
-        }
-      }
 
       // Initialize Supabase
       var supabaseInitialized = false;
       try {
         if (initSupabase()) {
           supabaseInitialized = true;
-          showStatus('Supabase: Connected', true);
+          console.log('Supabase: Connected');
         } else {
-          showStatus('Supabase: Error', false);
+          console.error('Supabase: Error');
         }
       } catch (err) {
-        showStatus('Supabase: Error', false);
+        console.error('Supabase: Error', err);
       }
 
       // Form elements
@@ -647,6 +1087,159 @@
         });
       }
 
+      // Content Validation System
+      var validationWarning = document.getElementById('validationWarning');
+      var descriptionTextarea = document.getElementById('description');
+      var editContentBtn = document.getElementById('editContentBtn');
+      var dismissWarningBtn = document.getElementById('dismissWarningBtn');
+
+      // List of restricted words (easily maintainable)
+      var restrictedWords = [
+        // English profanity and offensive language
+        'damn', 'hell', 'crap', 'stupid', 'idiot', 'moron', 'dumb',
+        'hate', 'kill', 'die', 'death', 'murder', 'suicide',
+        'fuck', 'shit', 'bitch', 'asshole', 'bastard', 'piss',
+        'cunt', 'whore', 'slut', 'fag', 'nigger', 'retard',
+
+        // Filipino profanity and offensive language
+        'putang', 'puta', 'tangina', 'tang ina', 'tangina mo', 'tang ina mo',
+        'gago', 'gaga', 'bobo', 'tanga', 'ulol', 'tarantado', 'tarantadu',
+        'hayop', 'hayup', 'buang', 'buang ka', 'buang mo', 'buang ka ba',
+        'walang hiya', 'walanghiya', 'bastos', 'malandi', 'pokpok', 'kalapating',
+        'bayot', 'bakla', 'tomboy', 'binabae', 'binabai', 'silahis',
+        'leche', 'lechugas', 'lechugas mo', 'lechugas ka', 'lechugas mo',
+        'sira ulo', 'siraulo', 'sira ang ulo', 'sira ang ulo mo',
+        'baliw', 'baliw ka', 'baliw mo', 'nababaliw', 'nababaliw ka',
+        'kupal', 'kupal mo', 'kupal ka', 'kupal na', 'kupal na yan',
+        'ulol', 'ulol ka', 'ulol mo', 'ulol na', 'ulol na yan',
+        'tanga', 'tanga ka', 'tanga mo', 'tanga na', 'tanga na yan',
+        'bobo', 'bobo ka', 'bobo mo', 'bobo na', 'bobo na yan',
+        'gago', 'gago ka', 'gago mo', 'gago na', 'gago na yan',
+        'tarantado', 'tarantadu', 'tarantado ka', 'tarantadu ka',
+        'tarantado mo', 'tarantadu mo', 'tarantado na', 'tarantadu na',
+
+        // Filipino threats and violence
+        'patayin', 'patayin mo', 'patayin ka', 'papatayin', 'papatayin mo',
+        'suntukin', 'suntukin mo', 'suntukin ka', 'susuntukin', 'susuntukin mo',
+        'bugbog', 'bugbog mo', 'bugbog ka', 'bubugbog', 'bubugbog mo',
+        'sapakin', 'sapakin mo', 'sapakin ka', 'sasapakin', 'sasapakin mo',
+        'barilin', 'barilin mo', 'barilin ka', 'babarilin', 'babarilin mo',
+        'saksakin', 'saksakin mo', 'saksakin ka', 'sasaksakin', 'sasaksakin mo',
+        'bomba', 'bomba mo', 'bomba ka', 'bobomba', 'bobomba mo',
+        'siraan', 'siraan mo', 'siraan ka', 'sisiraan', 'sisiraan mo',
+
+        // Filipino inappropriate sexual content
+        'kantot', 'kantutan', 'kantutin', 'kantutin mo', 'kantutin ka',
+        'jakol', 'jakulin', 'jakulin mo', 'jakulin ka', 'jajakulin',
+        'titi', 'pepe', 'kiki', 'burat', 'tamod', 'tamod mo',
+        'libog', 'libog mo', 'libog ka', 'nalilibog', 'nalilibog ka',
+        'malibog', 'malibog mo', 'malibog ka', 'malibog na', 'malibog na yan',
+        'manyak', 'manyak mo', 'manyak ka', 'manyak na', 'manyak na yan',
+        'bastos', 'bastos mo', 'bastos ka', 'bastos na', 'bastos na yan',
+        'malandi', 'malandi mo', 'malandi ka', 'malandi na', 'malandi na yan',
+        'pokpok', 'pokpok mo', 'pokpok ka', 'pokpok na', 'pokpok na yan',
+        'kalapating', 'kalapating mo', 'kalapating ka', 'kalapating na',
+
+        // Filipino discrimination and harassment
+        'bayot', 'bayot mo', 'bayot ka', 'bayot na', 'bayot na yan',
+        'bakla', 'bakla mo', 'bakla ka', 'bakla na', 'bakla na yan',
+        'tomboy', 'tomboy mo', 'tomboy ka', 'tomboy na', 'tomboy na yan',
+        'binabae', 'binabai', 'binabae mo', 'binabai mo', 'binabae ka', 'binabai ka',
+        'silahis', 'silahis mo', 'silahis ka', 'silahis na', 'silahis na yan',
+        'walang hiya', 'walanghiya', 'walang hiya mo', 'walanghiya mo',
+        'walang hiya ka', 'walanghiya ka', 'walang hiya na', 'walanghiya na',
+
+        // Threats and violence (English)
+        'threat', 'threaten', 'violence', 'fight', 'beat', 'hit',
+        'punch', 'stab', 'shoot', 'bomb', 'explode', 'destroy',
+
+        // Inappropriate sexual content (English)
+        'sex', 'sexual', 'porn', 'pornography', 'masturbat', 'rape',
+        'molest', 'pedophil', 'incest', 'orgasm', 'penis', 'vagina',
+
+        // Discrimination and harassment (English)
+        'racist', 'racism', 'discriminat', 'harass', 'bully', 'intimidat',
+        'sexist', 'homophob', 'transphob', 'xenophob',
+
+        // Spam and inappropriate content
+        'spam', 'scam', 'fraud', 'cheat', 'steal', 'rob', 'theft'
+      ];
+
+      // Function to check for inappropriate content
+      function validateContent(text) {
+        if (!text || text.trim().length === 0) return { isValid: true, foundWords: [] };
+
+        var lowerText = text.toLowerCase();
+        var foundWords = [];
+
+        // Check for restricted words
+        for (var i = 0; i < restrictedWords.length; i++) {
+          var word = restrictedWords[i];
+          if (lowerText.includes(word)) {
+            foundWords.push(word);
+          }
+        }
+
+        return {
+          isValid: foundWords.length === 0,
+          foundWords: foundWords
+        };
+      }
+
+      // Function to show validation warning
+      function showValidationWarning() {
+        validationWarning.classList.add('show');
+        descriptionTextarea.classList.add('textarea-invalid');
+        descriptionTextarea.focus();
+
+        // Scroll to warning if needed
+        validationWarning.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // Function to hide validation warning
+      function hideValidationWarning() {
+        validationWarning.classList.remove('show');
+        descriptionTextarea.classList.remove('textarea-invalid');
+      }
+
+      // Real-time validation on textarea input
+      if (descriptionTextarea) {
+        descriptionTextarea.addEventListener('input', function () {
+          var text = this.value;
+          var validation = validateContent(text);
+
+          if (!validation.isValid) {
+            showValidationWarning();
+          } else {
+            hideValidationWarning();
+          }
+        });
+
+        // Also validate on blur (when user leaves the field)
+        descriptionTextarea.addEventListener('blur', function () {
+          var text = this.value;
+          var validation = validateContent(text);
+
+          if (!validation.isValid) {
+            showValidationWarning();
+          }
+        });
+      }
+
+      // Warning action buttons
+      if (editContentBtn) {
+        editContentBtn.addEventListener('click', function () {
+          descriptionTextarea.focus();
+          descriptionTextarea.select();
+        });
+      }
+
+      if (dismissWarningBtn) {
+        dismissWarningBtn.addEventListener('click', function () {
+          hideValidationWarning();
+        });
+      }
+
       // Form submission via Supabase (send to admins)
       if (form) {
         form.addEventListener('submit', async function (e) {
@@ -660,12 +1253,20 @@
           var description = document.getElementById('description').value;
           var urgency = document.querySelector('input[name="urgency"]:checked');
 
-          // Validation
+          // Basic form validation
           if (!noiseLevel) { alert('Please select a noise level'); return; }
           if (!location) { alert('Please select a location'); return; }
           if (noiseTypes.length === 0) { alert('Please select at least one noise type'); return; }
           if (!duration) { alert('Please select duration'); return; }
           if (!urgency) { alert('Please select urgency level'); return; }
+
+          // Content validation - check for inappropriate language
+          var contentValidation = validateContent(description);
+          if (!contentValidation.isValid) {
+            showValidationWarning();
+            alert('Your report contains inappropriate language. Please revise it before submitting.');
+            return;
+          }
 
           // Show confirmation modal
           var confirmationModal = document.getElementById('confirmationModal');
@@ -697,6 +1298,14 @@
           var duration = document.getElementById('duration').value;
           var description = document.getElementById('description').value;
           var urgency = document.querySelector('input[name="urgency"]:checked');
+
+          // Final content validation before submission
+          var contentValidation = validateContent(description);
+          if (!contentValidation.isValid) {
+            showValidationWarning();
+            alert('Your report contains inappropriate language. Please revise it before submitting.');
+            return;
+          }
 
           submitBtn.disabled = true;
           submitBtn.textContent = 'Submitting...';

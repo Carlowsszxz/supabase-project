@@ -329,8 +329,6 @@
 
   <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
     data-delay="150">© 2025 UMak Library · Noise Comfort Index</footer>
-  <div id="supabase-status" style="position:fixed;right:12px;bottom:12px;pointer-events:none"
-    class="px-2 py-1 rounded-md text-xs bg-slate-200 text-slate-700 hidden"></div>
   <div id="toast" style="position:fixed;right:12px;bottom:48px;pointer-events:none"
     class="px-3 py-2 rounded-md text-sm bg-slate-800 text-white shadow hidden"></div>
 
@@ -379,15 +377,6 @@
     var occupancyState = {};
     TABLE_IDS.forEach(function (id) { occupancyState[id] = { seats: {} }; });
 
-    // Supabase init with validation and status
-    function showStatus(text, ok) {
-      var el = document.getElementById('supabase-status');
-      if (!el) return;
-      el.textContent = text;
-      el.classList.remove('hidden');
-      el.classList.remove('bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
-      if (ok) { el.classList.add('bg-green-100', 'text-green-700'); } else { el.classList.add('bg-red-100', 'text-red-700'); }
-    }
 
     // Admin access control
     async function checkAdminAccess() {
@@ -464,13 +453,12 @@
     try {
       if (initSupabase()) {
         supabaseInitialized = true;
-        showStatus('Supabase initialized successfully', true);
+        console.log('Supabase initialized successfully');
       } else {
-        showStatus('Supabase initialization failed', false);
+        console.error('Supabase initialization failed');
       }
     } catch (e) {
-      showStatus('Supabase init error: ' + (e && e.message ? e.message : 'unknown'), false);
-      try { console.error(e); } catch (_) { }
+      console.error('Supabase init error:', e);
     }
 
     var OCC_PATH = 'occupancy';
@@ -658,7 +646,7 @@
         await initSupabaseWithRetry();
         if (initSupabase()) {
           supabaseInitialized = true;
-          showStatus('Supabase initialized successfully', true);
+          console.log('Supabase initialized successfully');
         }
       }
 

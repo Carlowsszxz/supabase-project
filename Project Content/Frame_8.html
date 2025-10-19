@@ -589,11 +589,201 @@
         height: auto;
       }
     }
+
+    /* Glass-style design effects - visual only, no layout changes */
+    .bg-white {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border: 1px solid rgba(255, 255, 255, 0.3) !important;
+      box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.08),
+        0 1px 3px rgba(0, 0, 0, 0.05) !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      will-change: transform, box-shadow !important;
+      transform: translateZ(0) !important;
+      cursor: pointer !important;
+    }
+
+    /* Touch device support */
+    @media (hover: none) and (pointer: coarse) {
+      .bg-white:active {
+        transform: translateY(-2px) translateZ(0) !important;
+        box-shadow:
+          0 8px 25px rgba(0, 0, 0, 0.15),
+          0 4px 12px rgba(0, 0, 0, 0.1),
+          0 2px 6px rgba(0, 0, 0, 0.05) !important;
+        border-color: rgba(59, 130, 246, 0.3) !important;
+        background: rgba(255, 255, 255, 0.98) !important;
+      }
+    }
+
+    .bg-white:hover {
+      transform: translateY(-3px) translateZ(0) !important;
+      box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.2),
+        0 6px 20px rgba(0, 0, 0, 0.15),
+        0 3px 10px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(59, 130, 246, 0.1) !important;
+      border-color: rgba(59, 130, 246, 0.3) !important;
+      background: rgba(255, 255, 255, 0.98) !important;
+    }
+
+    /* Enhanced button hover effects */
+    .hover\\:bg-slate-50:hover {
+      transform: translateY(-1px) translateZ(0) !important;
+      transition: background-color 0.15s ease-out, transform 0.15s ease-out !important;
+    }
+
+    /* Dark mode support for glass effects */
+    @media (prefers-color-scheme: dark) {
+      .bg-white {
+        background: rgba(15, 23, 42, 0.95) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        box-shadow:
+          0 2px 8px rgba(0, 0, 0, 0.25),
+          0 1px 3px rgba(0, 0, 0, 0.15) !important;
+      }
+
+      .bg-white:hover {
+        transform: translateY(-3px) translateZ(0) !important;
+        box-shadow:
+          0 12px 35px rgba(0, 0, 0, 0.5),
+          0 6px 20px rgba(0, 0, 0, 0.4),
+          0 3px 10px rgba(0, 0, 0, 0.3),
+          0 0 0 1px rgba(59, 130, 246, 0.2) !important;
+        border-color: rgba(59, 130, 246, 0.4) !important;
+        background: rgba(15, 23, 42, 0.98) !important;
+      }
+
+      /* Touch device support for dark mode */
+      @media (hover: none) and (pointer: coarse) {
+        .bg-white:active {
+          transform: translateY(-2px) translateZ(0) !important;
+          box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.4),
+            0 4px 12px rgba(0, 0, 0, 0.3),
+            0 2px 6px rgba(0, 0, 0, 0.2) !important;
+          border-color: rgba(59, 130, 246, 0.4) !important;
+          background: rgba(15, 23, 42, 0.98) !important;
+        }
+      }
+    }
+
+    /* Manual dark mode class support */
+    .dark .bg-white {
+      background: rgba(15, 23, 42, 0.95) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.25),
+        0 1px 3px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .dark .bg-white:hover {
+      transform: translateY(-3px) translateZ(0) !important;
+      box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.5),
+        0 6px 20px rgba(0, 0, 0, 0.4),
+        0 3px 10px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(59, 130, 246, 0.2) !important;
+      border-color: rgba(59, 130, 246, 0.4) !important;
+      background: rgba(15, 23, 42, 0.98) !important;
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .bg-white {
+        transition: none !important;
+      }
+
+      .bg-white:hover {
+        transform: none !important;
+      }
+
+      .hover\\:bg-slate-50:hover {
+        transform: none !important;
+        transition: none !important;
+      }
+    }
+
+    /* Library background with blur effect */
+    .library-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f0f0f0;
+      /* Fallback color in case image doesn't load */
+      background-image: url('librarybg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: blur(6px);
+      -webkit-filter: blur(6px);
+      transform: scale(1.05);
+      /* Slightly larger to hide blur edges */
+      pointer-events: none;
+      opacity: 0.7;
+      /* Make background darker by reducing opacity */
+      z-index: -2;
+    }
+
+    /* Dark mode support for library background */
+    @media (prefers-color-scheme: dark) {
+      .library-background {
+        filter: blur(6px) brightness(0.7);
+        -webkit-filter: blur(6px) brightness(0.7);
+      }
+    }
+
+    /* Manual dark mode class support */
+    .dark .library-background {
+      filter: blur(6px) brightness(0.7);
+      -webkit-filter: blur(6px) brightness(0.7);
+    }
+
+    /* Override theme.css and Tailwind body background to show library background */
+    body.bg-slate-50 {
+      background-color: transparent !important;
+    }
+
+    body {
+      background-color: transparent !important;
+    }
+
+    /* Enhanced footer with frosted glass effect */
+    .footer-glass {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+      color: #374151;
+      font-weight: 500;
+    }
+
+    /* Dark mode footer */
+    @media (prefers-color-scheme: dark) {
+      .footer-glass {
+        background: rgba(15, 23, 42, 0.85);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+        color: #e5e7eb;
+      }
+    }
+
+    /* Manual dark mode class support */
+    .dark .footer-glass {
+      background: rgba(15, 23, 42, 0.85);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+      color: #e5e7eb;
+    }
   </style>
 </head>
 
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
   <div id="cursor-follower" class="cursor-follower" aria-hidden="true"></div>
+  <div id="library-background" class="library-background" aria-hidden="true"></div>
   <header class="site-header" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
     <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
@@ -1892,10 +2082,8 @@
 
       </div>
   </main>
-  <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
+  <footer class="footer-glass text-center text-xs py-4" data-fade data-blur="true" data-initial-opacity="0"
     data-duration="1000" data-delay="100">© 2025 UMak Library · Noise Comfort Index</footer>
-  <div id="supabase-status" style="position:fixed;right:12px;bottom:12px"
-    class="px-2 py-1 rounded-md text-xs bg-slate-200 text-slate-700 hidden"></div>
 
   <script>
     (function () {
@@ -2395,36 +2583,20 @@
         });
       }
 
-      // Status display
-      function showStatus(text, ok) {
-        var el = document.getElementById('supabase-status');
-        if (!el) return;
-        el.textContent = text;
-        el.classList.remove('hidden');
-        el.classList.remove('bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
-        if (ok) {
-          el.classList.add('bg-green-100', 'text-green-700');
-        } else {
-          el.classList.add('bg-red-100', 'text-red-700');
-        }
-      }
 
       // Initialize Supabase
       function initSupabaseConnection() {
         try {
           if (initSupabase()) {
             supabaseInitialized = true;
-            showStatus('Supabase connected', true);
             console.log('Supabase initialized successfully');
             loadInitialData();
             subscribeToChanges();
             setupMarkerClickHandlers();
           } else {
-            showStatus('Supabase initialization failed', false);
             console.error('Supabase initialization failed');
           }
         } catch (e) {
-          showStatus('Supabase init error: ' + (e && e.message ? e.message : 'unknown'), false);
           console.error('Supabase init error:', e);
         }
       }

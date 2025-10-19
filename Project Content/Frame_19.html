@@ -74,7 +74,6 @@
                 <h1 class="text-3xl font-bold mb-2">IoT Monitoring & Settings</h1>
                 <p class="text-slate-600">Monitor IoT devices, configure noise thresholds, and manage system settings
                 </p>
-                <div id="supabase-status" class="mt-2 text-xs text-slate-500"></div>
             </div>
 
             <!-- IoT Device Status Overview -->
@@ -316,12 +315,6 @@
                     return false;
                 }
             }
-            function showStatus(text, ok) {
-                var el = document.getElementById('supabase-status');
-                if (!el) return;
-                el.textContent = text || '';
-                el.className = 'mt-2 text-xs ' + (ok ? 'text-green-600' : 'text-red-600');
-            }
 
             function getEls() {
                 return {
@@ -409,14 +402,13 @@
             async function loadSettings() {
                 try {
                     if (!supabaseInitialized) { try { supabaseInitialized = await window.initSupabaseWithRetry(); } catch (_) { supabaseInitialized = false; } }
-                    if (!supabaseInitialized) { showStatus('Supabase not available', false); return; }
+                    if (!supabaseInitialized) { console.error('Supabase not available'); return; }
                     var res = await window.supabaseDB.getAdminLayout();
                     var cfg = (res && res.data) || {};
                     writeForm(cfg);
-                    showStatus('Loaded settings', true);
+                    console.log('Loaded settings');
                 } catch (e) {
-                    console.error(e);
-                    showStatus('Failed to load settings', false);
+                    console.error('Failed to load settings', e);
                 }
             }
 
@@ -426,11 +418,10 @@
                     var existing = (await window.supabaseDB.getAdminLayout()).data || {};
                     var merged = Object.assign({}, existing, partial);
                     var out = await window.supabaseDB.updateAdminLayout(merged);
-                    showStatus('Saved', true);
+                    console.log('Saved');
                     return out;
                 } catch (e) {
-                    console.error(e);
-                    showStatus('Save failed', false);
+                    console.error('Save failed', e);
                 }
             }
 
