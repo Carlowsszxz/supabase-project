@@ -795,7 +795,7 @@
 
   <script>
     (function () {
-      // Prevent auto-redirects when coming from a logout
+      // Prevent auto-redirects when coming from a logout or when on registration page
       var skipAutoRedirect = false;
       // Initialize Supabase with retry mechanism
       let supabaseInitialized = false;
@@ -1185,7 +1185,15 @@
         window.supabaseAuth.getCurrentUser().then(async ({ data: { user } }) => {
           if (user) {
             console.log('User already logged in:', user.email);
-            // Redirect to appropriate page
+
+            // Check if user is trying to access registration page
+            const currentPage = window.location.pathname.split('/').pop();
+            if (currentPage === 'Frame_5.html') {
+              console.log('User accessing registration page, allowing access');
+              return; // Don't redirect, allow access to registration page
+            }
+
+            // Redirect to appropriate page for other pages
             const destination = await getDestinationAfterLogin(user.email, '', user);
             window.location.href = destination;
           }
