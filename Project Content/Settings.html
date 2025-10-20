@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="icon" type="image/png" href="UMak_Logo_Registered.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Settings - UMak Library</title>
+    <script>
+        (function () {
+            var originalWarn = console.warn;
+            console.warn = function () {
+                try {
+                    if (arguments && typeof arguments[0] === 'string' && arguments[0].indexOf('cdn.tailwindcss.com should not be used in production') !== -1) {
+                        return; // suppress only Tailwind CDN production warning
+                    }
+                } catch (e) { }
+                return originalWarn.apply(console, arguments);
+            };
+        })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        /* Library Background */
+        .library-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('librarybg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(8px);
+            -webkit-filter: blur(8px);
+            transform: scale(1.1);
+            z-index: -2;
+            opacity: 0.7;
+        }
+
+        /* Dark mode library background */
+        @media (prefers-color-scheme: dark) {
+            .library-background {
+                filter: blur(6px) brightness(0.7);
+                -webkit-filter: blur(6px) brightness(0.7);
+            }
+        }
+
+        /* Manual dark mode class support */
+        .dark .library-background {
+            filter: blur(6px) brightness(0.7);
+            -webkit-filter: blur(6px) brightness(0.7);
+        }
+
+        /* Override theme.css body background to show library background */
+        body {
+            background-color: transparent !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+
+        /* Apply Inter font to all elements */
+        * {
+            font-family: 'Inter', sans-serif !important;
+        }
+
+        /* Modern Top Navigation Bar */
+        .modern-sidebar {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            min-width: 320px;
+            max-width: 500px;
+            height: auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            z-index: 1000;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2rem;
+            gap: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Top Navigation Items */
+        .sidebar-nav-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #374151;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            will-change: transform, box-shadow, background;
+        }
+
+        .sidebar-nav-item:hover {
+            transform: translateY(-2px) scale(1.05);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .sidebar-nav-item:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .sidebar-nav-item.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.4);
+            color: #3b82f6;
+        }
+
+        /* Sidebar Icons */
+        .sidebar-icon {
+            width: 24px;
+            height: 24px;
+            stroke-width: 1.5;
+        }
+
+        /* Tooltips */
+        .sidebar-tooltip {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            z-index: 1001;
+        }
+
+        .sidebar-tooltip::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-bottom-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .sidebar-nav-item:hover .sidebar-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Logo/Brand in Top Navigation */
+        .sidebar-brand {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 0.5rem;
+            margin-right: 1rem;
+        }
+
+        .sidebar-brand img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .modern-sidebar {
+                min-width: 280px;
+                max-width: 90vw;
+                padding: 0.75rem 1rem;
+                gap: 0.75rem;
+            }
+
+            .sidebar-nav-item {
+                width: 40px;
+                height: 40px;
+            }
+
+            .sidebar-icon {
+                width: 20px;
+                height: 20px;
+            }
+
+            .sidebar-brand img {
+                width: 32px;
+                height: 32px;
+            }
+
+            .sidebar-tooltip {
+                display: none;
+            }
+        }
+
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            .modern-sidebar {
+                background: rgba(15, 23, 42, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-top: none;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            }
+
+            .sidebar-nav-item {
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: #e5e7eb;
+            }
+
+            .sidebar-nav-item:hover {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.2);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.4);
+            }
+
+            .sidebar-nav-item.active {
+                background: rgba(59, 130, 246, 0.3);
+                border-color: rgba(59, 130, 246, 0.5);
+                color: #60a5fa;
+            }
+        }
+
+        /* Manual dark mode class support */
+        .dark .modern-sidebar {
+            background: rgba(15, 23, 42, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: none;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+        .dark .sidebar-nav-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e5e7eb;
+        }
+
+        .dark .sidebar-nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .dark .sidebar-nav-item.active {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+            color: #60a5fa;
+        }
+
+        /* Adjust main content for top navigation */
+        .main-with-sidebar {
+            margin-left: 0;
+            padding-top: 100px;
+            /* Add top padding to account for fixed top navigation */
+        }
+
+        @media (max-width: 768px) {
+            .main-with-sidebar {
+                padding-top: 80px;
+                /* Smaller padding on mobile */
+            }
+        }
+
+        /* Settings Card Styling */
+        .settings-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Dark mode settings card */
+        @media (prefers-color-scheme: dark) {
+            .settings-card {
+                background: rgba(15, 23, 42, 0.95);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                color: #e5e7eb;
+            }
+        }
+
+        .dark .settings-card {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            color: #e5e7eb;
+        }
+
+        /* Settings Section Styling */
+        .settings-section {
+            margin-bottom: 2rem;
+        }
+
+        .settings-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .settings-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dark .settings-title {
+            color: #f9fafb;
+        }
+
+        .settings-subtitle {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dark .settings-subtitle {
+            color: #d1d5db;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .dark .form-label {
+            color: #d1d5db;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-size: 0.875rem;
+            color: #374151;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .dark .form-select {
+            background: rgba(31, 41, 55, 0.8);
+            border-color: #4b5563;
+            color: #e5e7eb;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #d1d5db;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.toggle-slider {
+            background-color: #3b82f6;
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Range Slider */
+        .range-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #d1d5db;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .range-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Button Styling */
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* About Section */
+        .about-text {
+            color: #6b7280;
+            line-height: 1.6;
+            font-size: 0.875rem;
+        }
+
+        .dark .about-text {
+            color: #9ca3af;
+        }
+
+        /* Icon Styling */
+        .settings-icon {
+            width: 20px;
+            height: 20px;
+            stroke-width: 1.5;
+        }
+    </style>
+</head>
+
+<body class="text-slate-900 min-h-screen flex flex-col relative">
+    <div id="library-background" class="library-background" aria-hidden="true"></div>
+
+    <!-- Modern Vertical Sidebar -->
+    <nav class="modern-sidebar">
+        <!-- Brand/Logo -->
+        <div class="sidebar-brand">
+            <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" />
+        </div>
+
+        <!-- Navigation Items -->
+        <a href="index.html" class="sidebar-nav-item" aria-label="Home">
+            <i data-lucide="home" class="sidebar-icon"></i>
+            <div class="sidebar-tooltip" id="home-tooltip">Home</div>
+        </a>
+
+        <a href="Frame_5.html" class="sidebar-nav-item" aria-label="Register">
+            <i data-lucide="user-plus" class="sidebar-icon"></i>
+            <div class="sidebar-tooltip" id="register-tooltip">Register</div>
+        </a>
+
+        <a href="how-to.html" class="sidebar-nav-item" aria-label="How To / Help">
+            <i data-lucide="help-circle" class="sidebar-icon"></i>
+            <div class="sidebar-tooltip" id="help-tooltip">How To / Help</div>
+        </a>
+
+        <a href="Settings.html" class="sidebar-nav-item active" aria-label="Settings">
+            <i data-lucide="settings" class="sidebar-icon"></i>
+            <div class="sidebar-tooltip" id="settings-tooltip">Settings</div>
+        </a>
+    </nav>
+
+    <main class="main-with-sidebar flex-1 flex items-center justify-center py-12 px-6">
+        <div class="settings-card">
+            <!-- Settings Header -->
+            <div class="settings-section">
+                <h1 class="settings-title" id="settings-title">
+                    <i data-lucide="settings" class="settings-icon"></i>
+                    Settings
+                </h1>
+            </div>
+
+            <!-- Language Settings -->
+            <div class="settings-section">
+                <h2 class="settings-subtitle" id="language-subtitle">
+                    <i data-lucide="globe" class="settings-icon"></i>
+                    Language
+                </h2>
+                <div class="form-group">
+                    <label class="form-label" id="change-language-label" for="language-select">Change Language</label>
+                    <select id="language-select" class="form-select">
+                        <option value="en">English</option>
+                        <option value="fil">Filipino</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Theme Settings -->
+            <div class="settings-section">
+                <h2 class="settings-subtitle" id="theme-subtitle">
+                    <i data-lucide="palette" class="settings-icon"></i>
+                    Theme Mode
+                </h2>
+                <div class="form-group">
+                    <label class="form-label" id="theme-preference-label" for="theme-select">Theme Preference</label>
+                    <select id="theme-select" class="form-select">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="system">System Default</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Accessibility Settings -->
+            <div class="settings-section">
+                <h2 class="settings-subtitle" id="accessibility-subtitle">
+                    <i data-lucide="accessibility" class="settings-icon"></i>
+                    Accessibility
+                </h2>
+
+                <div class="form-group">
+                    <label class="form-label" id="font-size-label" for="font-size-slider">Font Size: <span
+                            id="font-size-value">100%</span></label>
+                    <input type="range" id="font-size-slider" class="range-slider" min="80" max="120" value="100">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" id="high-contrast-label" for="high-contrast-toggle">High Contrast
+                        Mode</label>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="high-contrast-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span id="high-contrast-description" style="font-size: 0.875rem; color: #6b7280;">Enable high
+                            contrast for better
+                            readability</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Section -->
+            <div class="settings-section">
+                <h2 class="settings-subtitle" id="about-subtitle">
+                    <i data-lucide="info" class="settings-icon"></i>
+                    About Library System
+                </h2>
+                <p class="about-text" id="about-text">
+                    The UMak Library System helps students manage seats, track usage, and explore resources efficiently.
+                    Our modern interface provides real-time updates and intuitive navigation for an enhanced library
+                    experience.
+                </p>
+            </div>
+
+            <!-- Back to Login Button -->
+            <div class="settings-section" style="text-align: center; margin-top: 2rem;">
+                <a href="index.html" class="btn-primary">
+                    <i data-lucide="arrow-left" class="settings-icon"></i>
+                    <span id="back-to-login">Back to Login</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Language translations
+        const translations = {
+            en: {
+                settings: "Settings",
+                language: "Language",
+                changeLanguage: "Change Language",
+                themeMode: "Theme Mode",
+                themePreference: "Theme Preference",
+                light: "Light",
+                dark: "Dark",
+                systemDefault: "System Default",
+                accessibility: "Accessibility",
+                fontSize: "Font Size",
+                highContrastMode: "High Contrast Mode",
+                enableHighContrast: "Enable high contrast for better readability",
+                aboutLibrarySystem: "About Library System",
+                aboutText: "The UMak Library System helps students manage seats, track usage, and explore resources efficiently. Our modern interface provides real-time updates and intuitive navigation for an enhanced library experience.",
+                backToLogin: "Back to Login",
+                home: "Home",
+                register: "Register",
+                howToHelp: "How To / Help",
+                settings: "Settings"
+            },
+            fil: {
+                settings: "Mga Setting",
+                language: "Wika",
+                changeLanguage: "Palitan ang Wika",
+                themeMode: "Mode ng Tema",
+                themePreference: "Kagustuhan sa Tema",
+                light: "Maliwanag",
+                dark: "Madilim",
+                systemDefault: "Default ng Sistema",
+                accessibility: "Accessibility",
+                fontSize: "Laki ng Font",
+                highContrastMode: "Mode ng Mataas na Contrast",
+                enableHighContrast: "Paganahin ang mataas na contrast para sa mas mabuting pagbabasa",
+                aboutLibrarySystem: "Tungkol sa Sistema ng Aklatan",
+                aboutText: "Ang Sistema ng Aklatan ng UMak ay tumutulong sa mga mag-aaral na pamahalaan ang mga upuan, subaybayan ang paggamit, at tuklasin ang mga mapagkukunan nang mahusay. Ang aming modernong interface ay nagbibigay ng real-time na mga update at intuitive na navigation para sa isang pinahusay na karanasan sa aklatan.",
+                backToLogin: "Bumalik sa Login",
+                home: "Tahanan",
+                register: "Magparehistro",
+                howToHelp: "Paano / Tulong",
+                settings: "Mga Setting"
+            }
+        };
+
+        // Function to update page language
+        function updateLanguage(language) {
+            const t = translations[language];
+            if (!t) return;
+
+            // Update all text elements
+            const elements = {
+                'settings-title': t.settings,
+                'language-subtitle': t.language,
+                'change-language-label': t.changeLanguage,
+                'theme-subtitle': t.themeMode,
+                'theme-preference-label': t.themePreference,
+                'accessibility-subtitle': t.accessibility,
+                'font-size-label': t.fontSize,
+                'high-contrast-label': t.highContrastMode,
+                'high-contrast-description': t.enableHighContrast,
+                'about-subtitle': t.aboutLibrarySystem,
+                'about-text': t.aboutText,
+                'back-to-login': t.backToLogin,
+                'home-tooltip': t.home,
+                'register-tooltip': t.register,
+                'help-tooltip': t.howToHelp,
+                'settings-tooltip': t.settings
+            };
+
+            // Update text content
+            Object.entries(elements).forEach(([id, text]) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = text;
+                }
+            });
+
+            // Update select options
+            const themeSelect = document.getElementById('theme-select');
+            if (themeSelect) {
+                themeSelect.options[0].text = t.light;
+                themeSelect.options[1].text = t.dark;
+                themeSelect.options[2].text = t.systemDefault;
+            }
+
+            // Update font size label
+            const fontSizeLabel = document.getElementById('font-size-label');
+            if (fontSizeLabel) {
+                const currentValue = document.getElementById('font-size-value').textContent;
+                fontSizeLabel.textContent = t.fontSize + ': ' + currentValue;
+            }
+        }
+
+        // Initialize Lucide icons
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+
+        // Settings functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            // Font size slider
+            const fontSizeSlider = document.getElementById('font-size-slider');
+            const fontSizeValue = document.getElementById('font-size-value');
+
+            fontSizeSlider.addEventListener('input', function () {
+                const value = this.value;
+                fontSizeValue.textContent = value + '%';
+                document.documentElement.style.fontSize = value + '%';
+                localStorage.setItem('fontSize', value);
+            });
+
+            // Load saved font size
+            const savedFontSize = localStorage.getItem('fontSize');
+            if (savedFontSize) {
+                fontSizeSlider.value = savedFontSize;
+                fontSizeValue.textContent = savedFontSize + '%';
+                document.documentElement.style.fontSize = savedFontSize + '%';
+            }
+
+            // Theme selector
+            const themeSelect = document.getElementById('theme-select');
+
+            themeSelect.addEventListener('change', function () {
+                const theme = this.value;
+                if (theme === 'system') {
+                    // Remove manual theme classes and let system preference take over
+                    document.documentElement.classList.remove('dark', 'light');
+                    localStorage.removeItem('theme');
+                } else {
+                    document.documentElement.classList.remove('dark', 'light');
+                    document.documentElement.classList.add(theme);
+                    localStorage.setItem('theme', theme);
+                }
+            });
+
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                themeSelect.value = savedTheme;
+                document.documentElement.classList.remove('dark', 'light');
+                document.documentElement.classList.add(savedTheme);
+            }
+
+            // High contrast toggle
+            const highContrastToggle = document.getElementById('high-contrast-toggle');
+
+            highContrastToggle.addEventListener('change', function () {
+                if (this.checked) {
+                    document.documentElement.classList.add('high-contrast');
+                    localStorage.setItem('highContrast', 'true');
+                } else {
+                    document.documentElement.classList.remove('high-contrast');
+                    localStorage.setItem('highContrast', 'false');
+                }
+            });
+
+            // Load saved high contrast setting
+            const savedHighContrast = localStorage.getItem('highContrast');
+            if (savedHighContrast === 'true') {
+                highContrastToggle.checked = true;
+                document.documentElement.classList.add('high-contrast');
+            }
+
+            // Language selector
+            const languageSelect = document.getElementById('language-select');
+
+            languageSelect.addEventListener('change', function () {
+                const language = this.value;
+                localStorage.setItem('language', language);
+                updateLanguage(language);
+                console.log('Language changed to:', language);
+            });
+
+            // Load saved language
+            const savedLanguage = localStorage.getItem('language');
+            if (savedLanguage) {
+                languageSelect.value = savedLanguage;
+                updateLanguage(savedLanguage);
+            }
+        });
+    </script>
+</body>
+
+</html>

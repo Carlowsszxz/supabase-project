@@ -9,6 +9,107 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
   <script defer src="theme.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script>
+    // Language translations
+    const translations = {
+      en: {
+        home: "Home",
+        register: "Register",
+        howToHelp: "How To / Help",
+        settings: "Settings",
+        registerTitle: "Create Account",
+        registerSubtitle: "Join the UMak Library community",
+        firstName: "First Name",
+        lastName: "Last Name",
+        email: "Email Address",
+        password: "Password",
+        confirmPassword: "Confirm Password",
+        studentId: "Student ID",
+        course: "Course",
+        yearLevel: "Year Level",
+        agreeTerms: "I agree to the terms and conditions",
+        createAccount: "Create Account",
+        alreadyHaveAccount: "Already have an account?",
+        signInHere: "Sign in here",
+        librarySystem: "University of Makati Library",
+        noiseComfort: "Noise Comfort Index"
+      },
+      fil: {
+        home: "Tahanan",
+        register: "Magparehistro",
+        howToHelp: "Paano / Tulong",
+        settings: "Mga Setting",
+        registerTitle: "Gumawa ng Account",
+        registerSubtitle: "Sumali sa komunidad ng Aklatan ng UMak",
+        firstName: "Unang Pangalan",
+        lastName: "Apelyido",
+        email: "Email Address",
+        password: "Password",
+        confirmPassword: "Kumpirmahin ang Password",
+        studentId: "Student ID",
+        course: "Kurso",
+        yearLevel: "Antas ng Taon",
+        agreeTerms: "Sumasang-ayon ako sa mga tuntunin at kondisyon",
+        createAccount: "Gumawa ng Account",
+        alreadyHaveAccount: "May account na?",
+        signInHere: "Mag-sign in dito",
+        librarySystem: "Aklatan ng University of Makati",
+        noiseComfort: "Index ng Kaginhawahan sa Ingay"
+      }
+    };
+
+    // Function to update page language
+    function updateLanguage(language) {
+      const t = translations[language];
+      if (!t) return;
+
+      // Update all text elements
+      const elements = {
+        'home-tooltip': t.home,
+        'register-tooltip': t.register,
+        'help-tooltip': t.howToHelp,
+        'settings-tooltip': t.settings,
+        'register-title': t.registerTitle,
+        'register-subtitle': t.registerSubtitle,
+        'first-name-label': t.firstName,
+        'last-name-label': t.lastName,
+        'email-label': t.email,
+        'password-label': t.password,
+        'confirm-password-label': t.confirmPassword,
+        'student-id-label': t.studentId,
+        'course-label': t.course,
+        'year-level-label': t.yearLevel,
+        'agree-terms': t.agreeTerms,
+        'create-account-btn': t.createAccount,
+        'already-have-account': t.alreadyHaveAccount,
+        'sign-in-link': t.signInHere,
+        'library-title': t.librarySystem,
+        'footer-text': t.noiseComfort
+      };
+
+      // Update text content
+      Object.entries(elements).forEach(([id, text]) => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.textContent = text;
+        }
+      });
+    }
+
+    // Load saved language and apply it
+    document.addEventListener('DOMContentLoaded', function () {
+      const savedLanguage = localStorage.getItem('language');
+      if (savedLanguage) {
+        updateLanguage(savedLanguage);
+      }
+
+      // Initialize Lucide icons
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    });
+  </script>
   <style>
     .fade-content {
       opacity: var(--fade-initial-opacity, 0);
@@ -157,6 +258,243 @@
       box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
       color: #e5e7eb;
     }
+
+    /* Modern Top Navigation Bar */
+    .modern-sidebar {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: auto;
+      min-width: 320px;
+      max-width: 500px;
+      height: auto;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-top: none;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      z-index: 1000;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 2rem;
+      gap: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Top Navigation Items */
+    .sidebar-nav-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #374151;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      will-change: transform, box-shadow, background;
+    }
+
+    .sidebar-nav-item:hover {
+      transform: translateY(-2px) scale(1.05);
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .sidebar-nav-item:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .sidebar-nav-item.active {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.4);
+      color: #3b82f6;
+    }
+
+    /* Sidebar Icons */
+    .sidebar-icon {
+      width: 24px;
+      height: 24px;
+      stroke-width: 1.5;
+    }
+
+    /* Tooltips */
+    .sidebar-tooltip {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      z-index: 1001;
+    }
+
+    .sidebar-tooltip::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-bottom-color: rgba(0, 0, 0, 0.9);
+    }
+
+    .sidebar-nav-item:hover .sidebar-tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Logo/Brand in Top Navigation */
+    .sidebar-brand {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+      margin-right: 1rem;
+    }
+
+    .sidebar-brand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+    }
+
+    .sidebar-brand-text {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #374151;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .modern-sidebar {
+        min-width: 280px;
+        max-width: 90vw;
+        padding: 0.75rem 1rem;
+        gap: 0.75rem;
+      }
+
+      .sidebar-nav-item {
+        width: 40px;
+        height: 40px;
+      }
+
+      .sidebar-icon {
+        width: 20px;
+        height: 20px;
+      }
+
+      .sidebar-brand img {
+        width: 32px;
+        height: 32px;
+      }
+
+      .sidebar-brand-text {
+        font-size: 0.625rem;
+      }
+
+      .sidebar-tooltip {
+        display: none;
+      }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+      .modern-sidebar {
+        background: rgba(15, 23, 42, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: none;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      }
+
+      .sidebar-nav-item {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #e5e7eb;
+      }
+
+      .sidebar-nav-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.4);
+      }
+
+      .sidebar-nav-item.active {
+        background: rgba(59, 130, 246, 0.3);
+        border-color: rgba(59, 130, 246, 0.5);
+        color: #60a5fa;
+      }
+
+      .sidebar-brand-text {
+        color: #e5e7eb;
+      }
+    }
+
+    /* Manual dark mode class support */
+    .dark .modern-sidebar {
+      background: rgba(15, 23, 42, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: none;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .dark .sidebar-nav-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e5e7eb;
+    }
+
+    .dark .sidebar-nav-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .dark .sidebar-nav-item.active {
+      background: rgba(59, 130, 246, 0.3);
+      border-color: rgba(59, 130, 246, 0.5);
+      color: #60a5fa;
+    }
+
+    .dark .sidebar-brand-text {
+      color: #e5e7eb;
+    }
+
+    /* Adjust main content for top navigation */
+    .main-with-sidebar {
+      margin-left: 0;
+      padding-top: 100px;
+      /* Add top padding to account for fixed top navigation */
+    }
+
+    @media (max-width: 768px) {
+      .main-with-sidebar {
+        padding-top: 80px;
+        /* Smaller padding on mobile */
+      }
+    }
   </style>
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script>
@@ -236,29 +574,36 @@
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
   <div id="cursor-follower" class="cursor-follower" aria-hidden="true"></div>
   <div id="library-background" class="library-background" aria-hidden="true"></div>
-  <header class="site-header">
-    <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
-      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
-      <a href="index.html" class="brand-title text-2xl font-semibold mr-auto">University of Makati Library</a>
-      <button id="mobile-menu-btn"
-        class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-        aria-label="Open main menu" aria-expanded="false">
-        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-          aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-      <nav class="hidden md:flex items-center gap-4 text-sm">
-        <a href="index.html" class="nav-link">Login</a>
-      </nav>
+  <!-- Modern Top Navigation Bar -->
+  <nav class="modern-sidebar" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
+    <!-- Brand/Logo -->
+    <div class="sidebar-brand">
+      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" />
     </div>
-    <nav id="mobile-menu" class="md:hidden hidden px-6 pb-3">
-      <a href="index.html" class="block py-2 text-sm nav-link">Login</a>
-    </nav>
-    </div>
-  </header>
 
-  <main class="flex-1 flex items-start justify-center py-12 px-6">
+    <!-- Navigation Items -->
+    <a href="index.html" class="sidebar-nav-item" aria-label="Home">
+      <i data-lucide="home" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="home-tooltip">Home</div>
+    </a>
+
+    <a href="Frame_5.html" class="sidebar-nav-item active" aria-label="Register">
+      <i data-lucide="user-plus" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="register-tooltip">Register</div>
+    </a>
+
+    <a href="how-to.html" class="sidebar-nav-item" aria-label="How To / Help">
+      <i data-lucide="help-circle" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="help-tooltip">How To / Help</div>
+    </a>
+
+    <a href="Settings.html" class="sidebar-nav-item" aria-label="Settings">
+      <i data-lucide="settings" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="settings-tooltip">Settings</div>
+    </a>
+  </nav>
+
+  <main class="main-with-sidebar flex-1 flex items-start justify-center py-12 px-6">
     <div class="w-full max-w-6xl">
       <div id="fade-content" class="fade-content" data-blur="true" data-duration="1000" data-easing="ease-out"
         data-initial-opacity="0">
@@ -268,8 +613,8 @@
             <!-- Left: Registration form (vertically centered) -->
             <div class="p-8 md:p-10 flex items-center">
               <div class="w-full">
-                <h1 class="text-2xl font-bold mb-2">Create Account</h1>
-                <p class="text-sm text-slate-500 mb-6">Register to access the library dashboard</p>
+                <h1 id="register-title" class="text-2xl font-bold mb-2">Create Account</h1>
+                <p id="register-subtitle" class="text-sm text-slate-500 mb-6">Join the UMak Library community</p>
 
                 <!-- Status Messages -->
                 <div id="register-error"
@@ -306,13 +651,13 @@
                 <form id="register-form" class="space-y-5">
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label class="block text-sm text-slate-700 mb-1">First Name</label>
+                      <label id="first-name-label" class="block text-sm text-slate-700 mb-1">First Name</label>
                       <input id="reg-first" type="text"
                         class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
                         placeholder="Enter first name" required />
                     </div>
                     <div>
-                      <label class="block text-sm text-slate-700 mb-1">Last Name</label>
+                      <label id="last-name-label" class="block text-sm text-slate-700 mb-1">Last Name</label>
                       <input id="reg-last" type="text"
                         class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
                         placeholder="Enter last name" required />
@@ -320,7 +665,7 @@
                   </div>
 
                   <div>
-                    <label class="block text-sm text-slate-700 mb-1">Email Address</label>
+                    <label id="email-label" class="block text-sm text-slate-700 mb-1">Email Address</label>
                     <input id="reg-email" type="email"
                       class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
                       placeholder="your.email@umak.edu.ph" required />
@@ -328,7 +673,7 @@
                   </div>
 
                   <div>
-                    <label class="block text-sm text-slate-700 mb-1">Password</label>
+                    <label id="password-label" class="block text-sm text-slate-700 mb-1">Password</label>
                     <input id="reg-pass" type="password"
                       class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
                       placeholder="Create a strong password" required minlength="6" />
@@ -336,7 +681,8 @@
                   </div>
 
                   <div>
-                    <label class="block text-sm text-slate-700 mb-1">Confirm Password</label>
+                    <label id="confirm-password-label" class="block text-sm text-slate-700 mb-1">Confirm
+                      Password</label>
                     <input id="reg-pass-confirm" type="password"
                       class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
                       placeholder="Re-enter your password" required minlength="6" />
@@ -362,7 +708,7 @@
                   </div>
 
                   <div>
-                    <button type="submit"
+                    <button type="submit" id="create-account-btn"
                       class="w-full py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed">
                       Create Account
                     </button>
@@ -371,10 +717,10 @@
 
                 <div class="mt-6 text-center">
                   <p class="text-sm text-slate-500">
-                    Already have an account?
-                    <a href="index.html"
-                      class="text-indigo-600 hover:text-indigo-700 font-medium transition-all duration-300 ease-in-out">Login
-                      here</a>
+                    <span id="already-have-account">Already have an account?</span>
+                    <a href="index.html" id="sign-in-link"
+                      class="text-indigo-600 hover:text-indigo-700 font-medium transition-all duration-300 ease-in-out">Sign
+                      in here</a>
                   </p>
                 </div>
               </div>

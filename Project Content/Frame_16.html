@@ -9,6 +9,330 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
   <script defer src="theme.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <style>
+    /* Modern Top Navigation Bar */
+    .modern-sidebar {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: auto;
+      min-width: 320px;
+      max-width: 500px;
+      height: auto;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-top: none;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      z-index: 1000;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 2rem;
+      gap: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Top Navigation Items */
+    .sidebar-nav-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      color: #374151;
+      text-decoration: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+
+    .sidebar-nav-item:hover {
+      transform: translateY(-2px) scale(1.05);
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .sidebar-nav-item:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .sidebar-nav-item.active {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.4);
+      color: #3b82f6;
+    }
+
+    /* Sidebar Icons */
+    .sidebar-icon {
+      width: 24px;
+      height: 24px;
+      stroke-width: 1.5;
+    }
+
+    /* Tooltips */
+    .sidebar-tooltip {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      z-index: 1001;
+    }
+
+    .sidebar-tooltip::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-bottom-color: rgba(0, 0, 0, 0.9);
+    }
+
+    .sidebar-nav-item:hover .sidebar-tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Logo/Brand in Top Navigation */
+    .sidebar-brand {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sidebar-brand img {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+    }
+
+    .sidebar-brand-text {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .modern-sidebar {
+        min-width: 280px;
+        max-width: 90vw;
+        padding: 0.75rem 1rem;
+        gap: 0.75rem;
+      }
+
+      .sidebar-nav-item {
+        width: 40px;
+        height: 40px;
+      }
+
+      .sidebar-icon {
+        width: 20px;
+        height: 20px;
+      }
+
+      .sidebar-brand img {
+        width: 28px;
+        height: 28px;
+      }
+
+      .sidebar-brand-text {
+        font-size: 1rem;
+      }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+      .modern-sidebar {
+        background: rgba(15, 23, 42, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: none;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      }
+
+      .sidebar-nav-item {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #e5e7eb;
+      }
+
+      .sidebar-nav-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.4);
+      }
+
+      .sidebar-nav-item.active {
+        background: rgba(59, 130, 246, 0.3);
+        border-color: rgba(59, 130, 246, 0.5);
+        color: #60a5fa;
+      }
+
+      .sidebar-brand-text {
+        color: #e5e7eb;
+      }
+    }
+
+    /* Manual dark mode class support */
+    .dark .modern-sidebar {
+      background: rgba(15, 23, 42, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: none;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .dark .sidebar-nav-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e5e7eb;
+    }
+
+    .dark .sidebar-nav-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .dark .sidebar-nav-item.active {
+      background: rgba(59, 130, 246, 0.3);
+      border-color: rgba(59, 130, 246, 0.5);
+      color: #60a5fa;
+    }
+
+    .dark .sidebar-brand-text {
+      color: #e5e7eb;
+    }
+
+    /* Adjust main content for top navigation */
+    .main-with-sidebar {
+      padding-top: 5rem;
+    }
+  </style>
+  <script>
+    // Language translations
+    const translations = {
+      en: {
+        home: "Home",
+        register: "Register",
+        howToHelp: "How To / Help",
+        settings: "Settings",
+        profile: "Profile",
+        map: "Map",
+        report: "Report",
+        logout: "Logout",
+        reportNoise: "Report Noise",
+        noiseReport: "Noise Report",
+        reportNoiseLevel: "Report Noise Level",
+        selectNoiseLevel: "Select Noise Level",
+        quiet: "Quiet",
+        moderate: "Moderate",
+        noisy: "Noisy",
+        veryNoisy: "Very Noisy",
+        addComment: "Add Comment (Optional)",
+        submitReport: "Submit Report",
+        communityReports: "Community Reports",
+        adminReports: "Admin Reports",
+        librarySystem: "University of Makati Library",
+        noiseComfort: "Noise Comfort Index"
+      },
+      fil: {
+        home: "Tahanan",
+        register: "Magparehistro",
+        howToHelp: "Paano / Tulong",
+        settings: "Mga Setting",
+        profile: "Profile",
+        map: "Mapa",
+        report: "Mag-report",
+        logout: "Mag-logout",
+        reportNoise: "Mag-report ng Ingay",
+        noiseReport: "Report ng Ingay",
+        reportNoiseLevel: "Mag-report ng Antas ng Ingay",
+        selectNoiseLevel: "Piliin ang Antas ng Ingay",
+        quiet: "Tahimik",
+        moderate: "Katamtaman",
+        noisy: "Maingay",
+        veryNoisy: "Napakaingay",
+        addComment: "Magdagdag ng Komento (Opsiyonal)",
+        submitReport: "I-submit ang Report",
+        communityReports: "Mga Report ng Komunidad",
+        adminReports: "Mga Report ng Admin",
+        librarySystem: "Aklatan ng University of Makati",
+        noiseComfort: "Index ng Kaginhawahan sa Ingay"
+      }
+    };
+
+    // Function to update page language
+    function updateLanguage(language) {
+      const t = translations[language];
+      if (!t) return;
+
+      // Update all text elements
+      const elements = {
+        'home-tooltip': t.home,
+        'register-tooltip': t.register,
+        'help-tooltip': t.howToHelp,
+        'settings-tooltip': t.settings,
+        'report-noise-title': t.reportNoise,
+        'noise-report-title': t.noiseReport,
+        'report-noise-level': t.reportNoiseLevel,
+        'select-noise-level': t.selectNoiseLevel,
+        'quiet-label': t.quiet,
+        'moderate-label': t.moderate,
+        'noisy-label': t.noisy,
+        'very-noisy-label': t.veryNoisy,
+        'add-comment-label': t.addComment,
+        'submit-report-btn': t.submitReport,
+        'community-reports-title': t.communityReports,
+        'admin-reports-title': t.adminReports,
+        'profile-tooltip': t.profile,
+        'map-tooltip': t.map,
+        'report-tooltip': t.report,
+        'logout-btn': t.logout,
+        'library-title': t.librarySystem,
+        'footer-text': t.noiseComfort
+      };
+
+      // Update text content
+      Object.entries(elements).forEach(([id, text]) => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.textContent = text;
+        }
+      });
+    }
+
+    // Load saved language and apply it
+    document.addEventListener('DOMContentLoaded', function () {
+      const savedLanguage = localStorage.getItem('language');
+      if (savedLanguage) {
+        updateLanguage(savedLanguage);
+      }
+    });
+  </script>
   <!-- UI/UX refinements (non-breaking):
        - improved padding and spacing consistency across sections
        - fixed low-contrast text by mapping to theme tokens
@@ -652,39 +976,37 @@
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
   <div id="cursor-follower" class="cursor-follower" aria-hidden="true"></div>
   <div id="library-background" class="library-background" aria-hidden="true"></div>
-  <header class="site-header" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
-    <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
-      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" data-fade data-blur="true"
-        data-delay="50" data-initial-opacity="0" />
-      <a href="Frame_11.html" class="brand-title text-xl md:text-2xl font-semibold mr-auto">University of Makati
-        Library</a>
-      <button id="mobile-menu-btn"
-        class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-        aria-label="Open main menu" aria-expanded="false">
-        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-          aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-      <nav class="hidden md:flex items-center gap-4 text-sm">
-        <a href="Frame_11.html" class="nav-link">Profile</a>
-        <a href="Frame_8.html" class="nav-link">Map</a>
-        <a href="Frame_16.html" class="nav-link active">Report</a>
-      </nav>
-      <button id="logoutBtn"
-        class="hidden md:inline px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 transition">Logout</button>
+  <!-- Modern Top Navigation Bar -->
+  <nav class="modern-sidebar" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
+    <!-- Brand/Logo -->
+    <div class="sidebar-brand">
+      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" />
     </div>
-    <nav id="mobile-menu" class="md:hidden hidden px-6 pb-3">
-      <a href="Frame_11.html" class="block py-2 text-sm nav-link">Profile</a>
-      <a href="Frame_8.html" class="block py-2 text-sm nav-link">Map</a>
-      <a href="Frame_16.html" class="block py-2 text-sm nav-link active">Report</a>
-      <button id="logoutBtnMobile"
-        class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition text-left">Logout</button>
-    </nav>
-  </header>
 
-  <main class="flex-1 flex items-start justify-center py-12 px-6" data-fade data-blur="true" data-initial-opacity="0"
-    data-duration="1000" data-delay="50">
+    <!-- Navigation Items -->
+    <a href="Frame_11.html" class="sidebar-nav-item" aria-label="Profile">
+      <i data-lucide="user" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="profile-tooltip">Profile</div>
+    </a>
+
+    <a href="Frame_8.html" class="sidebar-nav-item" aria-label="Map">
+      <i data-lucide="map" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="map-tooltip">Map</div>
+    </a>
+
+    <a href="Frame_16.html" class="sidebar-nav-item active" aria-label="Report">
+      <i data-lucide="flag" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="report-tooltip">Report</div>
+    </a>
+
+    <button id="logoutBtn" class="sidebar-nav-item" aria-label="Logout">
+      <i data-lucide="log-out" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="logout-btn">Logout</div>
+    </button>
+  </nav>
+
+  <main class="main-with-sidebar flex-1 flex items-start justify-center py-12 px-6" data-fade data-blur="true"
+    data-initial-opacity="0" data-duration="1000" data-delay="50">
     <div class="w-full max-w-4xl">
 
       <!-- Report Header -->
@@ -699,7 +1021,7 @@
             </svg>
           </div>
           <div class="flex-1 order-2" data-fade data-blur="true" data-delay="50" data-initial-opacity="0">
-            <h1 class="card-title">Report Noise Disturbance</h1>
+            <h1 id="report-noise-title" class="card-title">Report Noise Disturbance</h1>
             <p class="meta">Help maintain a quiet study environment by reporting noise issues. Your reports
               help librarians take appropriate action.</p>
             <p class="text-xs text-slate-500 mt-1">Note: Once a librarian resolves your complaint, it will be removed
@@ -922,7 +1244,7 @@
         data-initial-opacity="0">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h2 class="text-lg font-semibold">Community Reports</h2>
+            <h2 id="community-reports-title" class="text-lg font-semibold">Community Reports</h2>
             <div class="text-xs text-slate-500 mt-0.5"><span id="communityCount">0</span> reports • <span
                 id="communityWindow">Last 25</span></div>
           </div>
@@ -950,7 +1272,7 @@
       <section id="adminReportsTableContainer" class="card hidden" data-fade data-blur="true" data-duration="1000"
         data-easing="ease-out" data-delay="150" data-initial-opacity="0">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold">Admin Reports (table)</h2>
+          <h2 id="admin-reports-title" class="text-lg font-semibold">Admin Reports (table)</h2>
           <div class="text-xs text-slate-500">Visible to admins only</div>
         </div>
         <div class="overflow-x-auto">
@@ -1642,6 +1964,11 @@
       }
       requestAnimationFrame(animate);
     })();
+
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
   </script>
 </body>
 

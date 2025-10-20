@@ -9,7 +9,398 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
   <script defer src="theme.js"></script>
+
+  <style>
+    /* Modern Top Navigation Bar */
+    .modern-sidebar {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: auto;
+      min-width: 320px;
+      max-width: 500px;
+      height: auto;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-top: none;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      z-index: 1000;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 2rem;
+      gap: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Top Navigation Items */
+    .sidebar-nav-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      color: #374151;
+      text-decoration: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+
+    .sidebar-nav-item:hover {
+      transform: translateY(-2px) scale(1.05);
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .sidebar-nav-item:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .sidebar-nav-item.active {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.4);
+      color: #3b82f6;
+    }
+
+    /* Sidebar Icons */
+    .sidebar-icon {
+      width: 24px;
+      height: 24px;
+      stroke-width: 1.5;
+    }
+
+    /* Tooltips */
+    .sidebar-tooltip {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      z-index: 1001;
+    }
+
+    .sidebar-tooltip::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-bottom-color: rgba(0, 0, 0, 0.9);
+    }
+
+    .sidebar-nav-item:hover .sidebar-tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Logo/Brand in Top Navigation */
+    .sidebar-brand {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sidebar-brand img {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+    }
+
+    .sidebar-brand-text {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .modern-sidebar {
+        min-width: 280px;
+        max-width: 90vw;
+        padding: 0.75rem 1rem;
+        gap: 0.75rem;
+      }
+
+      .sidebar-nav-item {
+        width: 40px;
+        height: 40px;
+      }
+
+      .sidebar-icon {
+        width: 20px;
+        height: 20px;
+      }
+
+      .sidebar-brand img {
+        width: 28px;
+        height: 28px;
+      }
+
+      .sidebar-brand-text {
+        font-size: 1rem;
+      }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+      .modern-sidebar {
+        background: rgba(15, 23, 42, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: none;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      }
+
+      .sidebar-nav-item {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #e5e7eb;
+      }
+
+      .sidebar-nav-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.4);
+      }
+
+      .sidebar-nav-item.active {
+        background: rgba(59, 130, 246, 0.3);
+        border-color: rgba(59, 130, 246, 0.5);
+        color: #60a5fa;
+      }
+
+      .sidebar-brand-text {
+        color: #e5e7eb;
+      }
+    }
+
+    /* Manual dark mode class support */
+    .dark .modern-sidebar {
+      background: rgba(15, 23, 42, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: none;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .dark .sidebar-nav-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e5e7eb;
+    }
+
+    .dark .sidebar-nav-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .dark .sidebar-nav-item.active {
+      background: rgba(59, 130, 246, 0.3);
+      border-color: rgba(59, 130, 246, 0.5);
+      color: #60a5fa;
+    }
+
+    .dark .sidebar-brand-text {
+      color: #e5e7eb;
+    }
+
+    /* Adjust main content for top navigation */
+    .main-with-sidebar {
+      padding-top: 5rem;
+    }
+  </style>
   <script src="https://unpkg.com/ogl@0.0.112/dist/ogl.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script>
+    // Language translations
+    const translations = {
+      en: {
+        home: "Home",
+        register: "Register",
+        howToHelp: "How To / Help",
+        settings: "Settings",
+        profile: "Profile",
+        map: "Map",
+        report: "Report",
+        logout: "Logout",
+        dashboard: "Dashboard",
+        welcomeBack: "Welcome Back",
+        noiseLevel: "Noise Level",
+        currentLevel: "Current Level",
+        quiet: "Quiet",
+        moderate: "Moderate",
+        noisy: "Noisy",
+        studentInfo: "Student Information",
+        totalStudents: "Total Students",
+        activeUsers: "Active Users",
+        availableSeats: "Available Seats",
+        occupiedSeats: "Occupied Seats",
+        currentSession: "Current Session",
+        seat: "Seat",
+        duration: "Duration",
+        studyStatus: "Study Status",
+        active: "Active",
+        studyTips: "Study Tips",
+        studyGoals: "Study Goals",
+        studyProgress: "Study Progress",
+        selectSeat: "Select a Seat",
+        close: "Close",
+        notCheckedIn: "Not checked in",
+        viewOnly: "View-only",
+        readyToStudy: "Ready to study? Find a seat and get started!",
+        todaysTarget: "Today's Target",
+        thisWeek: "This Week",
+        thisMonth: "This Month",
+        librarySystem: "University of Makati Library",
+        noiseComfort: "Noise Comfort Index"
+      },
+      fil: {
+        home: "Tahanan",
+        register: "Magparehistro",
+        howToHelp: "Paano / Tulong",
+        settings: "Mga Setting",
+        profile: "Profile",
+        map: "Mapa",
+        report: "Mag-report",
+        logout: "Mag-logout",
+        dashboard: "Dashboard",
+        welcomeBack: "Maligayang Pagbabalik",
+        noiseLevel: "Antas ng Ingay",
+        currentLevel: "Kasalukuyang Antas",
+        quiet: "Tahimik",
+        moderate: "Katamtaman",
+        noisy: "Maingay",
+        studentInfo: "Impormasyon ng Mag-aaral",
+        totalStudents: "Kabuuang Mag-aaral",
+        activeUsers: "Aktibong Gumagamit",
+        availableSeats: "Available na Upuan",
+        occupiedSeats: "Okupadong Upuan",
+        currentSession: "Kasalukuyang Session",
+        seat: "Upuan",
+        duration: "Tagal",
+        studyStatus: "Status ng Pag-aaral",
+        active: "Aktibo",
+        studyTips: "Mga Tip sa Pag-aaral",
+        studyGoals: "Mga Layunin sa Pag-aaral",
+        studyProgress: "Pag-unlad sa Pag-aaral",
+        selectSeat: "Piliin ang Upuan",
+        close: "Isara",
+        notCheckedIn: "Hindi pa nag-check in",
+        viewOnly: "Tingnan lamang",
+        readyToStudy: "Handa na bang mag-aral? Maghanap ng upuan at magsimula na!",
+        todaysTarget: "Target ng Araw",
+        thisWeek: "Sa Linggong Ito",
+        thisMonth: "Sa Buwang Ito",
+        completed: "Nakumpleto",
+        streak: "Streak",
+        days: "araw",
+        hours: "oras",
+        librarySystem: "Aklatan ng University of Makati",
+        noiseComfort: "Index ng Kaginhawahan sa Ingay"
+      }
+    };
+
+    // Function to update page language
+    function updateLanguage(language) {
+      const t = translations[language];
+      if (!t) return;
+
+      // Update all text elements
+      const elements = {
+        'home-tooltip': t.home,
+        'register-tooltip': t.register,
+        'help-tooltip': t.howToHelp,
+        'settings-tooltip': t.settings,
+        'dashboard-title': t.dashboard,
+        'welcome-back': t.welcomeBack,
+        'noise-level-title': t.noiseLevel,
+        'current-level': t.currentLevel,
+        'quiet-label': t.quiet,
+        'moderate-label': t.moderate,
+        'noisy-label': t.noisy,
+        'student-info-title': t.studentInfo,
+        'total-students': t.totalStudents,
+        'active-users': t.activeUsers,
+        'available-seats': t.availableSeats,
+        'occupied-seats': t.occupiedSeats,
+        'current-session-title': t.currentSession,
+        'seat-label': t.seat,
+        'duration-label': t.duration,
+        'study-status-title': t.studyStatus,
+        'active-label': t.active,
+        'study-tips-title': t.studyTips,
+        'study-goals-title': t.studyGoals,
+        'study-progress-title': t.studyProgress,
+        'select-seat-title': t.selectSeat,
+        'close-btn': t.close,
+        'ready-to-study': t.readyToStudy,
+        'todays-target': t.todaysTarget,
+        'this-week': t.thisWeek,
+        'this-month': t.thisMonth,
+        'completed-label': t.completed,
+        'streak-label': t.streak,
+        'days-label': t.days,
+        'hours-label': t.hours,
+        'profile-tooltip': t.profile,
+        'map-tooltip': t.map,
+        'report-tooltip': t.report,
+        'logout-btn': t.logout,
+        'library-title': t.librarySystem,
+        'footer-text': t.noiseComfort
+      };
+
+      // Update text content
+      Object.entries(elements).forEach(([id, text]) => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.textContent = text;
+        }
+      });
+
+      // Update dynamic text that might be set by JavaScript
+      const dynamicElements = {
+        'currentSession': t.notCheckedIn,
+        'environmentStatus': t.viewOnly
+      };
+
+      Object.entries(dynamicElements).forEach(([id, text]) => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.textContent = text;
+        }
+      });
+    }
+
+    // Load saved language and apply it
+    document.addEventListener('DOMContentLoaded', function () {
+      const savedLanguage = localStorage.getItem('language');
+      if (savedLanguage) {
+        updateLanguage(savedLanguage);
+      }
+    });
+  </script>
   <style>
     .fade-content {
       opacity: var(--fade-initial-opacity, 0);
@@ -419,37 +810,36 @@
   <div id="veil-bg" aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:1">
     <canvas id="veil-canvas" class="w-full h-full block"></canvas>
   </div>
-  <header class="site-header" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
-    <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
-      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
-      <a href="Frame_11.html" class="brand-title text-xl md:text-2xl font-semibold mr-auto">University of Makati
-        Library</a>
-      <button id="mobile-menu-btn"
-        class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-        aria-label="Open main menu" aria-expanded="false">
-        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-          aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-      <nav class="hidden md:flex items-center gap-4 text-sm">
-        <a href="Frame_11.html" class="nav-link active">Profile</a>
-        <a href="Frame_8.html" class="nav-link">Map</a>
-        <a href="Frame_16.html" class="nav-link">Report</a>
-      </nav>
-      <button id="logoutBtn"
-        class="hidden md:inline px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition">Logout</button>
+  <!-- Modern Top Navigation Bar -->
+  <nav class="modern-sidebar" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
+    <!-- Brand/Logo -->
+    <div class="sidebar-brand">
+      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" />
     </div>
-    <nav id="mobile-menu" class="md:hidden hidden px-6 pb-3">
-      <a href="Frame_11.html" class="block py-2 text-sm nav-link active">Profile</a>
-      <a href="Frame_8.html" class="block py-2 text-sm nav-link">Map</a>
-      <a href="Frame_16.html" class="block py-2 text-sm nav-link">Report</a>
-      <button id="logoutBtnMobile"
-        class="mt-2 w-full px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition text-left">Logout</button>
-    </nav>
-  </header>
-  <main class="flex-1 flex items-start justify-center py-12 px-6" data-fade data-blur="true" data-initial-opacity="0"
-    data-duration="1000" data-delay="50">
+
+    <!-- Navigation Items -->
+    <a href="Frame_11.html" class="sidebar-nav-item active" aria-label="Profile">
+      <i data-lucide="user" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="profile-tooltip">Profile</div>
+    </a>
+
+    <a href="Frame_8.html" class="sidebar-nav-item" aria-label="Map">
+      <i data-lucide="map" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="map-tooltip">Map</div>
+    </a>
+
+    <a href="Frame_16.html" class="sidebar-nav-item" aria-label="Report">
+      <i data-lucide="flag" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="report-tooltip">Report</div>
+    </a>
+
+    <button id="logoutBtn" class="sidebar-nav-item" aria-label="Logout">
+      <i data-lucide="log-out" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="logout-btn">Logout</div>
+    </button>
+  </nav>
+  <main class="main-with-sidebar flex-1 flex items-start justify-center py-12 px-6" data-fade data-blur="true"
+    data-initial-opacity="0" data-duration="1000" data-delay="50">
     <div class="w-full max-w-6xl">
       <div id="fade-content" class="fade-content" data-blur="true" data-duration="1000" data-easing="ease-out"
         data-initial-opacity="0" data-delay="0" data-threshold="0.1">
@@ -528,11 +918,12 @@
         <!-- Current Session Status -->
         <section class="grid grid-cols-1 gap-6 mb-8">
           <div class="card">
-            <h2 class="card-title">Current Session</h2>
+            <h2 id="current-session-title" class="card-title">Current Session</h2>
             <div class="space-y-3">
-              <div class="kpi-row"><span class="meta">Seat</span><span id="currentSeat" class="font-medium">—</span>
+              <div class="kpi-row"><span id="seat-label" class="meta">Seat</span><span id="currentSeat"
+                  class="font-medium">—</span>
               </div>
-              <div class="kpi-row"><span class="meta">Duration</span><span id="sessionDuration"
+              <div class="kpi-row"><span id="duration-label" class="meta">Duration</span><span id="sessionDuration"
                   class="font-medium">—</span></div>
               <div class="mt-4">
                 <button id="checkOutBtn"
@@ -548,21 +939,21 @@
             <!-- Study Status -->
             <div class="card">
               <div class="flex items-center justify-between mb-2">
-                <h2 class="card-title">Study Status</h2>
+                <h2 id="study-status-title" class="card-title">Study Status</h2>
                 <div class="flex items-center gap-2">
                   <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                  <span class="meta">Active</span>
+                  <span id="active-label" class="meta">Active</span>
                 </div>
               </div>
               <div class="text-center py-8">
                 <div class="text-4xl mb-2">📚</div>
-                <div class="text-slate-600">Ready to study? Find a seat and get started!</div>
+                <div id="ready-to-study" class="text-slate-600">Ready to study? Find a seat and get started!</div>
               </div>
             </div>
 
             <!-- Study Tips -->
             <div class="card">
-              <h2 class="card-title mb-3">Study Tips</h2>
+              <h2 id="study-tips-title" class="card-title mb-3">Study Tips</h2>
               <div class="space-y-3 text-sm">
                 <div class="flex items-start gap-3">
                   <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -640,7 +1031,7 @@
             <!-- Noise Level Monitor -->
             <div class="card">
               <div class="flex items-center justify-between mb-4">
-                <h2 class="card-title">Table Noise Level</h2>
+                <h2 id="noise-level-title" class="card-title">Table Noise Level</h2>
                 <div class="text-xs text-slate-500" id="noiseTableLabel">—</div>
               </div>
 
@@ -704,14 +1095,14 @@
 
             <!-- Study Goals -->
             <div class="card">
-              <h2 class="card-title mb-3">Study Goals</h2>
+              <h2 id="study-goals-title" class="card-title mb-3">Study Goals</h2>
               <div class="space-y-3 text-sm">
                 <div class="flex justify-between">
-                  <span class="text-slate-500">Today's Target</span>
+                  <span id="todays-target" class="text-slate-500">Today's Target</span>
                   <span class="font-medium">4 hours</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-slate-500">Completed</span>
+                  <span id="completed-label" class="text-slate-500">Completed</span>
                   <span class="font-medium">2h 30m</span>
                 </div>
                 <div class="w-full progress-bar h-2">
@@ -723,14 +1114,14 @@
 
             <!-- Study Progress -->
             <div class="card">
-              <h2 class="card-title mb-3">Study Progress</h2>
+              <h2 id="study-progress-title" class="card-title mb-3">Study Progress</h2>
               <div class="space-y-3 text-sm">
                 <div class="flex justify-between">
-                  <span class="text-slate-500">This Week</span>
+                  <span id="this-week" class="text-slate-500">This Week</span>
                   <span class="font-medium">18h 45m</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-slate-500">Streak</span>
+                  <span id="streak-label" class="text-slate-500">Streak</span>
                   <span class="font-medium">5 days</span>
                 </div>
                 <div class="w-full progress-bar h-2">
@@ -752,7 +1143,7 @@
   <div id="seatModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4">
     <div class="bg-white rounded-xl p-6 w-full max-w-2xl">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold">Select a Seat</h3>
+        <h3 id="select-seat-title" class="text-lg font-semibold">Select a Seat</h3>
         <button id="closeSeatModal" class="px-2 py-1 text-sm btn-outline">Close</button>
       </div>
       <div class="grid grid-cols-5 gap-2 mb-4" id="seatGrid">
@@ -1520,6 +1911,11 @@
 
       console.log('Noise Level Monitor initialized for ' + currentTable);
     })();
+
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
   </script>
 </body>
 

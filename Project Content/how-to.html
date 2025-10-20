@@ -9,6 +9,164 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="theme.css" />
   <script defer src="theme.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script>
+    // Language translations
+    const translations = {
+      en: {
+        home: "Home",
+        register: "Register",
+        howToHelp: "How To / Help",
+        settings: "Settings",
+        howToTitle: "How to Use the System",
+        howToSubtitle: "Follow these steps to register, sign in, navigate features, and manage reports effectively.",
+        step1Title: "Register your account",
+        step1Desc: "Create an account using your UMak email",
+        step2Title: "Verify your email",
+        step2Desc: "Check your inbox and click the verification link",
+        step3Title: "Sign in",
+        step3Desc: "Login with your UMak email and password",
+        step4Title: "View seats and map",
+        step4Desc: "See seat availability and use the interactive map",
+        step5Title: "Report noise or issues",
+        step5Desc: "Report problems through the dashboard form",
+        createAccount: "Create Account",
+        login: "Login",
+        tips: "Tips",
+        goTo: "Go to",
+        useYourUMak: "Use your UMak email (e.g., your.name@umak.edu.ph).",
+        clickCreate: "Click Create Account to receive a verification email.",
+        openInbox: "Open your inbox and click the verification link.",
+        checkSpam: "If you don't see it, check Spam/Promotions.",
+        resendEmail: "Use \"Resend verification email\" if needed.",
+        enterEmail: "and enter your UMak email and password.",
+        adminsRouted: "Admins are routed to the Admin Dashboard automatically.",
+        forgotPassword: "Use \"Forgot password?\" to reset your password.",
+        seeSeatAvailability: "See seat availability and table numbers on your dashboard.",
+        useMap: "Use the map to locate quiet zones and collaborative areas.",
+        colorsIndicate: "Colors indicate occupancy; refresh for latest status.",
+        openReportForm: "Open the report form in your dashboard.",
+        selectTable: "Select table/location, pick type, and add details.",
+        adminsReceive: "Admins receive alerts and can resolve or follow up.",
+        useUMakEmail: "Use your UMak email to register. Other domains are blocked.",
+        resendButton: "If you don't get an email, use the resend button after 2 minutes.",
+        keepBrowser: "Keep your browser open during verification to complete signup smoothly.",
+        librarySystem: "University of Makati Library",
+        noiseComfort: "Noise Comfort Index"
+      },
+      fil: {
+        home: "Tahanan",
+        register: "Magparehistro",
+        howToHelp: "Paano / Tulong",
+        settings: "Mga Setting",
+        howToTitle: "Paano Gamitin ang Sistema",
+        howToSubtitle: "Sundin ang mga hakbang na ito upang magparehistro, mag-sign in, mag-navigate ng mga feature, at pamahalaan ang mga report nang epektibo.",
+        step1Title: "Magparehistro ng inyong account",
+        step1Desc: "Gumawa ng account gamit ang inyong UMak email",
+        step2Title: "I-verify ang inyong email",
+        step2Desc: "Tingnan ang inyong inbox at i-click ang verification link",
+        step3Title: "Mag-sign in",
+        step3Desc: "Mag-login gamit ang inyong UMak email at password",
+        step4Title: "Tingnan ang mga upuan at mapa",
+        step4Desc: "Tingnan ang availability ng mga upuan at gamitin ang interactive map",
+        step5Title: "Mag-report ng ingay o mga isyu",
+        step5Desc: "Mag-report ng mga problema sa pamamagitan ng dashboard form",
+        createAccount: "Gumawa ng Account",
+        login: "Mag-login",
+        tips: "Mga Tip",
+        goTo: "Pumunta sa",
+        useYourUMak: "Gamitin ang inyong UMak email (hal., inyong.pangalan@umak.edu.ph).",
+        clickCreate: "I-click ang Gumawa ng Account upang makatanggap ng verification email.",
+        openInbox: "Buksan ang inyong inbox at i-click ang verification link.",
+        checkSpam: "Kung hindi ninyo ito makita, tingnan ang Spam/Promotions.",
+        resendEmail: "Gamitin ang \"Resend verification email\" kung kailangan.",
+        enterEmail: "at ilagay ang inyong UMak email at password.",
+        adminsRouted: "Ang mga Admin ay awtomatikong niroroute sa Admin Dashboard.",
+        forgotPassword: "Gamitin ang \"Forgot password?\" upang i-reset ang inyong password.",
+        seeSeatAvailability: "Tingnan ang availability ng mga upuan at table numbers sa inyong dashboard.",
+        useMap: "Gamitin ang mapa upang mahanap ang mga tahimik na lugar at collaborative areas.",
+        colorsIndicate: "Ang mga kulay ay nagpapakita ng occupancy; i-refresh para sa pinakabagong status.",
+        openReportForm: "Buksan ang report form sa inyong dashboard.",
+        selectTable: "Piliin ang table/location, pumili ng type, at magdagdag ng details.",
+        adminsReceive: "Ang mga Admin ay tumatanggap ng alerts at maaaring mag-resolve o mag-follow up.",
+        useUMakEmail: "Gamitin ang inyong UMak email upang magparehistro. Ang ibang domains ay blocked.",
+        resendButton: "Kung hindi kayo makakatanggap ng email, gamitin ang resend button pagkatapos ng 2 minuto.",
+        keepBrowser: "Panatilihing bukas ang inyong browser habang nag-verify upang makumpleto ang signup nang maayos.",
+        librarySystem: "Aklatan ng University of Makati",
+        noiseComfort: "Index ng Kaginhawahan sa Ingay"
+      }
+    };
+
+    // Function to update page language
+    function updateLanguage(language) {
+      const t = translations[language];
+      if (!t) return;
+
+      // Update all text elements
+      const elements = {
+        'home-tooltip': t.home,
+        'register-tooltip': t.register,
+        'help-tooltip': t.howToHelp,
+        'settings-tooltip': t.settings,
+        'how-to-title': t.howToTitle,
+        'how-to-subtitle': t.howToSubtitle,
+        'step1-title': t.step1Title,
+        'step1-desc': t.step1Desc,
+        'step2-title': t.step2Title,
+        'step2-desc': t.step2Desc,
+        'step3-title': t.step3Title,
+        'step3-desc': t.step3Desc,
+        'step4-title': t.step4Title,
+        'step4-desc': t.step4Desc,
+        'step5-title': t.step5Title,
+        'step5-desc': t.step5Desc,
+        'create-account-link': t.createAccount,
+        'login-link': t.login,
+        'tips-title': t.tips,
+        'go-to-text': t.goTo,
+        'use-umak-email': t.useYourUMak,
+        'click-create': t.clickCreate,
+        'open-inbox': t.openInbox,
+        'check-spam': t.checkSpam,
+        'resend-email': t.resendEmail,
+        'enter-email': t.enterEmail,
+        'admins-routed': t.adminsRouted,
+        'forgot-password': t.forgotPassword,
+        'see-seat-availability': t.seeSeatAvailability,
+        'use-map': t.useMap,
+        'colors-indicate': t.colorsIndicate,
+        'open-report-form': t.openReportForm,
+        'select-table': t.selectTable,
+        'admins-receive': t.adminsReceive,
+        'use-umak-email-tip': t.useUMakEmail,
+        'resend-button': t.resendButton,
+        'keep-browser': t.keepBrowser,
+        'library-title': t.librarySystem,
+        'footer-text': t.noiseComfort
+      };
+
+      // Update text content
+      Object.entries(elements).forEach(([id, text]) => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.textContent = text;
+        }
+      });
+    }
+
+    // Load saved language and apply it
+    document.addEventListener('DOMContentLoaded', function () {
+      const savedLanguage = localStorage.getItem('language');
+      if (savedLanguage) {
+        updateLanguage(savedLanguage);
+      }
+
+      // Initialize Lucide icons
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    });
+  </script>
   <style>
     .fade-content {
       opacity: var(--fade-initial-opacity, 0);
@@ -159,27 +317,280 @@
       box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
       color: #e5e7eb;
     }
+
+    /* Modern Top Navigation Bar */
+    .modern-sidebar {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: auto;
+      min-width: 320px;
+      max-width: 500px;
+      height: auto;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-top: none;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      z-index: 1000;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 2rem;
+      gap: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Top Navigation Items */
+    .sidebar-nav-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #374151;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      will-change: transform, box-shadow, background;
+    }
+
+    .sidebar-nav-item:hover {
+      transform: translateY(-2px) scale(1.05);
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .sidebar-nav-item:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .sidebar-nav-item.active {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.4);
+      color: #3b82f6;
+    }
+
+    /* Sidebar Icons */
+    .sidebar-icon {
+      width: 24px;
+      height: 24px;
+      stroke-width: 1.5;
+    }
+
+    /* Tooltips */
+    .sidebar-tooltip {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      z-index: 1001;
+    }
+
+    .sidebar-tooltip::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-bottom-color: rgba(0, 0, 0, 0.9);
+    }
+
+    .sidebar-nav-item:hover .sidebar-tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Logo/Brand in Top Navigation */
+    .sidebar-brand {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+      margin-right: 1rem;
+    }
+
+    .sidebar-brand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+    }
+
+    .sidebar-brand-text {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #374151;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .modern-sidebar {
+        min-width: 280px;
+        max-width: 90vw;
+        padding: 0.75rem 1rem;
+        gap: 0.75rem;
+      }
+
+      .sidebar-nav-item {
+        width: 40px;
+        height: 40px;
+      }
+
+      .sidebar-icon {
+        width: 20px;
+        height: 20px;
+      }
+
+      .sidebar-brand img {
+        width: 32px;
+        height: 32px;
+      }
+
+      .sidebar-brand-text {
+        font-size: 0.625rem;
+      }
+
+      .sidebar-tooltip {
+        display: none;
+      }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+      .modern-sidebar {
+        background: rgba(15, 23, 42, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: none;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      }
+
+      .sidebar-nav-item {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #e5e7eb;
+      }
+
+      .sidebar-nav-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.4);
+      }
+
+      .sidebar-nav-item.active {
+        background: rgba(59, 130, 246, 0.3);
+        border-color: rgba(59, 130, 246, 0.5);
+        color: #60a5fa;
+      }
+
+      .sidebar-brand-text {
+        color: #e5e7eb;
+      }
+    }
+
+    /* Manual dark mode class support */
+    .dark .modern-sidebar {
+      background: rgba(15, 23, 42, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: none;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .dark .sidebar-nav-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e5e7eb;
+    }
+
+    .dark .sidebar-nav-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .dark .sidebar-nav-item.active {
+      background: rgba(59, 130, 246, 0.3);
+      border-color: rgba(59, 130, 246, 0.5);
+      color: #60a5fa;
+    }
+
+    .dark .sidebar-brand-text {
+      color: #e5e7eb;
+    }
+
+    /* Adjust main content for top navigation */
+    .main-with-sidebar {
+      margin-left: 0;
+      padding-top: 100px;
+      /* Add top padding to account for fixed top navigation */
+    }
+
+    @media (max-width: 768px) {
+      .main-with-sidebar {
+        padding-top: 80px;
+        /* Smaller padding on mobile */
+      }
+    }
   </style>
 </head>
 
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
   <div id="cursor-follower" class="cursor-follower" aria-hidden="true"></div>
   <div id="library-background" class="library-background" aria-hidden="true"></div>
-  <header class="site-header" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
-    <div class="max-w-6xl mx-auto flex items-center gap-4 py-3 px-6">
-      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" class="h-12 w-auto" />
-      <!-- Fix: unified smooth hover transitions to avoid abrupt changes -->
-      <a href="index.html"
-        class="brand-title text-2xl font-semibold mr-auto transition-all duration-300 ease-in-out">University of
-        Makati Library</a>
-      <nav class="hidden md:flex items-center gap-4 text-sm">
-        <a href="index.html" class="nav-link transition-all duration-300 ease-in-out">Login</a>
-      </nav>
+  <!-- Modern Top Navigation Bar -->
+  <nav class="modern-sidebar" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
+    <!-- Brand/Logo -->
+    <div class="sidebar-brand">
+      <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" />
     </div>
-  </header>
 
-  <main class="flex-1 py-10 px-6" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000"
-    data-delay="50">
+    <!-- Navigation Items -->
+    <a href="index.html" class="sidebar-nav-item" aria-label="Home">
+      <i data-lucide="home" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="home-tooltip">Home</div>
+    </a>
+
+    <a href="Frame_5.html" class="sidebar-nav-item" aria-label="Register">
+      <i data-lucide="user-plus" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="register-tooltip">Register</div>
+    </a>
+
+    <a href="how-to.html" class="sidebar-nav-item active" aria-label="How To / Help">
+      <i data-lucide="help-circle" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="help-tooltip">How To / Help</div>
+    </a>
+
+    <a href="Settings.html" class="sidebar-nav-item" aria-label="Settings">
+      <i data-lucide="settings" class="sidebar-icon"></i>
+      <div class="sidebar-tooltip" id="settings-tooltip">Settings</div>
+    </a>
+  </nav>
+
+  <main class="main-with-sidebar flex-1 py-10 px-6" data-fade data-blur="true" data-initial-opacity="0"
+    data-duration="1000" data-delay="50">
     <div class="max-w-5xl mx-auto">
       <div id="fade-content" class="fade-content" data-blur="true" data-duration="1000" data-easing="ease-out"
         data-initial-opacity="0">
@@ -188,9 +599,10 @@
           <div class="info-panel p-8">
             <div class="flex items-center gap-3 mb-4">
               <img src="UMak_Logo_Registered.png" alt="UMak" class="h-10 w-10 rounded bg-white p-1" />
-              <h1 class="text-2xl md:text-3xl font-semibold !text-white">How to Use the System</h1>
+              <h1 id="how-to-title" class="text-2xl md:text-3xl font-semibold !text-white">How to Use the System</h1>
             </div>
-            <p class="info-muted max-w-3xl">Follow these steps to register, sign in, navigate features, and manage
+            <p id="how-to-subtitle" class="info-muted max-w-3xl">Follow these steps to register, sign in, navigate
+              features, and manage
               reports effectively.</p>
           </div>
 
@@ -203,14 +615,15 @@
                 <div
                   class="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-700 transition-all duration-300 ease-in-out">
                   1</div>
-                <h2 class="text-lg font-semibold">Register your account</h2>
+                <h2 id="step1-title" class="text-lg font-semibold">Register your account</h2>
               </div>
               <ol class="list-decimal pl-5 space-y-2 text-sm text-slate-700">
-                <li>Go to <a href="Frame_5.html"
-                    class="text-indigo-600 hover:text-indigo-700 transition-all duration-300 ease-in-out">Create
+                <li><span id="go-to-text">Go to</span> <a href="Frame_5.html"
+                    class="text-indigo-600 hover:text-indigo-700 transition-all duration-300 ease-in-out"
+                    id="create-account-link">Create
                     Account</a>.</li>
-                <li>Use your UMak email (e.g., your.name@umak.edu.ph).</li>
-                <li>Click Create Account to receive a verification email.</li>
+                <li id="use-umak-email">Use your UMak email (e.g., your.name@umak.edu.ph).</li>
+                <li id="click-create">Click Create Account to receive a verification email.</li>
               </ol>
             </section>
 
@@ -221,12 +634,12 @@
                 <div
                   class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-green-700 transition-all duration-300 ease-in-out">
                   2</div>
-                <h2 class="text-lg font-semibold">Verify your email</h2>
+                <h2 id="step2-title" class="text-lg font-semibold">Verify your email</h2>
               </div>
               <ul class="list-disc pl-5 space-y-2 text-sm text-slate-700">
-                <li>Open your inbox and click the verification link.</li>
-                <li>If you don’t see it, check Spam/Promotions.</li>
-                <li>Use “Resend verification email” if needed.</li>
+                <li id="open-inbox">Open your inbox and click the verification link.</li>
+                <li id="check-spam">If you don't see it, check Spam/Promotions.</li>
+                <li id="resend-email">Use "Resend verification email" if needed.</li>
               </ul>
             </section>
 
@@ -237,15 +650,17 @@
                 <div
                   class="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center text-yellow-700 transition-all duration-300 ease-in-out">
                   3</div>
-                <h2 class="text-lg font-semibold">Sign in</h2>
+                <h2 id="step3-title" class="text-lg font-semibold">Sign in</h2>
               </div>
               <ul class="list-disc pl-5 space-y-2 text-sm text-slate-700">
-                <li>Go to <a href="index.html"
-                    class="text-indigo-600 hover:text-indigo-700 transition-all duration-300 ease-in-out">Login</a>
-                  and enter your
-                  UMak email and password.</li>
-                <li>Admins are routed to the Admin Dashboard automatically.</li>
-                <li>Use “Forgot password?” to reset your password.</li>
+                <li><span id="go-to-text">Go to</span> <a href="index.html"
+                    class="text-indigo-600 hover:text-indigo-700 transition-all duration-300 ease-in-out"
+                    id="login-link">Login</a>
+                  <span id="enter-email">and enter your
+                    UMak email and password.</span>
+                </li>
+                <li id="admins-routed">Admins are routed to the Admin Dashboard automatically.</li>
+                <li id="forgot-password">Use "Forgot password?" to reset your password.</li>
               </ul>
             </section>
 
@@ -256,12 +671,12 @@
                 <div
                   class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-700 transition-all duration-300 ease-in-out">
                   4</div>
-                <h2 class="text-lg font-semibold">View seats and map</h2>
+                <h2 id="step4-title" class="text-lg font-semibold">View seats and map</h2>
               </div>
               <ul class="list-disc pl-5 space-y-2 text-sm text-slate-700">
-                <li>See seat availability and table numbers on your dashboard.</li>
-                <li>Use the map to locate quiet zones and collaborative areas.</li>
-                <li>Colors indicate occupancy; refresh for latest status.</li>
+                <li id="see-seat-availability">See seat availability and table numbers on your dashboard.</li>
+                <li id="use-map">Use the map to locate quiet zones and collaborative areas.</li>
+                <li id="colors-indicate">Colors indicate occupancy; refresh for latest status.</li>
               </ul>
             </section>
 
@@ -272,23 +687,23 @@
                 <div
                   class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center text-red-700 transition-all duration-300 ease-in-out">
                   5</div>
-                <h2 class="text-lg font-semibold">Report noise or issues</h2>
+                <h2 id="step5-title" class="text-lg font-semibold">Report noise or issues</h2>
               </div>
               <ul class="list-disc pl-5 space-y-2 text-sm text-slate-700">
-                <li>Open the report form in your dashboard.</li>
-                <li>Select table/location, pick type, and add details.</li>
-                <li>Admins receive alerts and can resolve or follow up.</li>
+                <li id="open-report-form">Open the report form in your dashboard.</li>
+                <li id="select-table">Select table/location, pick type, and add details.</li>
+                <li id="admins-receive">Admins receive alerts and can resolve or follow up.</li>
               </ul>
             </section>
 
             <section class="lg:col-span-2" data-fade data-delay="300">
               <div
                 class="rounded-xl bg-slate-50 border border-slate-200 p-4 text-sm transition-all duration-300 ease-in-out">
-                <h3 class="font-semibold mb-2">Tips</h3>
+                <h3 id="tips-title" class="font-semibold mb-2">Tips</h3>
                 <ul class="list-disc pl-5 space-y-1 text-slate-700">
-                  <li>Use your UMak email to register. Other domains are blocked.</li>
-                  <li>If you don’t get an email, use the resend button after 2 minutes.</li>
-                  <li>Keep your browser open during verification to complete signup smoothly.</li>
+                  <li id="use-umak-email-tip">Use your UMak email to register. Other domains are blocked.</li>
+                  <li id="resend-button">If you don't get an email, use the resend button after 2 minutes.</li>
+                  <li id="keep-browser">Keep your browser open during verification to complete signup smoothly.</li>
                 </ul>
               </div>
             </section>
