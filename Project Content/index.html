@@ -1181,26 +1181,7 @@
       }
 
       // Check if user is already logged in
-      if (supabaseInitialized && !skipAutoRedirect) {
-        window.supabaseAuth.getCurrentUser().then(async ({ data: { user } }) => {
-          if (user) {
-            console.log('User already logged in:', user.email);
-
-            // Check if user is trying to access registration page
-            const currentPage = window.location.pathname.split('/').pop();
-            if (currentPage === 'Frame_5.html') {
-              console.log('User accessing registration page, allowing access');
-              return; // Don't redirect, allow access to registration page
-            }
-
-            // Redirect to appropriate page for other pages
-            const destination = await getDestinationAfterLogin(user.email, '', user);
-            window.location.href = destination;
-          }
-        }).catch(error => {
-          console.log('No existing session:', error);
-        });
-      }
+      // Removed auto-redirect logic to prevent interference with registration page access
 
     })();
   </script>

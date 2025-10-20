@@ -789,36 +789,7 @@
       // Initialize Supabase with retry mechanism
       let supabaseInitialized = false;
 
-      // Check if user is already authenticated
-      async function checkIfAlreadyAuthenticated() {
-        try {
-          if (window.supabaseAuth) {
-            const { data: { user } } = await window.supabaseAuth.getCurrentUser();
-            if (user) {
-              // User is already authenticated, show a helpful message
-              const messageDiv = document.createElement('div');
-              messageDiv.className = 'mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg';
-              messageDiv.innerHTML = `
-                <div class="flex items-center">
-                  <i data-lucide="info" class="w-5 h-5 text-blue-600 mr-2"></i>
-                  <div>
-                    <p class="text-blue-800 font-medium">Already have an account?</p>
-                    <p class="text-blue-600 text-sm">You're already signed in. <a href="index.html" class="underline hover:text-blue-800">Go to login page</a> or <a href="Frame_11.html" class="underline hover:text-blue-800">access your dashboard</a>.</p>
-                  </div>
-                </div>
-              `;
-
-              const form = document.querySelector('form');
-              if (form) {
-                form.parentNode.insertBefore(messageDiv, form);
-              }
-            }
-          }
-        } catch (error) {
-          // User not authenticated, that's fine for registration page
-          console.log('User not authenticated, proceeding with registration');
-        }
-      }
+      // Removed authentication check to prevent interference with registration access
 
       async function initializeSupabase() {
         try {
@@ -845,11 +816,6 @@
 
       // Initialize Supabase
       initializeSupabase();
-
-      // Check if user is already authenticated after Supabase is initialized
-      setTimeout(async () => {
-        await checkIfAlreadyAuthenticated();
-      }, 1000);
 
       // UI Helper Functions
       function showError(message) {
