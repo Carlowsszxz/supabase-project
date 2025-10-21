@@ -453,7 +453,7 @@
 
     /* Mobile Menu Overlay */
     .mobile-menu-overlay {
-      display: none;
+      display: block;
       position: fixed;
       top: 0;
       left: 0;
@@ -464,16 +464,21 @@
       -webkit-backdrop-filter: blur(4px);
       z-index: 999;
       opacity: 0;
-      transition: opacity 0.3s ease-out;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
     }
 
     .mobile-menu-overlay.active {
       opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
     }
 
     /* Mobile Menu Panel */
     .mobile-menu-panel {
-      display: none;
+      display: flex;
+      flex-direction: column;
       position: fixed;
       top: 0;
       right: 0;
@@ -487,14 +492,17 @@
       box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2);
       z-index: 1000;
       transform: translateX(100%);
-      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      visibility: hidden;
+      pointer-events: none;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s;
       overflow-y: auto;
       padding: 5rem 1.5rem 2rem;
-      flex-direction: column;
     }
 
     .mobile-menu-panel.active {
       transform: translateX(0);
+      visibility: visible;
+      pointer-events: auto;
     }
 
     .mobile-menu-header {
@@ -640,18 +648,9 @@
     /* Mobile Responsive */
     @media (max-width: 768px) {
 
-      /* Show burger menu and mobile navigation */
+      /* Show burger menu button on mobile */
       .burger-menu-btn {
         display: flex;
-      }
-
-      .mobile-menu-overlay {
-        display: block;
-      }
-
-      .mobile-menu-panel {
-        display: flex;
-        flex-direction: column;
       }
 
       .modern-sidebar {
@@ -1558,18 +1557,52 @@
 
         function openMenu() {
           isMenuOpen = true;
+
+          // Calculate scrollbar width to prevent layout shift
+          const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+          // Store current scroll position
+          const scrollY = window.scrollY;
+
+          // Add classes and prevent scroll
           burgerBtn.classList.add('active');
           mobileOverlay.classList.add('active');
           mobilePanel.classList.add('active');
+
+          // Prevent scroll without layout shift
           document.body.style.overflow = 'hidden';
+          document.body.style.position = 'fixed';
+          document.body.style.top = `-${scrollY}px`;
+          document.body.style.width = '100%';
+
+          // Compensate for scrollbar width if needed
+          if (scrollbarWidth > 0) {
+            document.body.style.paddingRight = `${scrollbarWidth}px`;
+          }
         }
 
         function closeMenu() {
           isMenuOpen = false;
+
+          // Get scroll position from body top
+          const scrollY = document.body.style.top;
+
+          // Remove classes
           burgerBtn.classList.remove('active');
           mobileOverlay.classList.remove('active');
           mobilePanel.classList.remove('active');
+
+          // Restore scroll
           document.body.style.overflow = '';
+          document.body.style.position = '';
+          document.body.style.top = '';
+          document.body.style.width = '';
+          document.body.style.paddingRight = '';
+
+          // Restore scroll position
+          if (scrollY) {
+            window.scrollTo(0, parseInt(scrollY || '0') * -1);
+          }
         }
 
         function toggleMenu() {
