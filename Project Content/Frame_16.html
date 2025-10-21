@@ -1728,50 +1728,56 @@
 
         <!-- Enhanced Search and Filter Bar -->
         <div class="mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
-          <div class="flex flex-col sm:flex-row gap-3">
+          <div class="space-y-3">
             <!-- Search Input -->
-            <div class="flex-1">
+            <div>
               <input type="text" id="reportSearch" placeholder="Search reports..."
                 class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none">
             </div>
-            <!-- Filter Dropdowns -->
-            <div class="flex gap-2">
-              <select id="urgencyFilter"
-                class="px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none">
-                <option value="">All Urgency</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-              </select>
-              <select id="tableFilter"
-                class="px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none">
-                <option value="">All Tables</option>
-                <option value="table-1">Table 1</option>
-                <option value="table-2">Table 2</option>
-                <option value="table-3">Table 3</option>
-                <option value="table-4">Table 4</option>
-                <option value="table-5">Table 5</option>
-                <option value="table-6">Table 6</option>
-                <option value="table-7">Table 7</option>
-                <option value="table-8">Table 8</option>
-                <option value="table-9">Table 9</option>
-                <option value="table-10">Table 10</option>
-                <option value="table-11">Table 11</option>
-                <option value="table-12">Table 12</option>
-                <option value="table-13">Table 13</option>
-                <option value="table-14">Table 14</option>
-                <option value="table-15">Table 15</option>
-                <option value="table-16">Table 16</option>
-                <option value="table-17">Table 17</option>
-                <option value="table-18">Table 18</option>
-                <option value="entrance">Entrance</option>
-                <option value="group-study">Group Study</option>
-                <option value="other">Other</option>
-              </select>
-              <button id="clearFilters"
-                class="px-3 py-2 text-sm rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700">
-                Clear
-              </button>
+            <!-- Filter Controls -->
+            <div class="flex flex-col sm:flex-row gap-3">
+              <!-- Filter Dropdowns -->
+              <div class="flex flex-col sm:flex-row gap-2 flex-1">
+                <select id="urgencyFilter"
+                  class="px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none">
+                  <option value="">All Urgency</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+                <select id="tableFilter"
+                  class="px-3 py-2 text-sm rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none">
+                  <option value="">All Tables</option>
+                  <option value="table-1">Table 1</option>
+                  <option value="table-2">Table 2</option>
+                  <option value="table-3">Table 3</option>
+                  <option value="table-4">Table 4</option>
+                  <option value="table-5">Table 5</option>
+                  <option value="table-6">Table 6</option>
+                  <option value="table-7">Table 7</option>
+                  <option value="table-8">Table 8</option>
+                  <option value="table-9">Table 9</option>
+                  <option value="table-10">Table 10</option>
+                  <option value="table-11">Table 11</option>
+                  <option value="table-12">Table 12</option>
+                  <option value="table-13">Table 13</option>
+                  <option value="table-14">Table 14</option>
+                  <option value="table-15">Table 15</option>
+                  <option value="table-16">Table 16</option>
+                  <option value="table-17">Table 17</option>
+                  <option value="table-18">Table 18</option>
+                  <option value="entrance">Entrance</option>
+                  <option value="group-study">Group Study</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <!-- Clear Button -->
+              <div class="flex justify-end sm:justify-start">
+                <button id="clearFilters"
+                  class="px-4 py-2 text-sm rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 transition-colors whitespace-nowrap">
+                  Clear Filters
+                </button>
+              </div>
             </div>
           </div>
         </div>
