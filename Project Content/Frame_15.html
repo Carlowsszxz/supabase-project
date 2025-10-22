@@ -574,6 +574,63 @@
     </div>
   </div>
 
+  <!-- Add User Modal -->
+  <div id="add-user-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-[90%] p-6">
+      <h3 class="text-xl font-semibold mb-4">Add New User</h3>
+      <form id="add-user-form" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Email *</label>
+          <input type="email" id="new-user-email" required
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            placeholder="user@umak.edu.ph" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Password *</label>
+          <div class="relative">
+            <input type="password" id="new-user-password" required
+              class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              placeholder="Minimum 6 characters" />
+            <button type="button" id="toggle-password-btn"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+              <i data-lucide="eye" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">First Name</label>
+          <input type="text" id="new-user-firstname"
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            placeholder="Juan" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
+          <input type="text" id="new-user-lastname"
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            placeholder="Dela Cruz" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Student ID</label>
+          <input type="text" id="new-user-studentid"
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            placeholder="2024-12345" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Program</label>
+          <input type="text" id="new-user-program"
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            placeholder="BSCS" />
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" id="add-user-cancel"
+            class="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-black transition">Cancel</button>
+          <button type="submit" id="add-user-submit"
+            class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition">Create User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Supabase SDK -->
 
   <script>
@@ -948,13 +1005,146 @@
       btnYes.onclick = function () { try { onYes && onYes(); } finally { cleanup(); } };
     }
 
+    // Add User Modal functions
+    function openAddUserModal() {
+      var modal = document.getElementById('add-user-modal');
+      if (!modal) return;
+
+      // Reset form
+      var form = document.getElementById('add-user-form');
+      if (form) form.reset();
+
+      // Show modal
+      modal.classList.remove('hidden');
+
+      // Wire up cancel button
+      var cancelBtn = document.getElementById('add-user-cancel');
+      if (cancelBtn) {
+        cancelBtn.onclick = function () {
+          modal.classList.add('hidden');
+        };
+      }
+
+      // Wire up form submit
+      if (form) {
+        form.onsubmit = function (e) {
+          e.preventDefault();
+          handleAddUser();
+        };
+      }
+
+      // Wire up password toggle
+      var toggleBtn = document.getElementById('toggle-password-btn');
+      var passwordInput = document.getElementById('new-user-password');
+      if (toggleBtn && passwordInput) {
+        toggleBtn.onclick = function () {
+          var type = passwordInput.type === 'password' ? 'text' : 'password';
+          passwordInput.type = type;
+          var icon = toggleBtn.querySelector('i');
+          if (icon) {
+            icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off');
+            if (typeof lucide !== 'undefined') {
+              lucide.createIcons();
+            }
+          }
+        };
+      }
+    }
+
+    async function handleAddUser() {
+      var email = document.getElementById('new-user-email').value.trim();
+      var password = document.getElementById('new-user-password').value;
+      var firstName = document.getElementById('new-user-firstname').value.trim();
+      var lastName = document.getElementById('new-user-lastname').value.trim();
+      var studentId = document.getElementById('new-user-studentid').value.trim();
+      var program = document.getElementById('new-user-program').value.trim();
+
+      // Validation
+      if (!email || !password) {
+        showToast('Email and password are required', false);
+        return;
+      }
+
+      if (password.length < 6) {
+        showToast('Password must be at least 6 characters', false);
+        return;
+      }
+
+      // Disable submit button
+      var submitBtn = document.getElementById('add-user-submit');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creating...';
+      }
+
+      try {
+        // Create auth user with autoConfirm
+        var signUpResult = await window.supabaseAuth.signUp(email, password, {
+          email_confirm: true,
+          first_name: firstName,
+          last_name: lastName,
+          student_id: studentId,
+          program: program
+        });
+
+        if (signUpResult.error) {
+          throw signUpResult.error;
+        }
+
+        var userId = signUpResult.data.user.id;
+
+        // Create user profile in database
+        var profileData = {
+          id: userId,
+          email: email,
+          first_name: firstName || null,
+          last_name: lastName || null,
+          student_id: studentId || null,
+          program: program || null,
+          is_admin: false
+        };
+
+        var insertResult = await window.supabaseDB.insertUser(userId, profileData);
+
+        if (insertResult.error && insertResult.error.code !== '23505') {
+          console.error('Failed to create profile:', insertResult.error);
+          throw new Error('User created but profile creation failed');
+        }
+
+        // Close modal and show success
+        var modal = document.getElementById('add-user-modal');
+        if (modal) modal.classList.add('hidden');
+
+        showToast('✓ User created successfully!', true);
+
+        // Reload users list
+        setTimeout(function () {
+          loadUsers();
+        }, 500);
+
+      } catch (error) {
+        console.error('Add user error:', error);
+        showToast('✗ Failed to create user: ' + (error.message || 'Unknown error'), false);
+      } finally {
+        // Re-enable submit button
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create User';
+        }
+      }
+    }
+
     function initUsersPage() {
       var container = document.querySelector('main .max-w-7xl');
       if (!container) return;
-      container.innerHTML = '\n      <div class="mb-8">\n        <h1 class="text-3xl font-bold mb-2">Users</h1>\n        <p class="text-slate-600">Search users, view details, and manage admin access</p>\n      </div>\n      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-6">\n        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">\n          <div class="flex items-center gap-2">\n            <input id="userSearch" placeholder="Search by email, name, student ID" class="px-3 py-2 rounded-lg border border-slate-300 w-72" />\n            <button id="searchBtn" class="px-3 py-2 rounded-lg btn-outline">Search</button>\n          </div>\n          <div class="text-sm text-slate-500" id="usersStatus"></div>\n        </div>\n      </div>\n      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">\n        <div class="overflow-auto">\n          <table class="w-full text-sm">\n            <thead>\n              <tr class="text-left text-slate-500 border-b">\n                <th class="py-2 pr-3">Name</th>\n                <th class="py-2 pr-3">Email</th>\n                <th class="py-2 pr-3">Student ID</th>\n                <th class="py-2 pr-3">Program</th>\n                <th class="py-2 pr-3">Created</th>\n                <th class="py-2 pr-3">Admin</th>\n                <th class="py-2 pr-3">Action</th>\n              </tr>\n            </thead>\n            <tbody id="usersRows">\n              <tr><td colspan="7" class="py-6 text-center text-slate-400">Loading...</td></tr>\n            </tbody>\n          </table>\n        </div>\n      </div>\n      ';
+      container.innerHTML = '\n      <div class="mb-8">\n        <h1 class="text-3xl font-bold mb-2">Users</h1>\n        <p class="text-slate-600">Search users, view details, and manage admin access</p>\n      </div>\n      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-6">\n        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">\n          <div class="flex items-center gap-2">\n            <input id="userSearch" placeholder="Search by email, name, student ID" class="px-3 py-2 rounded-lg border border-slate-300 w-72" />\n            <button id="searchBtn" class="px-3 py-2 rounded-lg btn-outline">Search</button>\n          </div>\n          <button id="addUserBtn" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium transition">+ Add User</button>\n          <div class="text-sm text-slate-500" id="usersStatus"></div>\n        </div>\n      </div>\n      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">\n        <div class="overflow-auto">\n          <table class="w-full text-sm">\n            <thead>\n              <tr class="text-left text-slate-500 border-b">\n                <th class="py-2 pr-3">Name</th>\n                <th class="py-2 pr-3">Email</th>\n                <th class="py-2 pr-3">Student ID</th>\n                <th class="py-2 pr-3">Program</th>\n                <th class="py-2 pr-3">Created</th>\n                <th class="py-2 pr-3">Admin</th>\n                <th class="py-2 pr-3">Action</th>\n              </tr>\n            </thead>\n            <tbody id="usersRows">\n              <tr><td colspan="7" class="py-6 text-center text-slate-400">Loading...</td></tr>\n            </tbody>\n          </table>\n        </div>\n      </div>\n      ';
       // Wire events
       var searchBtn = document.getElementById('searchBtn');
       if (searchBtn) searchBtn.addEventListener('click', loadUsers);
+
+      // Add User button
+      var addUserBtn = document.getElementById('addUserBtn');
+      if (addUserBtn) addUserBtn.addEventListener('click', openAddUserModal);
 
       // Add force refresh functionality
       window.forceRefreshUsers = function () {
@@ -1033,20 +1223,47 @@
             return;
           }
 
-          openConfirm('Are you sure you want to delete this user and ALL of their data? This action cannot be undone.', function () {
+          openConfirm('PERMANENT DELETION WARNING: This will COMPLETELY remove this user from the Database AND Authentication System. The user will NOT be able to log in again. This action CANNOT be undone. Are you absolutely sure?', function () {
             t.disabled = true;
+            showToast('Deleting user from database and auth...', true);
+
             window.supabaseDB.adminPurgeUser(id).then(function (res) {
-              if (res && !res.error) {
-                showToast('User deleted successfully', true);
-              } else {
-                var msg = (res && res.error && (res.error.message || res.error.details)) ? (res.error.message || res.error.details) : 'Failed to delete user';
+              console.log('Delete response:', res);
+
+              if (res && !res.error && res.data) {
+                if (res.data.success) {
+                  showToast('User deleted from entire system (DB + Auth)', true);
+                } else if (res.data.warning) {
+                  showToast(res.data.warning, true);
+                } else if (res.data.error) {
+                  showToast(res.data.error, false);
+                  t.disabled = false;
+                  return;
+                } else {
+                  showToast('User deleted successfully', true);
+                }
+              } else if (res && res.error) {
+                var msg = res.error.message || res.error.details || 'Failed to delete user';
                 showToast(msg, false);
+                t.disabled = false;
+                return;
+              } else {
+                showToast('Unexpected error during deletion', false);
+                t.disabled = false;
+                return;
               }
-              loadUsers();
+
+              // Reload users list after a short delay to ensure deletion is complete
+              setTimeout(function () {
+                loadUsers();
+                t.disabled = false;
+              }, 800);
             }).catch(function (err) {
+              console.error('Delete error:', err);
               var msg = (err && (err.message || err.details)) ? (err.message || err.details) : 'Failed to delete user';
               showToast(msg, false);
-            }).finally(function () { t.disabled = false; });
+              t.disabled = false;
+            });
           });
         }
       });

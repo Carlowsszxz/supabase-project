@@ -639,10 +639,33 @@ const db = {
   async adminPurgeUser(userId) {
     if (!supabase) return { error: 'Supabase not initialized' };
     try {
-      const { data, error } = await supabase.rpc('admin_purge_user', { p_user_id: userId });
-      if (error) throw error;
-      return { data, error: null };
+      // Use the secure RPC function that runs with SECURITY DEFINER
+      // This deletes from both users table AND auth.users
+      const { data, error } = await supabase.rpc('admin_delete_user_completely', {
+        p_user_id: userId
+      });
+
+      if (error) {
+        console.error('RPC error:', error);
+        throw error;
+      }
+
+      // Check the JSON response from the function
+      if (data && !data.success) {
+        console.error('Delete failed:', data.error);
+        return {
+          data: null,
+          error: { message: data.error }
+        };
+      }
+
+      console.log('User successfully deleted:', data);
+      return {
+        data: data || { success: true },
+        error: null
+      };
     } catch (error) {
+      console.error('adminPurgeUser error:', error);
       return { data: null, error };
     }
   },
