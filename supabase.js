@@ -304,6 +304,23 @@ const db = {
     }
   },
 
+  // Get user by email
+  async getUserByEmail(email) {
+    if (!supabase) return { error: 'Supabase not initialized' };
+
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', email);
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
+  },
+
   // Occupancy management
   async updateSeatOccupancy(tableId, seatNumber, isOccupied, userId = null) {
     if (!supabase) return { error: 'Supabase not initialized' };
