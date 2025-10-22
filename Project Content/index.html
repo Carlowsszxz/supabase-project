@@ -714,11 +714,88 @@
         /* Smaller padding on mobile */
       }
     }
+
+    /* Dark Mode Text Visibility */
+    .dark .text-slate-900 {
+      color: #f1f5f9 !important;
+    }
+
+    .dark .text-slate-700 {
+      color: #e2e8f0 !important;
+    }
+
+    .dark .text-slate-500 {
+      color: #94a3b8 !important;
+    }
+
+    .dark .text-slate-600 {
+      color: #cbd5e1 !important;
+    }
+
+    .dark .text-slate-800 {
+      color: #f8fafc !important;
+    }
+
+    .dark .text-slate-400 {
+      color: #64748b !important;
+    }
+
+    .dark .text-slate-300 {
+      color: #475569 !important;
+    }
+
+    .dark .text-slate-200 {
+      color: #334155 !important;
+    }
+
+    .dark .text-slate-100 {
+      color: #1e293b !important;
+    }
+
+    /* Dark Mode Form Elements */
+    .dark input[type="email"],
+    .dark input[type="password"],
+    .dark input[type="text"] {
+      background-color: rgba(30, 41, 59, 0.8) !important;
+      border-color: rgba(71, 85, 105, 0.5) !important;
+      color: #f1f5f9 !important;
+    }
+
+    .dark input[type="email"]:focus,
+    .dark input[type="password"]:focus,
+    .dark input[type="text"]:focus {
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+
+    .dark input[type="email"]::placeholder,
+    .dark input[type="password"]::placeholder,
+    .dark input[type="text"]::placeholder {
+      color: #94a3b8 !important;
+    }
+
+    /* Dark Mode Links */
+    .dark .text-indigo-600 {
+      color: #60a5fa !important;
+    }
+
+    .dark .text-indigo-700 {
+      color: #3b82f6 !important;
+    }
+
+    .dark .text-indigo-600:hover {
+      color: #93c5fd !important;
+    }
+
+    .dark .text-indigo-700:hover {
+      color: #60a5fa !important;
+    }
   </style>
 
   <script defer src="theme.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script src="theme-persistence.js"></script>
   <script src="config.js"></script>
   <script>
     // Language translations
@@ -978,7 +1055,7 @@
                 <label id="email-label" class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
                 <input id="login-email" type="email"
                   class="w-full p-3 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
-                  placeholder="your.email@umak.edu.ph" required />
+                  placeholder="your.email@example.com" required />
               </div>
 
               <div>
@@ -1187,6 +1264,46 @@
       // Initialize Supabase
       initializeSupabase();
 
+      // Custom login function (bypasses AuthManager and Supabase Auth)
+      async function customLogin(email, password) {
+        try {
+          // Query your custom users table directly
+          const { data, error } = await window.supabaseDB.getUserByEmail(email);
+
+          if (error) throw error;
+
+          if (!data || data.length === 0) {
+            throw new Error('User not found');
+          }
+
+          const user = data[0];
+
+          // Check password (plain text comparison for your system)
+          if (user.password !== password) {
+            throw new Error('Invalid password');
+          }
+
+          // Return user data in expected format
+          return {
+            data: {
+              user: {
+                id: user.id,
+                email: user.email,
+                user_metadata: {
+                  first_name: user.first_name,
+                  last_name: user.last_name,
+                  student_id: user.student_id,
+                  program: user.program
+                }
+              }
+            },
+            error: null
+          };
+        } catch (error) {
+          return { data: null, error };
+        }
+      }
+
       // Constants
       let tapCount = 0;
 
@@ -1308,10 +1425,11 @@
           return false;
         }
 
-        if (!email.toLowerCase().endsWith('@umak.edu.ph')) {
-          showError('Please use a University of Makati email address (@umak.edu.ph)');
-          return false;
-        }
+        // Temporarily disabled @umak.edu.ph restriction
+        // if (!email.toLowerCase().endsWith('@umak.edu.ph')) {
+        //   showError('Please use a University of Makati email address (@umak.edu.ph)');
+        //   return false;
+        // }
 
         if (!password) {
           showError('Password is required');
@@ -1327,10 +1445,11 @@
           return false;
         }
 
-        const email = (user.email || '').toLowerCase();
-        if (!email.endsWith('@umak.edu.ph')) {
-          return false;
-        }
+        // Temporarily disabled @umak.edu.ph restriction
+        // const email = (user.email || '').toLowerCase();
+        // if (!email.endsWith('@umak.edu.ph')) {
+        //   return false;
+        // }
 
         try {
           // Check if user exists in users table
@@ -1420,17 +1539,8 @@
 
           console.log('Attempting login with:', email);
 
-          // Use secure AuthManager for login
-          let result;
-          if (window.authManager) {
-            result = await window.authManager.login(email, password);
-          } else {
-            // Fallback to direct Supabase call
-            result = await window.supabaseAuth.signIn(email, password);
-            if (result.error) {
-              throw result.error;
-            }
-          }
+          // Use custom login (bypass AuthManager and Supabase Auth)
+          let result = await customLogin(email, password);
 
           console.log('Login successful:', result.data);
 
@@ -1482,8 +1592,9 @@
             showError('Please check your email and click the confirmation link before signing in.');
           } else if (error.message.includes('Too many requests') || error.message.includes('Too many login attempts')) {
             showError('Too many login attempts. Please wait a moment and try again.');
-          } else if (error.message.includes('Please use a University of Makati email address')) {
-            showError(error.message);
+            // Temporarily disabled University of Makati email validation
+            // } else if (error.message.includes('Please use a University of Makati email address')) {
+            //   showError(error.message);
           } else if (error.message.includes('Password must be at least')) {
             showError(error.message);
           } else {
@@ -1530,12 +1641,13 @@
                 hideAllMessages();
               }
             } else {
-              // Fallback validation
-              if (!email.toLowerCase().endsWith('@umak.edu.ph')) {
-                showError('Please use a University of Makati email address (@umak.edu.ph)');
-              } else {
-                hideAllMessages();
-              }
+              // Temporarily disabled @umak.edu.ph restriction
+              // if (!email.toLowerCase().endsWith('@umak.edu.ph')) {
+              //   showError('Please use a University of Makati email address (@umak.edu.ph)');
+              // } else {
+              //   hideAllMessages();
+              // }
+              hideAllMessages();
             }
           }
         });
