@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
   last_name TEXT,
   student_id TEXT,
   program TEXT,
+  is_admin BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -17,14 +18,17 @@ CREATE TABLE IF NOT EXISTS users (
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
 -- Create policy: Users can only access their own data
+DROP POLICY IF EXISTS "Users can access own data" ON users;
 CREATE POLICY "Users can access own data" ON users
   FOR ALL USING (auth.uid() = id);
 
 -- Create policy: Users can insert their own data
+DROP POLICY IF EXISTS "Users can insert own data" ON users;
 CREATE POLICY "Users can insert own data" ON users
   FOR INSERT WITH CHECK (auth.uid() = id);
 
 -- Create policy: Users can update their own data
+DROP POLICY IF EXISTS "Users can update own data" ON users;
 CREATE POLICY "Users can update own data" ON users
   FOR UPDATE USING (auth.uid() = id);
 
@@ -133,9 +137,11 @@ CREATE TABLE IF NOT EXISTS occupancy (
 ALTER TABLE occupancy ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for occupancy table
+DROP POLICY IF EXISTS "Anyone can read occupancy" ON occupancy;
 CREATE POLICY "Anyone can read occupancy" ON occupancy
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Authenticated users can update occupancy" ON occupancy;
 CREATE POLICY "Authenticated users can update occupancy" ON occupancy
   FOR ALL USING (auth.role() = 'authenticated');
 
@@ -170,13 +176,16 @@ CREATE TABLE IF NOT EXISTS noise_logs (
 ALTER TABLE noise_logs ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for noise_logs table
+DROP POLICY IF EXISTS "Users can read their own logs" ON noise_logs;
 CREATE POLICY "Users can read their own logs" ON noise_logs
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own logs" ON noise_logs;
 CREATE POLICY "Users can insert their own logs" ON noise_logs
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Allow admins to read all noise logs
+DROP POLICY IF EXISTS "Admins can read all logs" ON noise_logs;
 CREATE POLICY "Admins can read all logs" ON noise_logs
   FOR SELECT USING (
     EXISTS (
@@ -186,6 +195,7 @@ CREATE POLICY "Admins can read all logs" ON noise_logs
   );
 
 -- Allow admins to mark reports resolved
+DROP POLICY IF EXISTS "Admins can update logs" ON noise_logs;
 CREATE POLICY "Admins can update logs" ON noise_logs
   FOR UPDATE USING (
     EXISTS (
@@ -208,13 +218,16 @@ CREATE TABLE IF NOT EXISTS alerts (
 ALTER TABLE alerts ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for alerts table
+DROP POLICY IF EXISTS "Users can read their own alerts" ON alerts;
 CREATE POLICY "Users can read their own alerts" ON alerts
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own alerts" ON alerts;
 CREATE POLICY "Users can update their own alerts" ON alerts
   FOR UPDATE USING (auth.uid() = user_id);
 
 -- Allow users to insert their alerts
+DROP POLICY IF EXISTS "Users can insert own alerts" ON alerts;
 CREATE POLICY "Users can insert own alerts" ON alerts
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
@@ -230,6 +243,7 @@ CREATE TABLE IF NOT EXISTS admin_users (
 ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for admin_users table
+DROP POLICY IF EXISTS "Admins can manage admin users" ON admin_users;
 CREATE POLICY "Admins can manage admin users" ON admin_users
   FOR ALL USING (
     EXISTS (
@@ -386,25 +400,56 @@ GRANT EXECUTE ON FUNCTION public.admin_list_users(text, integer) TO authenticate
 
 -- Admin RPC: set or unset admin role for a user
 CREATE OR REPLACE FUNCTION public.admin_set_user_admin(p_user_id uuid, p_make_admin boolean)
-RETURNS void
+RETURNS json
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
+DECLARE
+  result json;
 BEGIN
+  -- Check if current user is admin
   IF NOT EXISTS (SELECT 1 FROM public.admin_users au WHERE au.id = auth.uid() AND au.role = 'admin') THEN
     RAISE EXCEPTION 'not authorized';
   END IF;
 
+  -- Check if target user exists
+  IF NOT EXISTS (SELECT 1 FROM public.users WHERE id = p_user_id) THEN
+    RAISE EXCEPTION 'user not found';
+  END IF;
+
   IF p_make_admin THEN
+    -- Try to insert or update admin status
     INSERT INTO public.admin_users (id, email, role)
     SELECT u.id, u.email, 'admin'
     FROM public.users u
     WHERE u.id = p_user_id
-    ON CONFLICT (id) DO UPDATE SET role = 'admin';
+    ON CONFLICT (id) DO UPDATE SET 
+      email = EXCLUDED.email,
+      role = 'admin',
+      created_at = CASE WHEN admin_users.created_at IS NULL THEN NOW() ELSE admin_users.created_at END;
+    
+    result := json_build_object('success', true, 'message', 'User granted admin access');
   ELSE
+    -- Remove admin access
     DELETE FROM public.admin_users WHERE id = p_user_id;
+    result := json_build_object('success', true, 'message', 'Admin access removed');
   END IF;
+
+  RETURN result;
+EXCEPTION
+  WHEN OTHERS THEN
+    RETURN json_build_object('success', false, 'error', SQLERRM);
 END;
 $$;
 
 GRANT EXECUTE ON FUNCTION public.admin_set_user_admin(uuid, boolean) TO authenticated;
+
+-- Create is_admin function for checking admin status
+CREATE OR REPLACE FUNCTION public.is_admin(p_user_id uuid)
+RETURNS boolean AS $$
+BEGIN
+  RETURN EXISTS(SELECT 1 FROM admin_users WHERE id = p_user_id);
+END;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION public.is_admin(uuid) TO authenticated;

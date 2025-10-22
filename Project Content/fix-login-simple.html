@@ -1,0 +1,77 @@
+<!-- Simple login test page -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="supabase.js"></script>
+    <script src="auth.js"></script>
+</head>
+
+<body>
+    <h1>Login Test</h1>
+    <form id="login-form">
+        <input type="email" id="email" placeholder="Email" value="admin@umak.edu.ph">
+        <input type="password" id="password" placeholder="Password">
+        <button type="submit">Login</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        // Wait for Supabase to load
+        function waitForSupabase() {
+            return new Promise((resolve) => {
+                const checkSupabase = () => {
+                    if (window.supabase && typeof window.supabase.createClient === 'function') {
+                        resolve(window.supabase);
+                    } else {
+                        setTimeout(checkSupabase, 100);
+                    }
+                };
+                checkSupabase();
+            });
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('result');
+
+            resultDiv.innerHTML = 'Initializing Supabase...';
+
+            try {
+                // Wait for Supabase to be available
+                const Supabase = await waitForSupabase();
+                resultDiv.innerHTML = 'Creating Supabase client...';
+
+                // Create Supabase client
+                const supabase = Supabase.createClient(
+                    'https://lvjfjyboqlcofzqrwqiy.supabase.co',
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2amZqeWJvcWxjb2Z6cXJ3cWl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc3NzU4MTEsImV4cCI6MjA3MzM1MTgxMX0.XHLeP0xxmSWLC8MpqCpHWOVL3GK2TTJrKOBdbmME2OE'
+                );
+
+                resultDiv.innerHTML = 'Logging in...';
+
+                // Simple direct Supabase login
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) {
+                    resultDiv.innerHTML = `Error: ${error.message}`;
+                } else {
+                    resultDiv.innerHTML = `Success! User: ${data.user.email}`;
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `Exception: ${err.message}`;
+            }
+        });
+    </script>
+</body>
+
+</html>

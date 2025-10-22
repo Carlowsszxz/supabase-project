@@ -622,7 +622,7 @@
 
         // Check for legacy admin credentials first
         const email = user.email ? user.email.toLowerCase() : '';
-        if (email === 'adminlibrarian@umak.edu.ph') {
+        if (email === 'adminlibrarian@umak.edu.ph' || email === 'admin@umak.edu.ph') {
           console.log('Legacy admin user detected, granting access');
           return true;
         }
@@ -689,8 +689,7 @@
       console.error('Supabase init error:', e);
     }
 
-    var OCC_PATH = 'occupancy';
-    var SEL_PATH = 'selection/current';
+    // Firebase paths removed - now using Supabase
 
     function toggleSeat(button) {
       var tableId = button.getAttribute('data-table');
@@ -766,33 +765,56 @@
     function ensureSeatSeed(tableId, remote) {
       var seats = remote && remote.seats;
       if (!seats || Object.keys(seats).length === 0) {
-        var updates = {};
-        for (var i = 1; i <= SEATS_PER_TABLE; i++) updates[i] = false;
-        firebase.database().ref(OCC_PATH + '/' + tableId + '/seats').update(updates).catch(function (_) { });
+        // Initialize empty seats in Supabase
+        if (supabaseInitialized) {
+          for (var i = 1; i <= SEATS_PER_TABLE; i++) {
+            window.supabaseDB.updateSeatOccupancy(tableId, i, false, null).catch(function (err) {
+              console.error('Failed to initialize seat:', err);
+            });
+          }
+        }
       }
     }
 
     // Save a timestamped snapshot of the current state for records
     function saveCurrentState() {
+      if (!supabaseInitialized) {
+        try { alert('System not initialized. Please try again.'); } catch (_) { }
+        return;
+      }
+
       var totals = { totalSeats: 0, occupiedSeats: 0 };
-      Object.keys(tableData).forEach(function (tableId) {
-        totals.totalSeats += tableData[tableId].total;
-        totals.occupiedSeats += tableData[tableId].occupied;
+      TABLE_IDS.forEach(function (tableId) {
+        var seats = occupancyState[tableId] && occupancyState[tableId].seats || {};
+        var occupied = Object.keys(seats).filter(function (k) { return !!seats[k]; }).length;
+        totals.totalSeats += SEATS_PER_TABLE;
+        totals.occupiedSeats += occupied;
       });
+
       var snapshotPayload = {
-        at: Date.now(),
-        occupancy: Object.keys(tableData).reduce(function (acc, tableId) {
-          acc[tableId] = { occupied: tableData[tableId].occupied, total: tableData[tableId].total };
+        created_at: new Date().toISOString(),
+        occupancy_data: Object.keys(occupancyState).reduce(function (acc, tableId) {
+          acc[tableId] = occupancyState[tableId].seats || {};
           return acc;
         }, {}),
         totals: totals
       };
 
-      db.ref('snapshots').push(snapshotPayload).then(function (ref) {
-        try { alert('Saved snapshot: ' + (ref.key || 'ok')); } catch (_) { }
+      // Save to Supabase (you may need to create a snapshots table)
+      window.supabaseDB.addActivityLog({
+        userId: null, // System action
+        userName: 'System',
+        type: 'snapshot_save',
+        title: 'Occupancy Snapshot',
+        description: 'Saved current occupancy state',
+        severity: 'info',
+        details: snapshotPayload
+      }).then(function (result) {
+        if (result.error) throw result.error;
+        try { alert('Snapshot saved successfully'); } catch (_) { }
       }).catch(function (err) {
         console.error('Failed to save snapshot', err);
-        try { alert('Failed to save: ' + err.message); } catch (_) { }
+        try { alert('Failed to save: ' + (err.message || 'Unknown error')); } catch (_) { }
       });
     }
 
@@ -933,6 +955,27 @@
       // Wire events
       var searchBtn = document.getElementById('searchBtn');
       if (searchBtn) searchBtn.addEventListener('click', loadUsers);
+
+      // Add force refresh functionality
+      window.forceRefreshUsers = function () {
+        console.log('Force refreshing users...');
+        // Clear any cached data
+        if (window.supabaseDB && window.supabaseDB.clearCache) {
+          window.supabaseDB.clearCache();
+        }
+        // Force reload
+        loadUsers();
+      };
+
+      // Nuclear refresh - clear all caches and reload
+      window.nuclearRefresh = function () {
+        console.log('Nuclear refresh - clearing all caches...');
+        // Clear localStorage
+        localStorage.clear();
+        sessionStorage.clear();
+        // Force page reload
+        window.location.reload(true);
+      };
       var rows = document.getElementById('usersRows');
       if (rows) rows.addEventListener('click', function (e) {
         var t = e.target; if (!t || !t.getAttribute) return; var id = t.getAttribute('data-id');
@@ -940,16 +983,56 @@
         if (action === 'set-admin') {
           openConfirm('Are you sure you want to grant Admin access to this user?', function () {
             t.disabled = true;
-            window.supabaseDB.adminSetUserAdmin(id, true).then(loadUsers).finally(function () { t.disabled = false; });
+            // Use the existing authenticated Supabase client from supabase.js
+            window.supabaseDB.adminSetUserAdmin(id, true).then(function (result) {
+              if (result && result.success) {
+                showToast(result.message || 'Admin access granted', true);
+                loadUsers();
+              } else {
+                showToast(result.error || 'Failed to grant admin access', false);
+              }
+            }).catch(function (err) {
+              showToast('Error: ' + (err.message || 'Unknown error'), false);
+            }).finally(function () { t.disabled = false; });
           });
         }
         if (action === 'unset-admin') {
+          // Only protect admin@umak.edu.ph (primary admin), allow adminlibrarian@umak.edu.ph to be managed
+          var row = t.closest('tr');
+          var emailCell = row ? row.cells[1] : null;
+          var email = emailCell ? emailCell.textContent.trim() : '';
+
+          if (email && email.toLowerCase() === 'admin@umak.edu.ph') {
+            showToast('Cannot remove admin status from primary admin account', false);
+            return;
+          }
+
           openConfirm('Are you sure you want to remove Admin access from this user?', function () {
             t.disabled = true;
-            window.supabaseDB.adminSetUserAdmin(id, false).then(loadUsers).finally(function () { t.disabled = false; });
+            // Use the existing authenticated Supabase client from supabase.js
+            window.supabaseDB.adminSetUserAdmin(id, false).then(function (result) {
+              if (result && result.success) {
+                showToast(result.message || 'Admin access removed', true);
+                loadUsers();
+              } else {
+                showToast(result.error || 'Failed to remove admin access', false);
+              }
+            }).catch(function (err) {
+              showToast('Error: ' + (err.message || 'Unknown error'), false);
+            }).finally(function () { t.disabled = false; });
           });
         }
         if (action === 'remove-user') {
+          // Only protect admin@umak.edu.ph (primary admin), allow adminlibrarian@umak.edu.ph to be managed
+          var row = t.closest('tr');
+          var emailCell = row ? row.cells[1] : null;
+          var email = emailCell ? emailCell.textContent.trim() : '';
+
+          if (email && email.toLowerCase() === 'admin@umak.edu.ph') {
+            showToast('Cannot delete primary admin account', false);
+            return;
+          }
+
           openConfirm('Are you sure you want to delete this user and ALL of their data? This action cannot be undone.', function () {
             t.disabled = true;
             window.supabaseDB.adminPurgeUser(id).then(function (res) {
@@ -982,13 +1065,27 @@
         var tr = document.createElement('tr');
         tr.className = 'border-b last:border-0';
         var name = ((u.first_name || '') + ' ' + (u.last_name || '')).trim();
+
+        // Check if user is admin (only use database flag, ignore email-based for adminlibrarian)
+        var isAdmin = u.is_admin === true;
+
+        // Special case: only admin@umak.edu.ph gets email-based admin status
+        if (u.email && u.email.toLowerCase() === 'admin@umak.edu.ph') {
+          isAdmin = true;
+        }
+
         var actionHtml = '';
-        if (u.is_admin) {
-          actionHtml = '<button class="px-3 py-1 text-xs rounded bg-slate-200 hover:bg-slate-300 text-black" data-action="unset-admin" data-id="' + u.id + '">Remove Admin</button>';
+        if (isAdmin) {
+          // Only protect admin@umak.edu.ph (primary admin), allow adminlibrarian@umak.edu.ph to be managed
+          if (u.email && u.email.toLowerCase() === 'admin@umak.edu.ph') {
+            actionHtml = '<span class="px-3 py-1 text-xs rounded bg-gray-200 text-gray-600">Primary Admin</span>';
+          } else {
+            actionHtml = '<button class="px-3 py-1 text-xs rounded bg-slate-200 hover:bg-slate-300 text-black" data-action="unset-admin" data-id="' + u.id + '">Remove Admin</button>';
+          }
         } else {
           actionHtml = '<div class="flex gap-2">\n            <button class="px-3 py-1 text-xs rounded bg-indigo-600 hover:bg-indigo-700 text-white" data-action="set-admin" data-id="' + u.id + '">Make Admin</button>\n            <button class="px-3 py-1 text-xs rounded bg-red-600 hover:bg-red-700 text-white" data-action="remove-user" data-id="' + u.id + '">Delete User</button>\n          </div>';
         }
-        tr.innerHTML = '\n          <td class="py-2 pr-3">' + (name || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.email || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.student_id || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.program || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.created_at ? new Date(u.created_at).toLocaleDateString() : '—') + '</td>\n          <td class="py-2 pr-3">' + (u.is_admin ? '<span class="px-2 py-0.5 text-xs rounded bg-indigo-100 text-indigo-800">Admin</span>' : '') + '</td>\n          <td class="py-2 pr-3">' + actionHtml + '</td>';
+        tr.innerHTML = '\n          <td class="py-2 pr-3">' + (name || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.email || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.student_id || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.program || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.created_at ? new Date(u.created_at).toLocaleDateString() : '—') + '</td>\n          <td class="py-2 pr-3">' + (isAdmin ? '<span class="px-2 py-0.5 text-xs rounded bg-indigo-100 text-indigo-800">Admin</span>' : '') + '</td>\n          <td class="py-2 pr-3">' + actionHtml + '</td>';
         body.appendChild(tr);
       });
     }
@@ -997,12 +1094,67 @@
       var q = (document.getElementById('userSearch') || {}).value || '';
       var status = document.getElementById('usersStatus');
       if (status) status.textContent = 'Loading...';
-      window.supabaseDB.adminListUsers(q, 200).then(function (res) {
+
+      // Create fresh Supabase client to bypass any caching
+      var supabaseClient = window.supabase.createClient(
+        'https://lvjfjyboqlcofzqrwqiy.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2amZqeWJvcWxjb2Z6cXJ3cWl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc3NzU4MTEsImV4cCI6MjA3MzM1MTgxMX0.XHLeP0xxmSWLC8MpqCpHWOVL3GK2TTJrKOBdbmME2OE'
+      );
+
+      // Query users table directly with admin status
+      var query = supabaseClient
+        .from('users')
+        .select(`
+          id,
+          email,
+          first_name,
+          last_name,
+          student_id,
+          program,
+          is_admin,
+          created_at
+        `)
+        .order('created_at', { ascending: false })
+        .limit(200);
+
+      // Add search filter if provided
+      if (q && q.trim()) {
+        query = query.or(`email.ilike.%${q}%,first_name.ilike.%${q}%,last_name.ilike.%${q}%,student_id.ilike.%${q}%`);
+      }
+
+      query.then(function (res) {
         if (status) status.textContent = '';
-        renderUsers(res.data || []);
+        if (res.error) {
+          console.error('Direct query error:', res.error);
+          status.textContent = 'Failed to load users';
+          return;
+        }
+
+        // Process the data to match expected format
+        var processedData = (res.data || []).map(function (user) {
+          return {
+            id: user.id,
+            email: user.email,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            student_id: user.student_id,
+            program: user.program,
+            is_admin: user.is_admin,
+            created_at: user.created_at
+          };
+        });
+
+        console.log('Loaded users directly from database:', processedData);
+
+        // Log admin status for each user
+        processedData.forEach(function (user, index) {
+          console.log(`User ${index}: ${user.email} - is_admin: ${user.is_admin}`);
+        });
+
+        renderUsers(processedData);
       }).catch(function (err) {
         if (status) status.textContent = 'Failed to load users';
-        try { console.error('adminListUsers error', err); } catch (_) { }
+        console.error('Direct query error:', err);
       });
     }
 

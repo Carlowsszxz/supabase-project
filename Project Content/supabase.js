@@ -105,8 +105,22 @@ const auth = {
         password
       });
 
+      console.log('Raw Supabase response:', { data, error });
+
       if (error) throw error;
-      return { data, error: null };
+
+      // Supabase returns { data: { session, user } }, but our code expects { data: { user } }
+      // So we need to restructure the response
+      const restructuredResponse = {
+        data: {
+          user: data.user,
+          session: data.session
+        },
+        error: null
+      };
+
+      console.log('Restructured response:', restructuredResponse);
+      return restructuredResponse;
     } catch (error) {
       return { data: null, error };
     }
@@ -593,9 +607,17 @@ const db = {
   async adminSetUserAdmin(userId, makeAdmin) {
     if (!supabase) return { error: 'Supabase not initialized' };
     try {
-      const { error } = await supabase.rpc('admin_set_user_admin', { p_user_id: userId, p_make_admin: !!makeAdmin });
+      const { data, error } = await supabase.rpc('admin_set_user_admin', { p_user_id: userId, p_make_admin: !!makeAdmin });
       if (error) throw error;
-      return { error: null };
+
+      // The function now returns JSON with success/error info
+      if (data && data.success) {
+        return { success: true, message: data.message, error: null };
+      } else if (data && !data.success) {
+        return { success: false, error: data.error || 'Unknown error' };
+      }
+
+      return { success: true, data: data, error: null };
     } catch (error) {
       return { error };
     }
