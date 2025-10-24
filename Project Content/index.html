@@ -52,7 +52,7 @@
               console.log('User already logged in, redirecting to dashboard:', email);
 
               // Determine redirect destination
-              let redirectTo = 'Frame_8.html'; // Default dashboard
+              let redirectTo = 'Frame_11.html'; // Default dashboard
 
               if (isAdmin) {
                 redirectTo = 'Frame_6.html'; // Admin dashboard
@@ -70,7 +70,7 @@
                     return; // Allow login if database check fails
                   }
                 }
-                redirectTo = 'Frame_8.html'; // User dashboard
+                redirectTo = 'Frame_11.html'; // Student dashboard
               }
 
               // Redirect to appropriate dashboard
