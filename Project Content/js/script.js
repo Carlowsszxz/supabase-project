@@ -375,6 +375,8 @@ window.addEventListener('load', function () {
     if (logoutFlag) {
         skipAutoRedirect = true;
         try { window.supabaseAuth && window.supabaseAuth.signOut && window.supabaseAuth.signOut(); } catch (_) { }
+        // Clear remembered email on logout
+        localStorage.removeItem('rememberedEmail');
         // Clean the URL so refreshes don't keep the flag
         window.history.replaceState({}, document.title, window.location.pathname);
     }
@@ -711,6 +713,14 @@ window.addEventListener('load', function () {
                 }
             } catch (_) { }
 
+            // Save email if Remember Me is checked
+            const rememberCheckbox = document.getElementById('remember-me-checkbox');
+            if (rememberCheckbox && rememberCheckbox.checked) {
+                localStorage.setItem('rememberedEmail', email);
+            } else {
+                localStorage.removeItem('rememberedEmail');
+            }
+
             // Determine destination
             const destination = await getDestinationAfterLogin(email, password, result.data.user);
 
@@ -786,6 +796,42 @@ window.addEventListener('load', function () {
                     } else {
                         hideAllMessages();
                     }
+                }
+            }
+        });
+    }
+
+    // Remember Me functionality
+    const rememberCheckbox = document.getElementById('remember-me-checkbox');
+
+    // Load saved email on page load
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if (savedEmail && emailInput) {
+        emailInput.value = savedEmail;
+        if (rememberCheckbox) {
+            rememberCheckbox.checked = true;
+        }
+    }
+
+    // Save/clear email when checkbox changes
+    if (rememberCheckbox && emailInput) {
+        rememberCheckbox.addEventListener('change', function () {
+            const email = emailInput.value.trim();
+            if (this.checked && email) {
+                localStorage.setItem('rememberedEmail', email);
+            } else {
+                localStorage.removeItem('rememberedEmail');
+            }
+        });
+
+        // Update saved email when email input changes (if checkbox is checked)
+        emailInput.addEventListener('input', function () {
+            if (rememberCheckbox.checked) {
+                const email = this.value.trim();
+                if (email) {
+                    localStorage.setItem('rememberedEmail', email);
+                } else {
+                    localStorage.removeItem('rememberedEmail');
                 }
             }
         });
@@ -955,5 +1001,142 @@ window.addEventListener('load', function () {
     }
 
     requestAnimationFrame(updateParallax);
+})();
+
+// Collapsible Header Toggle (Desktop Only)
+(function () {
+    const trigger = document.getElementById('headerTrigger');
+    const headerNav = document.getElementById('headerNav');
+
+    if (!trigger || !headerNav) return;
+
+    let isExpanded = false;
+    let isInitialized = false;
+
+    function init() {
+        // Check if mobile
+        const isMobile = window.innerWidth <= 768;
+
+        if (isMobile) {
+            // Mobile: hide trigger, always show header
+            trigger.style.display = 'none';
+            headerNav.classList.remove('header-collapsed');
+            headerNav.classList.add('header-expanded');
+            trigger.classList.remove('trigger-collapsed', 'trigger-expanded');
+        } else {
+            // Desktop: show trigger, start collapsed
+            trigger.style.display = 'flex';
+            if (!isInitialized) {
+                // Start collapsed on desktop
+                headerNav.classList.add('header-collapsed');
+                headerNav.classList.remove('header-expanded');
+                trigger.classList.add('trigger-collapsed');
+                trigger.classList.remove('trigger-expanded', 'header-expanded');
+                isExpanded = false;
+            }
+        }
+
+        isInitialized = true;
+    }
+
+    function toggleHeader(e) {
+        if (e) e.stopPropagation();
+
+        isExpanded = !isExpanded;
+
+        // Use requestAnimationFrame for smoother transitions
+        requestAnimationFrame(() => {
+            if (isExpanded) {
+                // Expand header - add blur effect before expanding
+                headerNav.classList.add('animating-in');
+
+                // Expand header
+                headerNav.classList.remove('header-collapsed');
+                headerNav.classList.add('header-expanded');
+
+                // Arrow follows header down
+                trigger.classList.remove('trigger-collapsed');
+                trigger.classList.add('trigger-expanded', 'header-expanded');
+
+                // Remove blur class after animation completes
+                setTimeout(() => {
+                    headerNav.classList.remove('animating-in');
+                }, 500);
+            } else {
+                // Collapse header - add blur effect before collapsing
+                headerNav.classList.add('animating-out');
+
+                // Collapse header
+                headerNav.classList.add('header-collapsed');
+                headerNav.classList.remove('header-expanded');
+
+                // Arrow follows header up
+                trigger.classList.remove('trigger-expanded', 'header-expanded');
+                trigger.classList.add('trigger-collapsed');
+
+                // Remove blur class after animation completes
+                setTimeout(() => {
+                    headerNav.classList.remove('animating-out');
+                }, 500);
+            }
+        });
+    }
+
+    // Initialize on load
+    init();
+
+    // Click trigger to toggle
+    trigger.addEventListener('click', toggleHeader);
+
+    // Click outside to close (with delay to avoid immediate closing)
+    let clickTimeout;
+    document.addEventListener('click', function (e) {
+        if (isExpanded &&
+            !headerNav.contains(e.target) &&
+            !trigger.contains(e.target)) {
+            clearTimeout(clickTimeout);
+            clickTimeout = setTimeout(() => {
+                if (isExpanded) toggleHeader();
+            }, 100);
+        }
+    });
+
+    // Keyboard shortcut (Escape to close)
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && isExpanded) {
+            toggleHeader();
+        }
+    });
+
+    // Handle window resize
+    let resizeTimeout;
+    window.addEventListener('resize', function () {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            init();
+        }, 150);
+    });
+})();
+
+// Nav Label Hover Functionality
+(function () {
+    const navLabel = document.getElementById('navLabel');
+    const navItems = document.querySelectorAll('.sidebar-nav-item');
+
+    if (!navLabel || !navItems.length) return;
+
+    navItems.forEach(item => {
+        const label = item.getAttribute('data-label');
+        if (!label) return;
+
+        item.addEventListener('mouseenter', function () {
+            navLabel.textContent = label;
+            navLabel.classList.add('visible');
+        });
+
+        item.addEventListener('mouseleave', function () {
+            navLabel.classList.remove('visible');
+        });
+    });
 })();
 

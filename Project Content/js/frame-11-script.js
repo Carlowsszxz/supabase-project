@@ -712,7 +712,7 @@ document.addEventListener('DOMContentLoaded', function () {
     requestAnimationFrame(animate);
 })();
 
-// Noise Level Monitoring System with Realistic Simulation
+// Noise Level Monitoring System with Real-time Database Polling
 (function () {
     var noiseLevelFill = document.getElementById('noiseLevelFill');
     var noiseValue = document.getElementById('noiseValue');
@@ -723,8 +723,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!noiseLevelFill || !noiseValue || !noiseStatus) return;
 
     // Get user's current table from profile data
-    var currentTable = 'Table 18'; // Default for demo
-    var currentTableId = 'table-18';
+    var currentTable = 'Table 1'; // Default label - showing Table 1 for testing
+    var currentTableId = 'table-1';
 
     // Try to get actual seat info if user is checked in
     setTimeout(function () {
@@ -741,31 +741,35 @@ document.addEventListener('DOMContentLoaded', function () {
         noiseTableLabel.textContent = currentTable;
     }, 500);
 
-    // Noise simulation variables
-    var currentNoiseLevel = 42; // Start at quiet level (42 dB)
-    var targetNoiseLevel = 42;
-    var baselineNoise = 38; // Library baseline (very quiet)
-    var maxNoise = 85; // Maximum noise level
+    // State variables
+    var currentNoiseLevel = null; // Start with null to show "No data available"
+    var lastUpdateTime = null;
+    var hasData = false;
 
-    // Time-based patterns (library is quieter in morning, noisier in afternoon)
-    function getTimeBasedBaseline() {
-        var hour = new Date().getHours();
-        if (hour >= 8 && hour < 10) return 40; // Early morning - very quiet
-        if (hour >= 10 && hour < 12) return 45; // Late morning - quiet
-        if (hour >= 12 && hour < 14) return 55; // Lunch time - moderate
-        if (hour >= 14 && hour < 16) return 50; // Early afternoon - moderate
-        if (hour >= 16 && hour < 18) return 52; // Late afternoon - moderate
-        if (hour >= 18 && hour < 20) return 48; // Evening - quiet
-        return 42; // Default
-    }
+    // Initialize display with "No data available" state
+    updateDisplay(null);
 
     // Update visual display
-    function updateDisplay() {
-        var level = Math.round(currentNoiseLevel);
+    function updateDisplay(level) {
+        if (level === null || level === undefined) {
+            // Show "No data available" state
+            noiseValue.textContent = '--';
+            noiseStatus.textContent = '⚪ Tap your RFID at a table';
+            noiseStatus.className = 'text-sm font-medium text-slate-400';
+            noiseLevelFill.style.height = '0%';
+            noiseLevelFill.style.background = 'linear-gradient(to top, #9ca3af, #d1d5db)';
+            noiseTimestamp.textContent = 'Tap RFID to start monitoring';
+            hasData = false;
+            return;
+        }
+
+        hasData = true;
+        // Show decimal value (e.g., 12.37) instead of rounding
+        var displayLevel = parseFloat(level).toFixed(1); // Shows one decimal place (e.g., 12.4)
         var percentage = Math.min(100, Math.max(0, ((level - 30) / (85 - 30)) * 100));
 
         // Update value display
-        noiseValue.textContent = level;
+        noiseValue.textContent = displayLevel;
 
         // Update bar height
         noiseLevelFill.style.height = percentage + '%';
@@ -791,14 +795,20 @@ document.addEventListener('DOMContentLoaded', function () {
         noiseLevelFill.style.background = gradient;
 
         // Update timestamp
+        lastUpdateTime = Date.now();
         updateTimestamp();
     }
 
-    // Update timestamp
-    var lastUpdate = Date.now();
+    // Update timestamp display
     function updateTimestamp() {
+        if (!lastUpdateTime || !hasData) {
+            noiseTimestamp.textContent = 'Tap RFID to start monitoring';
+            return;
+        }
+
         var now = Date.now();
-        var seconds = Math.floor((now - lastUpdate) / 1000);
+        var seconds = Math.floor((now - lastUpdateTime) / 1000);
+
         if (seconds < 5) {
             noiseTimestamp.textContent = 'Updated just now';
         } else if (seconds < 60) {
@@ -809,96 +819,269 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Real-time noise level simulation with continuous updates
-    var lastEventTime = 0;
-    var currentEvent = null;
-    var eventDuration = 0;
-    var eventStartTime = 0;
+    // Get the table the current user last tapped
+    async function getUserTable() {
+        try {
+            // Get current user
+            const { data: { user }, error: userError } = await window.supabaseClient.auth.getUser();
 
-    // Initialize with current time to start events immediately
-    lastEventTime = Date.now() - 5000; // Start first event soon
-
-    function updateNoiseLevelRealTime() {
-        var timeBaseline = getTimeBasedBaseline();
-        var now = Date.now();
-
-        // Check if we need a new random event (every 2-8 seconds)
-        if (now - lastEventTime > (2000 + Math.random() * 6000)) {
-            var eventTypes = ['conversation', 'chair_movement', 'book_drop', 'phone_ring', 'footsteps', 'keyboard_typing', 'page_turning', 'whisper'];
-            currentEvent = eventTypes[Math.floor(Math.random() * eventTypes.length)];
-            eventDuration = 1000 + Math.random() * 4000; // 1-5 seconds
-            eventStartTime = now;
-            lastEventTime = now;
-        }
-
-        // Calculate current noise level based on active event
-        if (currentEvent && (now - eventStartTime) < eventDuration) {
-            var eventProgress = (now - eventStartTime) / eventDuration;
-            var eventIntensity = Math.sin(eventProgress * Math.PI); // Smooth bell curve
-
-            switch (currentEvent) {
-                case 'conversation':
-                    targetNoiseLevel = timeBaseline + (eventIntensity * 30) + 10; // 10-40dB above baseline
-                    break;
-                case 'chair_movement':
-                    targetNoiseLevel = timeBaseline + (eventIntensity * 20) + 5; // 5-25dB above baseline
-                    break;
-                case 'book_drop':
-                    targetNoiseLevel = timeBaseline + (eventIntensity * 35) + 15; // 15-50dB above baseline
-                    break;
-                case 'phone_ring':
-                    targetNoiseLevel = timeBaseline + (eventIntensity * 40) + 20; // 20-60dB above baseline
-                    break;
-                case 'footsteps':
-                    targetNoiseLevel = timeBaseline + (eventIntensity * 15) + 3; // 3-18dB above baseline
-                    break;
-                case 'keyboard_typing':
-                    targetNoiseLevel = timeBaseline + (eventIntensity * 12) + 2; // 2-14dB above baseline
-                    break;
-                case 'page_turning':
-                    targetNoiseLevel = timeBaseline + (eventIntensity * 8) + 1; // 1-9dB above baseline
-                    break;
-                case 'whisper':
-                    targetNoiseLevel = timeBaseline + (eventIntensity * 6) + 1; // 1-7dB above baseline
-                    break;
+            if (userError || !user) {
+                console.log('[Noise Monitor] No user logged in');
+                return null;
             }
-        } else {
-            // No active event - normal ambient variation
-            var variation = (Math.random() - 0.5) * 8; // ±4dB variation
-            targetNoiseLevel = timeBaseline + variation;
-            currentEvent = null;
-        }
 
-        // Add micro-variations for more realistic feel
-        var microVariation = (Math.random() - 0.5) * 2; // ±1dB micro-variation
-        targetNoiseLevel += microVariation;
+            console.log('[Noise Monitor] Current user:', user.id);
 
-        // Ensure noise level stays within realistic bounds
-        targetNoiseLevel = Math.max(25, Math.min(75, targetNoiseLevel));
+            // Get user's UID from users table
+            const { data: userData, error: uidError } = await window.supabaseClient
+                .from('users')
+                .select('uid')
+                .eq('id', user.id)
+                .single();
 
-        // Update currentNoiseLevel for display (direct assignment for real-time feel)
-        currentNoiseLevel = targetNoiseLevel;
+            if (uidError || !userData || !userData.uid) {
+                console.log('[Noise Monitor] User has no UID assigned yet');
+                return null;
+            }
 
-        // Update display
-        updateDisplay();
+            const userUid = userData.uid;
+            console.log('[Noise Monitor] User UID:', userUid);
 
-        // Update timestamp every 2 seconds
-        if (now % 2000 < 50) { // Update roughly every 2 seconds
-            updateTimestamp();
+            // Query recent_taps to find the latest table this user tapped
+            const { data: tapData, error: tapError } = await window.supabaseClient
+                .from('recent_taps')
+                .select('table_name, created_at')
+                .eq('uid', userUid)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .single();
+
+            if (tapError || !tapData) {
+                console.log('[Noise Monitor] No recent taps found for this user');
+                return null;
+            }
+
+            console.log('[Noise Monitor] User last tapped:', tapData.table_name, 'at', tapData.created_at);
+            return tapData.table_name;
+
+        } catch (err) {
+            console.error('[Noise Monitor] Error getting user table:', err);
+            return null;
         }
     }
 
-    // Update every 100ms for real-time feel (10 times per second)
-    setInterval(updateNoiseLevelRealTime, 100);
+    // Fetch latest decibel value from latest_sound_per_table
+    async function fetchLatestNoiseLevel() {
+        try {
+            console.log('[Noise Monitor] Fetching latest noise level...');
 
-    // Initial update
-    updateNoiseLevelRealTime();
+            // Check if Supabase is initialized
+            if (!window.supabaseClient && typeof initSupabase === 'function') {
+                console.log('[Noise Monitor] Supabase not found, attempting to initialize...');
+                initSupabase();
+            }
 
-    // Debug logging
-    console.log('Real-time noise monitor started - updating every 100ms');
-    console.log('Initial noise level:', currentNoiseLevel);
+            if (!window.supabaseClient) {
+                console.warn('[Noise Monitor] Supabase not initialized yet');
+                updateDisplay(null);
+                return;
+            }
 
-    console.log('Noise Level Monitor initialized for ' + currentTable);
+            // Get the table the user tapped
+            const userTable = await getUserTable();
+
+            if (!userTable) {
+                console.log('[Noise Monitor] User has not tapped any table yet');
+                updateDisplay(null);
+                noiseTableLabel.textContent = 'No table selected';
+                // Hide Leave Seat button when no table
+                const leaveSeatBtn = document.getElementById('leaveSeatBtn');
+                if (leaveSeatBtn) leaveSeatBtn.style.display = 'none';
+                return;
+            }
+
+            console.log('[Noise Monitor] Querying latest_sound_per_table for', userTable);
+
+            // Show Leave Seat button when table is detected
+            const leaveSeatBtn = document.getElementById('leaveSeatBtn');
+            if (leaveSeatBtn) leaveSeatBtn.style.display = 'flex';
+
+            // Fetch from latest_sound_per_table for the user's table
+            const { data, error } = await window.supabaseClient
+                .from('latest_sound_per_table')
+                .select('table_name, decibel, created_at')
+                .eq('table_name', userTable)
+                .single();
+
+            if (error) {
+                // If no data found (PGRST116), that's okay - show "No data available"
+                if (error.code === 'PGRST116') {
+                    console.log('[Noise Monitor] No noise data available for', userTable, 'yet');
+                    updateDisplay(null);
+                    noiseTableLabel.textContent = userTable.replace('_', ' ');
+                    return;
+                }
+                console.error('[Noise Monitor] Query error:', error);
+                throw error;
+            }
+
+            console.log('[Noise Monitor] Raw data received:', data);
+
+            // Update display with fetched decibel value
+            if (data && data.decibel !== null && data.decibel !== undefined) {
+                currentNoiseLevel = parseFloat(data.decibel);
+                console.log('[Noise Monitor] ✅ Successfully fetched:', currentNoiseLevel, 'dB from', data.table_name, 'at', data.created_at);
+
+                updateDisplay(currentNoiseLevel);
+
+                // Update the table label to show which table this reading is from
+                if (data.table_name) {
+                    noiseTableLabel.textContent = data.table_name.replace('_', ' ');
+                }
+            } else {
+                console.log('[Noise Monitor] No decibel value in latest record');
+                updateDisplay(null);
+            }
+        } catch (err) {
+            console.error('[Noise Monitor] ❌ Error fetching noise level:', err);
+            updateDisplay(null);
+        }
+    }
+
+    // Set up polling interval (4 seconds - middle of 3-5 range)
+    var pollingInterval = 4000; // 4 seconds
+    var intervalId = null;
+
+    function startPolling() {
+        // Initial fetch
+        fetchLatestNoiseLevel();
+
+        // Set up interval
+        intervalId = setInterval(fetchLatestNoiseLevel, pollingInterval);
+
+        console.log('Noise level polling started - fetching every', pollingInterval / 1000, 'seconds');
+    }
+
+    // Update timestamp display every second
+    setInterval(updateTimestamp, 1000);
+
+    // Wait for Supabase to be initialized before starting polling
+    setTimeout(function () {
+        if (window.supabaseClient) {
+            startPolling();
+        } else {
+            console.log('Waiting for Supabase initialization...');
+            // Retry after a delay
+            setTimeout(function () {
+                if (window.supabaseClient) {
+                    startPolling();
+                } else {
+                    console.error('Supabase not available - noise polling disabled');
+                    updateDisplay(null);
+                }
+            }, 2000);
+        }
+    }, 500);
+
+    // Clean up on page unload
+    window.addEventListener('beforeunload', function () {
+        if (intervalId) {
+            clearInterval(intervalId);
+        }
+    });
+
+    console.log('Noise Level Monitor initialized - polling from latest_sound_per_table');
+
+    // Leave Seat Button Functionality
+    const leaveSeatBtn = document.getElementById('leaveSeatBtn');
+
+    if (leaveSeatBtn) {
+        leaveSeatBtn.addEventListener('click', async function () {
+            try {
+                leaveSeatBtn.disabled = true;
+                leaveSeatBtn.textContent = 'Leaving...';
+
+                // Get current user
+                const { data: { user }, error: userError } = await window.supabaseClient.auth.getUser();
+
+                if (userError || !user) {
+                    alert('Error: Could not get user information');
+                    leaveSeatBtn.disabled = false;
+                    leaveSeatBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg> Leave Seat';
+                    return;
+                }
+
+                console.log('[Leave Seat] User:', user.id);
+
+                // Get user's UID
+                const { data: userData, error: uidError } = await window.supabaseClient
+                    .from('users')
+                    .select('uid')
+                    .eq('id', user.id)
+                    .single();
+
+                if (uidError || !userData || !userData.uid) {
+                    console.error('[Leave Seat] Could not get user UID:', uidError);
+                    alert('Error leaving seat. Please try again.');
+                    leaveSeatBtn.disabled = false;
+                    leaveSeatBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg> Leave Seat';
+                    return;
+                }
+
+                const userUid = userData.uid;
+                console.log('[Leave Seat] User UID:', userUid);
+
+                // Delete tap records for this user
+                const { error: deleteError } = await window.supabaseClient
+                    .from('actlog_iot')
+                    .delete()
+                    .eq('uid', userUid)
+                    .eq('event', 'tap');
+
+                if (deleteError) {
+                    console.error('[Leave Seat] Error deleting tap records:', deleteError);
+                } else {
+                    console.log('[Leave Seat] ✅ Tap records deleted');
+                }
+
+                // Free up all seats occupied by this user
+                const { data: updateData, error: updateError } = await window.supabaseClient
+                    .from('occupancy')
+                    .update({
+                        is_occupied: false,
+                        occupied_by: null,
+                        occupied_at: null,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('occupied_by', user.id);
+
+                if (updateError) {
+                    console.error('[Leave Seat] Error freeing seat:', updateError);
+                    alert('Error leaving seat. Please try again.');
+                    leaveSeatBtn.disabled = false;
+                    leaveSeatBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg> Leave Seat';
+                    return;
+                }
+
+                console.log('[Leave Seat] ✅ Seat freed successfully');
+
+                // Reset the display
+                updateDisplay(null);
+                noiseTableLabel.textContent = 'No table selected';
+                leaveSeatBtn.style.display = 'none';
+                leaveSeatBtn.disabled = false;
+                leaveSeatBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg> Leave Seat';
+
+                console.log('[Leave Seat] Display reset complete');
+
+            } catch (err) {
+                console.error('[Leave Seat] Error:', err);
+                alert('Error leaving seat. Please try again.');
+                leaveSeatBtn.disabled = false;
+                leaveSeatBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg> Leave Seat';
+            }
+        });
+    }
 })();
 
 // Initialize Lucide icons
