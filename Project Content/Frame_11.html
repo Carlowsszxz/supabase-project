@@ -11,6 +11,162 @@
   <script defer src="theme.js"></script>
 
   <style>
+    /* Collapsible Header - Glassmorphic Arrow Trigger */
+    .header-trigger {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(0);
+      z-index: 99999;
+      width: 70px;
+      height: 36px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      backdrop-filter: blur(30px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-top: none;
+      border-radius: 0 0 20px 20px;
+      border-top-left-radius: 0 !important;
+      border-top-right-radius: 0 !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        background 0.35s ease,
+        box-shadow 0.35s ease,
+        border-color 0.35s ease;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.15),
+        0 8px 24px rgba(99, 102, 241, 0.12),
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      outline: none;
+      animation: headerPulse 2s ease-in-out infinite;
+    }
+
+    .header-trigger:hover {
+      height: 42px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1));
+      -webkit-backdrop-filter: blur(40px) saturate(200%);
+      backdrop-filter: blur(40px) saturate(200%);
+      box-shadow: 0 0 30px rgba(99, 102, 241, 0.25),
+        0 10px 32px rgba(99, 102, 241, 0.18),
+        0 6px 16px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      border-color: rgba(255, 255, 255, 0.75);
+    }
+
+    .header-trigger:active {
+      transform: translateX(-50%) translateY(0) scale(0.95);
+    }
+
+    .header-trigger.trigger-expanded:active {
+      transform: translateX(-50%) translateY(75px) scale(0.95);
+    }
+
+    .header-trigger-icon {
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      color: #6366f1;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    }
+
+    .header-trigger:hover .header-trigger-icon {
+      color: #4f46e5;
+      transform: translateY(3px) scale(1.1);
+    }
+
+    .header-trigger.header-expanded .header-trigger-icon {
+      transform: rotate(180deg) scale(1.1);
+      color: #4f46e5;
+    }
+
+    /* Pulse animation */
+    @keyframes headerPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.15),
+          0 8px 24px rgba(99, 102, 241, 0.12),
+          0 4px 12px rgba(0, 0, 0, 0.08),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      }
+
+      50% {
+        box-shadow: 0 0 30px rgba(99, 102, 241, 0.3),
+          0 10px 28px rgba(99, 102, 241, 0.2),
+          0 6px 16px rgba(0, 0, 0, 0.12),
+          inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      }
+    }
+
+    .header-trigger.header-expanded {
+      animation: none;
+    }
+
+    /* Arrow follows header */
+    .header-trigger.trigger-collapsed {
+      transform: translateX(-50%) translateY(0);
+      animation: arrowSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .header-trigger.trigger-expanded {
+      transform: translateX(-50%) translateY(75px);
+      animation: arrowSlideDown 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes arrowSlideDown {
+      0% {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      100% {
+        transform: translateX(-50%) translateY(75px);
+      }
+    }
+
+    @keyframes arrowSlideUp {
+      0% {
+        transform: translateX(-50%) translateY(75px);
+      }
+
+      100% {
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    /* Nav Label (appears to left of nav container) */
+    .nav-label {
+      position: fixed;
+      top: 22px;
+      right: calc(50% + 210px);
+      padding: 0.5rem 1rem;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      z-index: 99997;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-label.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Hide label on mobile */
+    @media (max-width: 768px) {
+      .nav-label {
+        display: none;
+      }
+    }
+
     /* Modern Top Navigation Bar */
     .modern-sidebar {
       position: fixed;
@@ -22,20 +178,93 @@
       max-width: 500px;
       height: auto;
       background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
       border-top: none;
       border-radius: 0 0 20px 20px;
+      border-top-left-radius: 0 !important;
+      border-top-right-radius: 0 !important;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05);
-      z-index: 1000;
+      z-index: 99998;
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: center;
       padding: 1rem 2rem;
       gap: 1rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: top center;
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+        opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        filter 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform, opacity, filter;
+      pointer-events: auto;
+    }
+
+    /* Collapsible Header States */
+    .modern-sidebar.header-collapsed {
+      transform: translateX(-50%) translateY(-120%);
+      opacity: 0;
+      filter: blur(10px);
+      pointer-events: none;
+    }
+
+    .modern-sidebar.header-expanded {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      filter: blur(0px);
+      pointer-events: auto;
+    }
+
+    .modern-sidebar.animating-in {
+      filter: blur(10px);
+      animation: slideDown 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    .modern-sidebar.animating-out {
+      filter: blur(10px);
+      animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes slideDown {
+      0% {
+        transform: translateX(-50%) translateY(-120%);
+        opacity: 0;
+        filter: blur(10px);
+      }
+
+      100% {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+        filter: blur(0px);
+      }
+    }
+
+    @keyframes slideUp {
+      0% {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+        filter: blur(0px);
+      }
+
+      100% {
+        transform: translateX(-50%) translateY(-120%);
+        opacity: 0;
+        filter: blur(10px);
+      }
+    }
+
+    /* Hide trigger on mobile */
+    @media (max-width: 768px) {
+      .header-trigger {
+        display: none;
+      }
+
+      .modern-sidebar.header-collapsed {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
     }
 
     /* Top Navigation Items */
@@ -441,9 +670,58 @@
 
     /* Dark Mode Support */
     @media (prefers-color-scheme: dark) {
+      .header-trigger {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.3), rgba(15, 23, 42, 0.2));
+        border-color: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.25),
+          0 8px 24px rgba(0, 0, 0, 0.4),
+          0 4px 12px rgba(0, 0, 0, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        animation: headerPulseDark 2s ease-in-out infinite;
+      }
+
+      .header-trigger:hover {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.3));
+        box-shadow: 0 0 30px rgba(99, 102, 241, 0.35),
+          0 10px 32px rgba(0, 0, 0, 0.5),
+          0 6px 16px rgba(0, 0, 0, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.55);
+      }
+
+      .header-trigger.header-expanded {
+        animation: none;
+      }
+
+      .header-trigger-icon {
+        color: #818cf8;
+      }
+
+      .header-trigger:hover .header-trigger-icon {
+        color: #a5b4fc;
+      }
+
+      @keyframes headerPulseDark {
+
+        0%,
+        100% {
+          box-shadow: 0 0 20px rgba(99, 102, 241, 0.25),
+            0 8px 24px rgba(0, 0, 0, 0.4),
+            0 4px 12px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        50% {
+          box-shadow: 0 0 35px rgba(99, 102, 241, 0.4),
+            0 10px 28px rgba(0, 0, 0, 0.5),
+            0 6px 16px rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+      }
+
       .modern-sidebar {
         background: rgba(15, 23, 42, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.4);
         border-top: none;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
       }
@@ -472,9 +750,40 @@
     }
 
     /* Manual dark mode class support */
+    .dark .header-trigger {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.3), rgba(15, 23, 42, 0.2));
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.25),
+        0 8px 24px rgba(0, 0, 0, 0.4),
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      animation: headerPulseDark 2s ease-in-out infinite;
+    }
+
+    .dark .header-trigger:hover {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.3));
+      box-shadow: 0 0 30px rgba(99, 102, 241, 0.35),
+        0 10px 32px rgba(0, 0, 0, 0.5),
+        0 6px 16px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.55);
+    }
+
+    .dark .header-trigger.header-expanded {
+      animation: none;
+    }
+
+    .dark .header-trigger-icon {
+      color: #818cf8;
+    }
+
+    .dark .header-trigger:hover .header-trigger-icon {
+      color: #a5b4fc;
+    }
+
     .dark .modern-sidebar {
       background: rgba(15, 23, 42, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.4);
       border-top: none;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
     }
@@ -497,8 +806,234 @@
       color: #60a5fa;
     }
 
+
     .dark .sidebar-brand-text {
       color: #e5e7eb;
+    }
+
+    /* Floating Library Info Button */
+    .library-info-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 2px solid rgba(59, 130, 246, 0.3);
+      box-shadow: 0 8px 32px rgba(59, 130, 246, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3b82f6;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 999;
+      outline: none;
+    }
+
+    .library-info-btn:hover {
+      transform: scale(1.1) translateY(-4px);
+      box-shadow: 0 12px 40px rgba(59, 130, 246, 0.35), 0 0 0 1px rgba(59, 130, 246, 0.3);
+      border-color: rgba(59, 130, 246, 0.5);
+      background: rgba(255, 255, 255, 1);
+    }
+
+    .library-info-btn:active {
+      transform: scale(1.05);
+    }
+
+    /* Library Info Card */
+    .library-info-card {
+      position: fixed;
+      bottom: 6rem;
+      right: 2rem;
+      min-width: 320px;
+      max-width: 360px;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      padding: 1.25rem;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.3);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px) scale(0.95);
+      transform-origin: bottom right;
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        visibility 0.35s;
+      z-index: 998;
+      pointer-events: none;
+    }
+
+    .library-info-btn:hover+.library-info-card,
+    .library-info-card:hover {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    /* Arrow pointing to button */
+    .library-info-card::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      right: 22px;
+      width: 16px;
+      height: 16px;
+      background: rgba(255, 255, 255, 0.98);
+      border-right: 1px solid rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      transform: rotate(45deg);
+    }
+
+    /* Dark Mode Styles */
+    .dark .library-info-btn {
+      background: rgba(30, 41, 59, 0.95);
+      border-color: rgba(59, 130, 246, 0.4);
+      color: #60a5fa;
+    }
+
+    .dark .library-info-btn:hover {
+      background: rgba(30, 41, 59, 1);
+      border-color: rgba(59, 130, 246, 0.6);
+    }
+
+    .dark .library-info-card {
+      background: rgba(30, 41, 59, 0.98);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .dark .library-info-card::after {
+      background: rgba(30, 41, 59, 0.98);
+      border-right-color: rgba(255, 255, 255, 0.1);
+      border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Mobile Adjustments */
+    @media (max-width: 768px) {
+      .library-info-btn {
+        bottom: 1.5rem;
+        right: 1.5rem;
+        width: 52px;
+        height: 52px;
+      }
+
+      .library-info-card {
+        bottom: 5rem;
+        right: 1rem;
+        left: 1rem;
+        min-width: auto;
+        max-width: none;
+      }
+
+      .library-info-card::after {
+        right: 18px;
+      }
+    }
+
+    /* Mini-Games Styling */
+    .game-card {
+      position: relative;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .game-emoji {
+      transition: transform 0.3s ease;
+      display: inline-block;
+    }
+
+    .game-card:hover .game-emoji {
+      transform: scale(1.1);
+    }
+
+    /* Bubble Animation */
+    .bubble {
+      position: absolute;
+      bottom: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(100, 200, 255, 0.4));
+      animation: floatUp 3s ease-in-out forwards;
+      pointer-events: none;
+      box-shadow: 0 0 10px rgba(100, 200, 255, 0.5);
+    }
+
+    @keyframes floatUp {
+      0% {
+        bottom: 0;
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+
+      100% {
+        bottom: 120%;
+        opacity: 0;
+        transform: translateX(var(--drift, 20px)) scale(1.5);
+      }
+    }
+
+    /* Color Mood Pulse */
+    .game-card.color-pulse {
+      animation: colorPulse 1s ease-in-out;
+    }
+
+    @keyframes colorPulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px currentColor;
+      }
+    }
+
+    /* Lucky Number Spin */
+    .lucky-spin {
+      animation: spin 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg) scale(1);
+      }
+
+      50% {
+        transform: rotate(180deg) scale(1.3);
+      }
+
+      100% {
+        transform: rotate(360deg) scale(1);
+      }
+    }
+
+    /* Breathing Animation */
+    .breathing {
+      animation: breathe 4s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+      }
     }
 
     /* Adjust main content for top navigation */
@@ -538,16 +1073,11 @@
         studyStatus: "Study Status",
         active: "Active",
         studyTips: "Study Tips",
-        studyGoals: "Study Goals",
-        studyProgress: "Study Progress",
         selectSeat: "Select a Seat",
         close: "Close",
         notCheckedIn: "Not checked in",
         viewOnly: "View-only",
         readyToStudy: "Ready to study? Find a seat and get started!",
-        todaysTarget: "Today's Target",
-        thisWeek: "This Week",
-        thisMonth: "This Month",
         librarySystem: "University of Makati Library",
         noiseComfort: "Noise Comfort Index"
       },
@@ -578,18 +1108,11 @@
         studyStatus: "Status ng Pag-aaral",
         active: "Aktibo",
         studyTips: "Mga Tip sa Pag-aaral",
-        studyGoals: "Mga Layunin sa Pag-aaral",
-        studyProgress: "Pag-unlad sa Pag-aaral",
         selectSeat: "Piliin ang Upuan",
         close: "Isara",
         notCheckedIn: "Hindi pa nag-check in",
         viewOnly: "Tingnan lamang",
         readyToStudy: "Handa na bang mag-aral? Maghanap ng upuan at magsimula na!",
-        todaysTarget: "Target ng Araw",
-        thisWeek: "Sa Linggong Ito",
-        thisMonth: "Sa Buwang Ito",
-        completed: "Nakumpleto",
-        streak: "Streak",
         days: "araw",
         hours: "oras",
         librarySystem: "Aklatan ng University of Makati",
@@ -626,16 +1149,9 @@
         'study-status-title': t.studyStatus,
         'active-label': t.active,
         'study-tips-title': t.studyTips,
-        'study-goals-title': t.studyGoals,
-        'study-progress-title': t.studyProgress,
         'select-seat-title': t.selectSeat,
         'close-btn': t.close,
         'ready-to-study': t.readyToStudy,
-        'todays-target': t.todaysTarget,
-        'this-week': t.thisWeek,
-        'this-month': t.thisMonth,
-        'completed-label': t.completed,
-        'streak-label': t.streak,
         'days-label': t.days,
         'hours-label': t.hours,
         'profile-tooltip': t.profile,
@@ -1086,33 +1602,42 @@
     <canvas id="veil-canvas" class="w-full h-full block"></canvas>
   </div>
   <!-- Modern Top Navigation Bar -->
-  <nav class="modern-sidebar" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
+  <!-- Collapsible Header Trigger Button -->
+  <button id="headerTrigger" class="header-trigger" aria-label="Toggle header navigation">
+    <svg class="header-trigger-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </button>
+
+  <!-- Hover Label (appears to left of nav) -->
+  <div id="navLabel" class="nav-label"></div>
+
+  <nav id="headerNav" class="modern-sidebar header-collapsed" data-fade data-blur="true" data-initial-opacity="0"
+    data-duration="1000">
     <!-- Brand/Logo -->
     <div class="sidebar-brand">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" />
     </div>
 
     <!-- Navigation Items -->
-    <a href="Frame_11.html" class="sidebar-nav-item active" aria-label="Profile">
+    <a href="Frame_11.html" class="sidebar-nav-item active" data-label="Profile">
       <i data-lucide="user" class="sidebar-icon"></i>
-      <div class="sidebar-tooltip" id="profile-tooltip">Profile</div>
     </a>
 
-    <a href="Frame_8.html" class="sidebar-nav-item" aria-label="Map">
+    <a href="Frame_8.html" class="sidebar-nav-item" data-label="Map">
       <i data-lucide="map" class="sidebar-icon"></i>
-      <div class="sidebar-tooltip" id="map-tooltip">Map</div>
     </a>
 
-    <a href="Frame_16.html" class="sidebar-nav-item" aria-label="Report">
+    <a href="Frame_16.html" class="sidebar-nav-item" data-label="Report">
       <i data-lucide="flag" class="sidebar-icon"></i>
-      <div class="sidebar-tooltip" id="report-tooltip">Report</div>
     </a>
 
-    <button id="logoutBtn" class="sidebar-nav-item" aria-label="Logout">
+    <button id="logoutBtn" class="sidebar-nav-item" data-label="Logout">
       <i data-lucide="log-out" class="sidebar-icon"></i>
-      <div class="sidebar-tooltip" id="logout-btn">Logout</div>
     </button>
   </nav>
+
 
   <!-- Burger Menu Button (Mobile Only) -->
   <button class="burger-menu-btn" id="burgerMenuBtn" aria-label="Toggle menu">
@@ -1247,208 +1772,243 @@
           </div>
         </section>
 
+        <!-- Motivational Banner -->
+        <div id="motivationalBanner"
+          class="mb-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 rounded-xl border border-indigo-100 dark:border-indigo-900/50 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
+          data-fade>
+          <div class="px-6 py-3 flex items-center gap-4">
+            <div id="quoteIcon" class="text-2xl flex-shrink-0 transition-all duration-700 ease-in-out">💡</div>
+            <div id="quoteDisplay"
+              class="flex-1 transition-all duration-700 ease-in-out min-h-[2.5rem] flex items-center">
+              <p class="text-sm md:text-base font-medium text-slate-800 dark:text-slate-200 leading-relaxed"
+                id="quoteText">
+                Loading...
+              </p>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <!-- Navigation Dots -->
+              <div class="flex gap-1.5" id="quoteDots">
+                <!-- Dots will be generated here -->
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Main Content Grid -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-6" data-fade>
           <div class="lg:col-span-2 space-y-6">
-            <!-- Study Status -->
+
+            <!-- Noise Level Monitor (Prominent) -->
             <div class="card">
-              <div class="flex items-center justify-between mb-2">
-                <h2 id="study-status-title" class="card-title">Study Status</h2>
-                <div class="flex items-center gap-2">
-                  <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                  <span id="active-label" class="meta">Active</span>
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <h2 id="noise-level-title" class="card-title">Table Noise Level</h2>
+                  <div class="text-sm text-slate-500 mt-1" id="noiseTableLabel">No table selected</div>
                 </div>
               </div>
-              <div class="text-center py-8">
-                <div class="text-4xl mb-2">📚</div>
-                <div id="ready-to-study" class="text-slate-600">Ready to study? Find a seat and get started!</div>
+
+              <!-- Enhanced Vertical Noise Bar -->
+              <div class="flex items-center justify-center gap-6 mb-6">
+                <!-- The Bar Container (Larger) -->
+                <div
+                  class="relative w-24 h-64 bg-slate-100/80 dark:bg-slate-800/50 rounded-2xl overflow-hidden shadow-inner border-2 border-white/50 dark:border-slate-700/50">
+                  <!-- Background gradient markers -->
+                  <div class="absolute inset-0 flex flex-col">
+                    <div class="flex-1 bg-gradient-to-b from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30">
+                    </div>
+                    <div
+                      class="flex-1 bg-gradient-to-b from-yellow-50 to-yellow-100 dark:from-yellow-900/30 dark:to-yellow-800/30">
+                    </div>
+                    <div
+                      class="flex-1 bg-gradient-to-b from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30">
+                    </div>
+                  </div>
+
+                  <!-- Animated noise level fill -->
+                  <div id="noiseLevelFill"
+                    class="absolute bottom-0 left-0 right-0 transition-all duration-500 ease-out rounded-t-2xl"
+                    style="height: 25%; background: linear-gradient(to top, #10b981, #34d399);">
+                  </div>
+
+                  <!-- Level markers -->
+                  <div class="absolute inset-0 flex flex-col justify-between py-3 px-2 pointer-events-none">
+                    <div class="text-base font-bold text-red-600">🔴</div>
+                    <div class="text-base font-bold text-yellow-600">🟡</div>
+                    <div class="text-base font-bold text-green-600">🟢</div>
+                  </div>
+                </div>
+
+                <!-- Level Info (Enhanced) -->
+                <div class="flex-1 space-y-4">
+                  <div class="space-y-2">
+                    <div class="flex items-baseline gap-2">
+                      <div id="noiseValue" class="text-5xl font-bold text-slate-800 dark:text-slate-100">42</div>
+                      <div class="text-lg text-slate-500 dark:text-slate-400">dB</div>
+                    </div>
+                    <div id="noiseStatus" class="text-base font-semibold text-green-600">🟢 Quiet Environment</div>
+                  </div>
+
+                  <div class="space-y-2.5 text-sm text-slate-600 dark:text-slate-400">
+                    <div class="flex items-center gap-2">
+                      <div class="w-4 h-4 rounded-full bg-green-500 shadow-sm"></div>
+                      <span class="font-medium">0-50 dB: Quiet</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <div class="w-4 h-4 rounded-full bg-yellow-500 shadow-sm"></div>
+                      <span class="font-medium">50-70 dB: Moderate</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <div class="w-4 h-4 rounded-full bg-red-500 shadow-sm"></div>
+                      <span class="font-medium">70+ dB: Noisy</span>
+                    </div>
+                  </div>
+
+                  <div
+                    class="text-xs text-slate-400 dark:text-slate-500 italic pt-2 border-t border-slate-200 dark:border-slate-700"
+                    id="noiseTimestamp">
+                    Updated just now
+                  </div>
+                </div>
+              </div>
+
+              <!-- Leave Seat Button -->
+              <div class="mt-4">
+                <button id="leaveSeatBtn"
+                  class="w-full py-3 px-6 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  style="display: none;">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  Leave Seat
+                </button>
               </div>
             </div>
 
-            <!-- Study Tips -->
-            <div class="card">
-              <h2 id="study-tips-title" class="card-title mb-3">Study Tips</h2>
-              <div class="space-y-3 text-sm">
-                <div class="flex items-start gap-3">
-                  <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <div class="font-medium text-slate-900">Find Your Quiet Zone</div>
-                    <div class="text-slate-600">Choose seats away from high-traffic areas for better focus</div>
-                  </div>
-                </div>
-
-                <div class="flex items-start gap-3">
-                  <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <div class="font-medium text-slate-900">Take Regular Breaks</div>
-                    <div class="text-slate-600">Follow the 25-5 rule: 25 minutes study, 5 minutes break</div>
-                  </div>
-                </div>
-
-                <div class="flex items-start gap-3">
-                  <div class="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg class="w-3 h-3 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z">
-                      </path>
-                    </svg>
-                  </div>
-                  <div>
-                    <div class="font-medium text-slate-900">Report Disturbances</div>
-                    <div class="text-slate-600">Help maintain a quiet environment by reporting noise issues</div>
-                  </div>
-                </div>
-
-                <div class="flex items-start gap-3 mt-6">
-                  <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
-                      </path>
-                    </svg>
-                  </div>
-                  <div>
-                    <div class="font-medium text-slate-900">Stay Hydrated</div>
-                    <div class="text-slate-600">Keep water nearby and take regular hydration breaks</div>
-                  </div>
-                </div>
-
-                <div class="flex items-start gap-3">
-                  <div class="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg class="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4">
-                      </path>
-                    </svg>
-                  </div>
-                  <div>
-                    <div class="font-medium text-slate-900">Organize Your Space</div>
-                    <div class="text-slate-600">Keep your study area clean and organized for better focus</div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
           <!-- Right Column -->
           <div class="space-y-6">
 
-            <!-- Noise Level Monitor -->
+            <!-- Stress Relief Mini-Games -->
             <div class="card">
-              <div class="flex items-center justify-between mb-4">
-                <h2 id="noise-level-title" class="card-title">Table Noise Level</h2>
-                <div class="text-xs text-slate-500" id="noiseTableLabel">—</div>
-              </div>
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4 text-center">Quick Break Games 🎮
+              </h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 text-center mb-4">Take a breather, you deserve it!
+              </p>
 
-              <!-- Vertical Noise Bar -->
-              <div class="flex items-end gap-4 h-48">
-                <!-- The Bar Container -->
-                <div
-                  class="relative w-16 h-full bg-slate-100/80 rounded-xl overflow-hidden shadow-inner border border-white/30">
-                  <!-- Background gradient markers -->
-                  <div class="absolute inset-0 flex flex-col">
-                    <div class="flex-1 bg-gradient-to-b from-red-50 to-red-100"></div>
-                    <div class="flex-1 bg-gradient-to-b from-yellow-50 to-yellow-100"></div>
-                    <div class="flex-1 bg-gradient-to-b from-green-50 to-green-100"></div>
-                  </div>
+              <div class="grid grid-cols-2 gap-3">
+                <!-- Bubble Pop -->
+                <button id="bubblePopBtn"
+                  class="game-card flex flex-col items-center gap-2 p-4 rounded-xl bg-cyan-50 hover:bg-cyan-100 dark:bg-cyan-900/20 dark:hover:bg-cyan-900/30 border border-cyan-100 dark:border-cyan-800 transition-all duration-200 hover:scale-105 group relative overflow-hidden">
+                  <div class="game-emoji text-4xl">🫧</div>
+                  <span class="text-xs font-medium text-cyan-700 dark:text-cyan-300">Bubble Pop</span>
+                  <span class="game-subtitle text-xs text-cyan-600 dark:text-cyan-400">Click me!</span>
+                </button>
 
-                  <!-- Animated noise level fill -->
-                  <div id="noiseLevelFill"
-                    class="absolute bottom-0 left-0 right-0 transition-all duration-500 ease-out rounded-t-lg"
-                    style="height: 25%; background: linear-gradient(to top, #10b981, #34d399);">
-                  </div>
+                <!-- Color Mood -->
+                <button id="colorMoodBtn"
+                  class="game-card flex flex-col items-center gap-2 p-4 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-900/20 dark:hover:bg-rose-900/30 border border-rose-100 dark:border-rose-800 transition-all duration-200 hover:scale-105 group">
+                  <div class="game-emoji text-4xl">🎨</div>
+                  <span class="text-xs font-medium text-rose-700 dark:text-rose-300">Color Mood</span>
+                  <span class="game-subtitle text-xs text-rose-600 dark:text-rose-400">Click to vibe!</span>
+                </button>
 
-                  <!-- Level markers -->
-                  <div class="absolute inset-0 flex flex-col justify-between py-2 px-1 pointer-events-none">
-                    <div class="text-[10px] font-bold text-red-600">🔴</div>
-                    <div class="text-[10px] font-bold text-yellow-600">🟡</div>
-                    <div class="text-[10px] font-bold text-green-600">🟢</div>
-                  </div>
-                </div>
+                <!-- Lucky Number -->
+                <button id="luckyNumberBtn"
+                  class="game-card flex flex-col items-center gap-2 p-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800 transition-all duration-200 hover:scale-105 group">
+                  <div class="game-emoji text-4xl" id="luckyNumberEmoji">🎲</div>
+                  <span class="text-xs font-medium text-emerald-700 dark:text-emerald-300">Lucky Number</span>
+                  <span class="game-subtitle text-xs text-emerald-600 dark:text-emerald-400" id="luckyNumberText">Roll
+                    it!</span>
+                </button>
 
-                <!-- Level Info -->
-                <div class="flex-1 space-y-3">
-                  <div class="space-y-1">
-                    <div class="flex items-baseline gap-2">
-                      <div id="noiseValue" class="text-3xl font-bold text-slate-800">42</div>
-                      <div class="text-sm text-slate-500">dB</div>
-                    </div>
-                    <div id="noiseStatus" class="text-sm font-medium text-green-600">🟢 Quiet</div>
-                  </div>
-
-                  <div class="space-y-2 text-xs text-slate-600">
-                    <div class="flex items-center gap-2">
-                      <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                      <span>0-50 dB: Quiet</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                      <span>50-70 dB: Moderate</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                      <span>70+ dB: Noisy</span>
-                    </div>
-                  </div>
-
-                  <div class="text-xs text-slate-400 italic" id="noiseTimestamp">
-                    Updated just now
-                  </div>
-                </div>
+                <!-- Breathing Exercise -->
+                <button id="breathingBtn"
+                  class="game-card flex flex-col items-center gap-2 p-4 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/20 dark:hover:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 transition-all duration-200 hover:scale-105 group relative">
+                  <div class="game-emoji text-4xl" id="breathingEmoji">🌬️</div>
+                  <span class="text-xs font-medium text-indigo-700 dark:text-indigo-300">Breathe</span>
+                  <span class="game-subtitle text-xs text-indigo-600 dark:text-indigo-400" id="breathingText">Relax
+                    now</span>
+                </button>
               </div>
             </div>
 
-            <!-- Study Goals -->
-            <div class="card">
-              <h2 id="study-goals-title" class="card-title mb-3">Study Goals</h2>
-              <div class="space-y-3 text-sm">
-                <div class="flex justify-between">
-                  <span id="todays-target" class="text-slate-500">Today's Target</span>
-                  <span class="font-medium">4 hours</span>
-                </div>
-                <div class="flex justify-between">
-                  <span id="completed-label" class="text-slate-500">Completed</span>
-                  <span class="font-medium">2h 30m</span>
-                </div>
-                <div class="w-full progress-bar h-2">
-                  <div class="progress-fill h-2 w-[62%]"></div>
-                </div>
-              </div>
-            </div>
-
-
-            <!-- Study Progress -->
-            <div class="card">
-              <h2 id="study-progress-title" class="card-title mb-3">Study Progress</h2>
-              <div class="space-y-3 text-sm">
-                <div class="flex justify-between">
-                  <span id="this-week" class="text-slate-500">This Week</span>
-                  <span class="font-medium">18h 45m</span>
-                </div>
-                <div class="flex justify-between">
-                  <span id="streak-label" class="text-slate-500">Streak</span>
-                  <span class="font-medium">5 days</span>
-                </div>
-                <div class="w-full progress-bar h-2">
-                  <div class="progress-fill h-2 w-[75%]" style="background: linear-gradient(90deg, #10b981, #059669);">
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 
       </div>
     </div>
+
+    <!-- Floating Library Info Button (Bottom Right) -->
+    <button id="libraryInfoBtn" class="library-info-btn" aria-label="Library information and contact">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </button>
+
+    <!-- Library Info Card (Slides up on hover) -->
+    <div id="libraryInfoCard" class="library-info-card">
+      <!-- Hours Status -->
+      <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200 dark:border-slate-700">
+        <div class="flex items-center gap-2 flex-1">
+          <div class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
+          <span class="text-sm font-semibold text-slate-900 dark:text-slate-100">Open Now</span>
+        </div>
+        <span class="text-xs text-slate-600 dark:text-slate-400 font-medium">Mon-Fri 7AM-8PM</span>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="grid grid-cols-3 gap-2 mb-3">
+        <!-- Phone -->
+        <a href="tel:+6288831134"
+          class="flex flex-col items-center gap-1.5 p-3 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 group">
+          <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+          </svg>
+          <span class="text-xs font-medium text-slate-700 dark:text-slate-300">Call</span>
+        </a>
+
+        <!-- Email -->
+        <a href="mailto:library@umak.edu.ph"
+          class="flex flex-col items-center gap-1.5 p-3 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-green-50 dark:hover:bg-green-900/30 border border-slate-200 dark:border-slate-700 hover:border-green-300 dark:hover:border-green-500 transition-all duration-200 group">
+          <svg class="w-5 h-5 text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          <span class="text-xs font-medium text-slate-700 dark:text-slate-300">Email</span>
+        </a>
+
+        <!-- Emergency -->
+        <button onclick="alert('Emergency: Call Security at Local 8888')"
+          class="flex flex-col items-center gap-1.5 p-3 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/30 border border-slate-200 dark:border-slate-700 hover:border-red-300 dark:hover:border-red-500 transition-all duration-200 group">
+          <svg class="w-5 h-5 text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform"
+            fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+              clip-rule="evenodd" />
+          </svg>
+          <span class="text-xs font-medium text-slate-700 dark:text-slate-300">SOS</span>
+        </button>
+      </div>
+
+      <!-- Location -->
+      <div
+        class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 pt-3 border-t border-slate-200 dark:border-slate-700">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span>J.P. Rizal Ext., Makati City</span>
+      </div>
+    </div>
+
   </main>
   <footer class="footer-glass text-center text-xs py-4" data-fade data-blur="true" data-initial-opacity="0"
     data-duration="1000" data-delay="100">© 2025 UMak Library · Noise Comfort Index</footer>
@@ -1495,22 +2055,65 @@
       var logoutBtn = document.getElementById('logoutBtn');
       var logoutBtnMobile = document.getElementById('logoutBtnMobile');
 
-      function handleLogout() {
+      async function handleLogout() {
+        console.log('[Logout] Starting logout process...');
+
+        // Prevent multiple simultaneous logout attempts
+        if (window._loggingOut) {
+          console.log('[Logout] Already in progress, skipping...');
+          return;
+        }
+        window._loggingOut = true;
+
         try {
-          if (window.supabaseAuth) {
-            window.supabaseAuth.signOut().then(function () {
-              window.location.href = 'index.html';
-            }).catch(function (err) {
-              console.error('Logout error:', err);
-              window.location.href = 'index.html';
-            });
-          } else {
-            window.location.href = 'index.html';
+          // Disable buttons to prevent double-clicks
+          if (logoutBtn) logoutBtn.disabled = true;
+          if (logoutBtnMobile) logoutBtnMobile.disabled = true;
+
+          // Clear session storage
+          try {
+            sessionStorage.clear();
+            console.log('[Logout] Session storage cleared');
+          } catch (_) { }
+
+          // Wait for Supabase to be available
+          if (!window.supabaseAuth) {
+            console.warn('[Logout] Supabase Auth not available, redirecting...');
+            window.location.href = 'index.html?logout=1';
+            return;
           }
-        } catch (_) { window.location.href = 'index.html'; }
+
+          console.log('[Logout] Calling Supabase signOut...');
+          const { error } = await window.supabaseAuth.signOut();
+
+          if (error) {
+            console.error('[Logout] Sign out error:', error);
+          } else {
+            console.log('[Logout] Sign out successful');
+          }
+
+          // Redirect to login page
+          console.log('[Logout] Redirecting to login...');
+          window.location.href = 'index.html?logout=1';
+        } catch (err) {
+          console.error('[Logout] Exception during logout:', err);
+          // Force redirect even on error
+          window.location.href = 'index.html?logout=1';
+        }
       }
-      if (logoutBtn) { logoutBtn.addEventListener('click', handleLogout); }
-      if (logoutBtnMobile) { logoutBtnMobile.addEventListener('click', handleLogout); }
+
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          handleLogout();
+        });
+      }
+      if (logoutBtnMobile) {
+        logoutBtnMobile.addEventListener('click', function (e) {
+          e.preventDefault();
+          handleLogout();
+        });
+      }
 
       // Disable reservation: hide modal trigger
       if (checkInBtn) { checkInBtn.classList.add('hidden'); }
@@ -1557,13 +2160,8 @@
         setText('studentId', ((profile && profile.studentId) ? String(profile.studentId).toUpperCase() : '—'));
         setText('program', profile && profile.program || '—');
 
-        // Session data
-        // View-only mode: always show not checked in and hide actions
-        setText('currentSession', 'Not checked in');
-        setText('currentSeat', '—');
-        setText('sessionDuration', '—');
+        // Session data will be updated by updateCurrentSessionDisplay()
         setText('environmentStatus', 'View-only');
-        if (checkOutBtn) checkOutBtn.classList.add('hidden');
         if (checkInBtn) checkInBtn.classList.add('hidden');
 
         // Environment preferences
@@ -1957,20 +2555,15 @@
       const mobileNavItems = mobilePanel.querySelectorAll('.mobile-nav-item');
       mobileNavItems.forEach(item => {
         item.addEventListener('click', function (e) {
-          // Don't close immediately if it's the logout button
+          // Close menu for navigation items (not logout - it handles itself)
           if (item.id !== 'logoutBtnMobile') {
+            closeMenu();
+          } else {
+            // For logout button, just close the menu - logout handler is already attached
             closeMenu();
           }
         });
       });
-
-      // Handle mobile logout button separately
-      if (logoutBtnMobile) {
-        logoutBtnMobile.addEventListener('click', function () {
-          // Logout handler will be called from the existing logout code
-          closeMenu();
-        });
-      }
 
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && isMenuOpen) {
@@ -2063,7 +2656,7 @@
   </script>
 
   <script>
-    // Noise Level Monitoring System with Realistic Simulation
+    // Noise Level Monitoring System with Real-time Database Polling
     (function () {
       var noiseLevelFill = document.getElementById('noiseLevelFill');
       var noiseValue = document.getElementById('noiseValue');
@@ -2073,84 +2666,122 @@
 
       if (!noiseLevelFill || !noiseValue || !noiseStatus) return;
 
-      // Get user's current table from profile data
-      var currentTable = 'Table 18'; // Default for demo
-      var currentTableId = 'table-18';
+      // State variables
+      var currentNoiseLevel = null; // Start with null to show "No data available"
+      var lastUpdateTime = null;
+      var hasData = false;
 
-      // Try to get actual seat info if user is checked in
-      setTimeout(function () {
-        var currentSeatEl = document.getElementById('currentSeat');
-        if (currentSeatEl && currentSeatEl.textContent !== '—') {
-          var seatText = currentSeatEl.textContent;
-          // Extract table number if format is like "Table 1, Seat 3"
-          var match = seatText.match(/Table (\d+)/i);
-          if (match) {
-            currentTable = 'Table ' + match[1];
-            currentTableId = 'table-' + match[1];
+
+      // Update Current Session display
+      var sessionStartTime = null;
+      async function updateCurrentSessionDisplay() {
+        try {
+          const currentSessionEl = document.getElementById('currentSession');
+          const currentSeatEl = document.getElementById('currentSeat');
+          const sessionDurationEl = document.getElementById('sessionDuration');
+          const checkOutBtn = document.getElementById('checkOutBtn');
+
+          // Get current user
+          const { data: { user }, error: userError } = await window.supabaseClient.auth.getUser();
+          if (userError || !user) {
+            if (currentSessionEl) currentSessionEl.textContent = 'Not checked in';
+            if (currentSeatEl) currentSeatEl.textContent = '—';
+            if (sessionDurationEl) sessionDurationEl.textContent = '—';
+            if (checkOutBtn) checkOutBtn.classList.add('hidden');
+            sessionStartTime = null;
+            return;
           }
+
+          // Get user's UID
+          const { data: userData, error: uidError } = await window.supabaseClient
+            .from('users')
+            .select('uid')
+            .eq('id', user.id)
+            .single();
+
+          if (uidError || !userData || !userData.uid) {
+            if (currentSessionEl) currentSessionEl.textContent = 'Not checked in';
+            if (currentSeatEl) currentSeatEl.textContent = '—';
+            if (sessionDurationEl) sessionDurationEl.textContent = '—';
+            if (checkOutBtn) checkOutBtn.classList.add('hidden');
+            sessionStartTime = null;
+            return;
+          }
+
+          // Check recent taps
+          const { data: tapData, error: tapError } = await window.supabaseClient
+            .from('recent_taps')
+            .select('table_name, created_at')
+            .eq('uid', userData.uid)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          if (tapError || !tapData) {
+            // No active session
+            if (currentSessionEl) currentSessionEl.textContent = 'Not checked in';
+            if (currentSeatEl) currentSeatEl.textContent = '—';
+            if (sessionDurationEl) sessionDurationEl.textContent = '—';
+            if (checkOutBtn) checkOutBtn.classList.add('hidden');
+            sessionStartTime = null;
+            return;
+          }
+
+          // User has an active session
+          const tableName = tapData.table_name.replace('_', ' ');
+          if (currentSessionEl) currentSessionEl.textContent = 'Checked in at ' + tableName;
+          if (currentSeatEl) currentSeatEl.textContent = tableName;
+
+          // Calculate duration
+          if (!sessionStartTime) {
+            sessionStartTime = new Date(tapData.created_at).getTime();
+          }
+          const now = Date.now();
+          const durationMs = now - sessionStartTime;
+          const hours = Math.floor(durationMs / (1000 * 60 * 60));
+          const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+
+          if (sessionDurationEl) {
+            if (hours > 0) {
+              sessionDurationEl.textContent = hours + 'h ' + minutes + 'm';
+            } else {
+              sessionDurationEl.textContent = minutes + 'm';
+            }
+          }
+
+          // Show check out button (but keep it hidden since we use Leave Seat instead)
+          // if (checkOutBtn) checkOutBtn.classList.add('hidden'); // Keep hidden
+
+        } catch (err) {
+          console.error('[Current Session] Error:', err);
         }
-        noiseTableLabel.textContent = currentTable;
-      }, 500);
-
-      // Noise simulation variables
-      var currentNoiseLevel = 42; // Start at quiet level (42 dB)
-      var targetNoiseLevel = 42;
-      var baselineNoise = 38; // Library baseline (very quiet)
-      var maxNoise = 85; // Maximum noise level
-
-      // Time-based patterns (library is quieter in morning, noisier in afternoon)
-      function getTimeBasedBaseline() {
-        var hour = new Date().getHours();
-        if (hour >= 8 && hour < 10) return 40; // Early morning - very quiet
-        if (hour >= 10 && hour < 12) return 45; // Late morning - quiet
-        if (hour >= 12 && hour < 14) return 55; // Lunch time - moderate
-        if (hour >= 14 && hour < 16) return 50; // Early afternoon - moderate
-        if (hour >= 16 && hour < 18) return 52; // Late afternoon - moderate
-        if (hour >= 18 && hour < 20) return 48; // Evening - quiet
-        return 42; // Default
       }
 
-      // Update noise level with realistic variations
-      function updateNoiseLevel() {
-        var timeBaseline = getTimeBasedBaseline();
-
-        // Random events (someone talking, chair moving, etc.)
-        var eventChance = Math.random();
-        if (eventChance < 0.02) {
-          // 2% chance: Someone talking nearby (spike)
-          targetNoiseLevel = timeBaseline + Math.random() * 20 + 10;
-        } else if (eventChance < 0.05) {
-          // 3% chance: Activity increase (moderate)
-          targetNoiseLevel = timeBaseline + Math.random() * 10;
-        } else if (eventChance < 0.15) {
-          // 10% chance: Slight activity
-          targetNoiseLevel = timeBaseline + Math.random() * 5;
-        } else {
-          // Normal ambient noise with small variations
-          targetNoiseLevel = timeBaseline + (Math.random() - 0.5) * 4;
-        }
-
-        // Clamp target
-        targetNoiseLevel = Math.max(baselineNoise, Math.min(maxNoise, targetNoiseLevel));
-
-        // Smooth transition to target (simulates gradual changes)
-        var smoothing = 0.15;
-        currentNoiseLevel += (targetNoiseLevel - currentNoiseLevel) * smoothing;
-
-        // Add tiny random fluctuations for realism
-        currentNoiseLevel += (Math.random() - 0.5) * 1;
-
-        // Clamp final value
-        currentNoiseLevel = Math.max(baselineNoise, Math.min(maxNoise, currentNoiseLevel));
-      }
+      // Initialize displays
+      updateDisplay(null);
+      updateCurrentSessionDisplay(); // Initialize current session display
 
       // Update visual display
-      function updateDisplay() {
-        var level = Math.round(currentNoiseLevel);
+      function updateDisplay(level) {
+        if (level === null || level === undefined) {
+          // Show "No data available" state
+          noiseValue.textContent = '--';
+          noiseStatus.textContent = '⚪ Tap your RFID at a table';
+          noiseStatus.className = 'text-base font-semibold text-slate-400 dark:text-slate-500';
+          noiseLevelFill.style.height = '0%';
+          noiseLevelFill.style.background = 'linear-gradient(to top, #9ca3af, #d1d5db)';
+          noiseTimestamp.textContent = 'Tap RFID to start monitoring';
+          hasData = false;
+          return;
+        }
+
+        hasData = true;
+        // Show decimal value (e.g., 12.37) instead of rounding
+        var displayLevel = parseFloat(level).toFixed(1); // Shows one decimal place (e.g., 12.4)
         var percentage = Math.min(100, Math.max(0, ((level - 30) / (85 - 30)) * 100));
 
         // Update value display
-        noiseValue.textContent = level;
+        noiseValue.textContent = displayLevel;
 
         // Update bar height
         noiseLevelFill.style.height = percentage + '%';
@@ -2158,32 +2789,38 @@
         // Update colors and status based on level
         var status, statusColor, gradient;
         if (level < 50) {
-          status = '🟢 Quiet';
+          status = '🟢 Quiet Environment';
           statusColor = 'text-green-600';
           gradient = 'linear-gradient(to top, #10b981, #34d399)';
         } else if (level < 70) {
-          status = '🟡 Moderate';
+          status = '🟡 Moderate Noise';
           statusColor = 'text-yellow-600';
           gradient = 'linear-gradient(to top, #f59e0b, #fbbf24)';
         } else {
-          status = '🔴 Noisy';
+          status = '🔴 Noisy Environment';
           statusColor = 'text-red-600';
           gradient = 'linear-gradient(to top, #ef4444, #f87171)';
         }
 
         noiseStatus.textContent = status;
-        noiseStatus.className = 'text-sm font-medium ' + statusColor;
+        noiseStatus.className = 'text-base font-semibold ' + statusColor;
         noiseLevelFill.style.background = gradient;
 
         // Update timestamp
+        lastUpdateTime = Date.now();
         updateTimestamp();
       }
 
-      // Update timestamp
-      var lastUpdate = Date.now();
+      // Update timestamp display
       function updateTimestamp() {
+        if (!lastUpdateTime || !hasData) {
+          noiseTimestamp.textContent = 'Tap RFID to start monitoring';
+          return;
+        }
+
         var now = Date.now();
-        var seconds = Math.floor((now - lastUpdate) / 1000);
+        var seconds = Math.floor((now - lastUpdateTime) / 1000);
+
         if (seconds < 5) {
           noiseTimestamp.textContent = 'Updated just now';
         } else if (seconds < 60) {
@@ -2194,96 +2831,749 @@
         }
       }
 
-      // Real-time noise level simulation with continuous updates
-      var lastEventTime = 0;
-      var currentEvent = null;
-      var eventDuration = 0;
-      var eventStartTime = 0;
+      // Get the table the current user last tapped
+      async function getUserTable() {
+        try {
+          // Get current user
+          const { data: { user }, error: userError } = await window.supabaseClient.auth.getUser();
 
-      // Initialize with current time to start events immediately
-      lastEventTime = Date.now() - 5000; // Start first event soon
-
-      function updateNoiseLevelRealTime() {
-        var timeBaseline = getTimeBasedBaseline();
-        var now = Date.now();
-
-        // Check if we need a new random event (every 2-8 seconds)
-        if (now - lastEventTime > (2000 + Math.random() * 6000)) {
-          var eventTypes = ['conversation', 'chair_movement', 'book_drop', 'phone_ring', 'footsteps', 'keyboard_typing', 'page_turning', 'whisper'];
-          currentEvent = eventTypes[Math.floor(Math.random() * eventTypes.length)];
-          eventDuration = 1000 + Math.random() * 4000; // 1-5 seconds
-          eventStartTime = now;
-          lastEventTime = now;
-        }
-
-        // Calculate current noise level based on active event
-        if (currentEvent && (now - eventStartTime) < eventDuration) {
-          var eventProgress = (now - eventStartTime) / eventDuration;
-          var eventIntensity = Math.sin(eventProgress * Math.PI); // Smooth bell curve
-
-          switch (currentEvent) {
-            case 'conversation':
-              targetNoiseLevel = timeBaseline + (eventIntensity * 30) + 10; // 10-40dB above baseline
-              break;
-            case 'chair_movement':
-              targetNoiseLevel = timeBaseline + (eventIntensity * 20) + 5; // 5-25dB above baseline
-              break;
-            case 'book_drop':
-              targetNoiseLevel = timeBaseline + (eventIntensity * 35) + 15; // 15-50dB above baseline
-              break;
-            case 'phone_ring':
-              targetNoiseLevel = timeBaseline + (eventIntensity * 40) + 20; // 20-60dB above baseline
-              break;
-            case 'footsteps':
-              targetNoiseLevel = timeBaseline + (eventIntensity * 15) + 3; // 3-18dB above baseline
-              break;
-            case 'keyboard_typing':
-              targetNoiseLevel = timeBaseline + (eventIntensity * 12) + 2; // 2-14dB above baseline
-              break;
-            case 'page_turning':
-              targetNoiseLevel = timeBaseline + (eventIntensity * 8) + 1; // 1-9dB above baseline
-              break;
-            case 'whisper':
-              targetNoiseLevel = timeBaseline + (eventIntensity * 6) + 1; // 1-7dB above baseline
-              break;
+          if (userError || !user) {
+            console.log('[Noise Monitor] No user logged in');
+            return null;
           }
-        } else {
-          // No active event - normal ambient variation
-          var variation = (Math.random() - 0.5) * 8; // ±4dB variation
-          targetNoiseLevel = timeBaseline + variation;
-          currentEvent = null;
-        }
 
-        // Add micro-variations for more realistic feel
-        var microVariation = (Math.random() - 0.5) * 2; // ±1dB micro-variation
-        targetNoiseLevel += microVariation;
+          console.log('[Noise Monitor] Current user:', user.id);
 
-        // Ensure noise level stays within realistic bounds
-        targetNoiseLevel = Math.max(25, Math.min(75, targetNoiseLevel));
+          // Get user's UID from users table
+          const { data: userData, error: uidError } = await window.supabaseClient
+            .from('users')
+            .select('uid')
+            .eq('id', user.id)
+            .single();
 
-        // Update currentNoiseLevel for display (direct assignment for real-time feel)
-        currentNoiseLevel = targetNoiseLevel;
+          if (uidError || !userData || !userData.uid) {
+            console.log('[Noise Monitor] User has no UID assigned yet');
+            return null;
+          }
 
-        // Update display
-        updateDisplay();
+          const userUid = userData.uid;
+          console.log('[Noise Monitor] User UID:', userUid);
 
-        // Update timestamp every 2 seconds
-        if (now % 2000 < 50) { // Update roughly every 2 seconds
-          updateTimestamp();
+          // Query recent_taps to find the latest table this user tapped
+          const { data: tapData, error: tapError } = await window.supabaseClient
+            .from('recent_taps')
+            .select('table_name, created_at')
+            .eq('uid', userUid)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          if (tapError || !tapData) {
+            console.log('[Noise Monitor] No recent taps found for this user');
+            return null;
+          }
+
+          console.log('[Noise Monitor] User last tapped:', tapData.table_name, 'at', tapData.created_at);
+          return tapData.table_name;
+
+        } catch (err) {
+          console.error('[Noise Monitor] Error getting user table:', err);
+          return null;
         }
       }
 
-      // Update every 100ms for real-time feel (10 times per second)
-      setInterval(updateNoiseLevelRealTime, 100);
+      // Fetch latest decibel value from latest_sound_per_table
+      async function fetchLatestNoiseLevel() {
+        try {
+          console.log('[Noise Monitor] Fetching latest noise level...');
 
-      // Initial update
-      updateNoiseLevelRealTime();
+          // Check if Supabase is initialized
+          if (!window.supabaseClient && typeof initSupabase === 'function') {
+            console.log('[Noise Monitor] Supabase not found, attempting to initialize...');
+            initSupabase();
+          }
 
-      // Debug logging
-      console.log('Real-time noise monitor started - updating every 100ms');
-      console.log('Initial noise level:', currentNoiseLevel);
+          if (!window.supabaseClient) {
+            console.warn('[Noise Monitor] Supabase not initialized yet');
+            updateDisplay(null);
+            return;
+          }
 
-      console.log('Noise Level Monitor initialized for ' + currentTable);
+          // Get the table the user tapped
+          const userTable = await getUserTable();
+
+          if (!userTable) {
+            console.log('[Noise Monitor] User has not tapped any table yet');
+            updateDisplay(null);
+            noiseTableLabel.textContent = 'No table selected';
+            // Hide Leave Seat button when no table
+            const leaveSeatBtn = document.getElementById('leaveSeatBtn');
+            if (leaveSeatBtn) leaveSeatBtn.style.display = 'none';
+            return;
+          }
+
+          console.log('[Noise Monitor] Querying latest_sound_per_table for', userTable);
+
+          // Show Leave Seat button when table is detected
+          const leaveSeatBtn = document.getElementById('leaveSeatBtn');
+          if (leaveSeatBtn) leaveSeatBtn.style.display = 'flex';
+
+          // Fetch from latest_sound_per_table for the user's table
+          const { data, error } = await window.supabaseClient
+            .from('latest_sound_per_table')
+            .select('table_name, decibel, created_at')
+            .eq('table_name', userTable)
+            .single();
+
+          if (error) {
+            // If no data found (PGRST116), that's okay - show "No data available"
+            if (error.code === 'PGRST116') {
+              console.log('[Noise Monitor] No noise data available for', userTable, 'yet');
+              updateDisplay(null);
+              noiseTableLabel.textContent = userTable.replace('_', ' ');
+              return;
+            }
+            console.error('[Noise Monitor] Query error:', error);
+            throw error;
+          }
+
+          console.log('[Noise Monitor] Raw data received:', data);
+
+          // Update display with fetched decibel value
+          if (data && data.decibel !== null && data.decibel !== undefined) {
+            currentNoiseLevel = parseFloat(data.decibel);
+            console.log('[Noise Monitor] ✅ Successfully fetched:', currentNoiseLevel, 'dB from', data.table_name, 'at', data.created_at);
+
+            updateDisplay(currentNoiseLevel);
+
+            // Update the table label to show which table this reading is from
+            if (data.table_name) {
+              noiseTableLabel.textContent = data.table_name.replace('_', ' ');
+            }
+          } else {
+            console.log('[Noise Monitor] No decibel value in latest record');
+            updateDisplay(null);
+          }
+        } catch (err) {
+          console.error('[Noise Monitor] ❌ Error fetching noise level:', err);
+          updateDisplay(null);
+        }
+      }
+
+      // Set up polling interval (4 seconds - middle of 3-5 range)
+      var pollingInterval = 4000; // 4 seconds
+      var intervalId = null;
+
+      function startPolling() {
+        // Initial fetch
+        fetchLatestNoiseLevel();
+        updateCurrentSessionDisplay();
+
+        // Set up interval
+        intervalId = setInterval(function () {
+          fetchLatestNoiseLevel();
+          updateCurrentSessionDisplay();
+        }, pollingInterval);
+
+        console.log('Noise level polling started - fetching every', pollingInterval / 1000, 'seconds');
+      }
+
+      // Update timestamp display and session duration every second
+      setInterval(function () {
+        updateTimestamp();
+        updateCurrentSessionDisplay();
+      }, 1000);
+
+      // Wait for Supabase to be initialized before starting polling
+      setTimeout(function () {
+        if (window.supabaseClient) {
+          startPolling();
+        } else {
+          console.log('Waiting for Supabase initialization...');
+          // Retry after a delay
+          setTimeout(function () {
+            if (window.supabaseClient) {
+              startPolling();
+            } else {
+              console.error('Supabase not available - noise polling disabled');
+              updateDisplay(null);
+            }
+          }, 2000);
+        }
+      }, 500);
+
+      // Clean up on page unload
+      window.addEventListener('beforeunload', function () {
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+      });
+
+      console.log('Noise Level Monitor initialized - polling from latest_sound_per_table');
+
+      // Leave Seat Button Functionality
+      const leaveSeatBtn = document.getElementById('leaveSeatBtn');
+
+      if (leaveSeatBtn) {
+        leaveSeatBtn.addEventListener('click', async function () {
+          try {
+            leaveSeatBtn.disabled = true;
+            leaveSeatBtn.textContent = 'Leaving...';
+
+            // Get current user
+            const { data: { user }, error: userError } = await window.supabaseClient.auth.getUser();
+
+            if (userError || !user) {
+              alert('Error: Could not get user information');
+              leaveSeatBtn.disabled = false;
+              leaveSeatBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg> Leave Seat';
+              return;
+            }
+
+            console.log('[Leave Seat] User:', user.id);
+
+            // Get user's UID
+            const { data: userData, error: uidError } = await window.supabaseClient
+              .from('users')
+              .select('uid')
+              .eq('id', user.id)
+              .single();
+
+            if (uidError || !userData || !userData.uid) {
+              console.error('[Leave Seat] Could not get user UID:', uidError);
+              alert('Error leaving seat. Please try again.');
+              leaveSeatBtn.disabled = false;
+              leaveSeatBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg> Leave Seat';
+              return;
+            }
+
+            const userUid = userData.uid;
+            console.log('[Leave Seat] User UID:', userUid);
+
+            // Delete tap records for this user
+            const { error: deleteError } = await window.supabaseClient
+              .from('actlog_iot')
+              .delete()
+              .eq('uid', userUid)
+              .eq('event', 'tap');
+
+            if (deleteError) {
+              console.error('[Leave Seat] Error deleting tap records:', deleteError);
+            } else {
+              console.log('[Leave Seat] ✅ Tap records deleted');
+            }
+
+            // Free up all seats occupied by this user
+            const { data: updateData, error: updateError } = await window.supabaseClient
+              .from('occupancy')
+              .update({
+                is_occupied: false,
+                occupied_by: null,
+                occupied_at: null,
+                updated_at: new Date().toISOString()
+              })
+              .eq('occupied_by', user.id);
+
+            if (updateError) {
+              console.error('[Leave Seat] Error freeing seat:', updateError);
+              alert('Error leaving seat. Please try again.');
+              leaveSeatBtn.disabled = false;
+              leaveSeatBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg> Leave Seat';
+              return;
+            }
+
+            console.log('[Leave Seat] ✅ Seat freed successfully');
+
+            // Reset the display
+            updateDisplay(null);
+            noiseTableLabel.textContent = 'No table selected';
+            sessionStartTime = null; // Reset session start time
+            updateCurrentSessionDisplay(); // Update current session display
+            leaveSeatBtn.style.display = 'none';
+            leaveSeatBtn.disabled = false;
+            leaveSeatBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg> Leave Seat';
+
+            console.log('[Leave Seat] Display reset complete');
+
+          } catch (err) {
+            console.error('[Leave Seat] Error:', err);
+            alert('Error leaving seat. Please try again.');
+            leaveSeatBtn.disabled = false;
+            leaveSeatBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg> Leave Seat';
+          }
+        });
+      }
+    })();
+
+    // Library Info Button - Mobile Tap Toggle
+    (function () {
+      const infoBtn = document.getElementById('libraryInfoBtn');
+      const infoCard = document.getElementById('libraryInfoCard');
+      let isCardVisible = false;
+
+      if (infoBtn && infoCard) {
+        // For mobile: tap to toggle
+        infoBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          isCardVisible = !isCardVisible;
+
+          if (isCardVisible) {
+            infoCard.style.opacity = '1';
+            infoCard.style.visibility = 'visible';
+            infoCard.style.transform = 'translateY(0) scale(1)';
+            infoCard.style.pointerEvents = 'auto';
+          } else {
+            infoCard.style.opacity = '0';
+            infoCard.style.visibility = 'hidden';
+            infoCard.style.transform = 'translateY(20px) scale(0.95)';
+            infoCard.style.pointerEvents = 'none';
+          }
+        });
+
+        // Close card when clicking outside
+        document.addEventListener('click', function (e) {
+          if (!infoBtn.contains(e.target) && !infoCard.contains(e.target)) {
+            isCardVisible = false;
+            infoCard.style.opacity = '0';
+            infoCard.style.visibility = 'hidden';
+            infoCard.style.transform = 'translateY(20px) scale(0.95)';
+            infoCard.style.pointerEvents = 'none';
+          }
+        });
+
+        // Prevent card from closing when clicking inside it
+        infoCard.addEventListener('click', function (e) {
+          e.stopPropagation();
+        });
+      }
+    })();
+
+    // Stress Relief Mini-Games
+    (function () {
+      // 1. Bubble Pop Game
+      const bubblePopBtn = document.getElementById('bubblePopBtn');
+      if (bubblePopBtn) {
+        bubblePopBtn.addEventListener('click', function (e) {
+          const bubble = document.createElement('div');
+          bubble.className = 'bubble';
+          bubble.style.left = Math.random() * 80 + 10 + '%';
+          bubble.style.setProperty('--drift', (Math.random() - 0.5) * 100 + 'px');
+          this.appendChild(bubble);
+
+          // Remove bubble after animation
+          setTimeout(() => bubble.remove(), 3000);
+
+          // Play "pop" feedback
+          this.style.transform = 'scale(0.95)';
+          setTimeout(() => { this.style.transform = ''; }, 100);
+        });
+      }
+
+      // 2. Color Mood Changer
+      const colorMoodBtn = document.getElementById('colorMoodBtn');
+      const colors = [
+        { bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', name: 'Calm Purple' },
+        { bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', name: 'Energetic Pink' },
+        { bg: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', name: 'Cool Blue' },
+        { bg: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', name: 'Fresh Green' },
+        { bg: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', name: 'Sunny Orange' },
+        { bg: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)', name: 'Deep Ocean' }
+      ];
+
+      if (colorMoodBtn) {
+        colorMoodBtn.addEventListener('click', function () {
+          const randomColor = colors[Math.floor(Math.random() * colors.length)];
+          const banner = document.getElementById('motivationalBanner');
+
+          if (banner) {
+            banner.style.background = randomColor.bg;
+            banner.style.transition = 'background 0.8s ease';
+            console.log('Color changed to:', randomColor.name);
+          } else {
+            console.log('Banner not found!');
+          }
+
+          // Visual feedback
+          this.classList.add('color-pulse');
+          const subtitle = this.querySelector('.game-subtitle');
+          if (subtitle) subtitle.textContent = randomColor.name + '!';
+
+          setTimeout(() => {
+            this.classList.remove('color-pulse');
+            if (subtitle) subtitle.textContent = 'Click to vibe!';
+          }, 1000);
+        });
+      }
+
+      // 3. Lucky Number Generator
+      const luckyNumberBtn = document.getElementById('luckyNumberBtn');
+      const luckyNumberEmoji = document.getElementById('luckyNumberEmoji');
+      const luckyNumberText = document.getElementById('luckyNumberText');
+      const motivations = [
+        "You're amazing! ⭐",
+        "Keep shining! ✨",
+        "You got this! 💪",
+        "Believe in you! 🌟",
+        "Stay strong! 🔥",
+        "Almost there! 🎯",
+        "You're a star! 🌠",
+        "Keep going! 🚀"
+      ];
+
+      if (luckyNumberBtn && luckyNumberEmoji && luckyNumberText) {
+        luckyNumberBtn.addEventListener('click', function () {
+          // Spin animation
+          luckyNumberEmoji.classList.add('lucky-spin');
+
+          setTimeout(() => {
+            const luckyNum = Math.floor(Math.random() * 100) + 1;
+            const message = motivations[Math.floor(Math.random() * motivations.length)];
+
+            luckyNumberEmoji.textContent = luckyNum;
+            luckyNumberText.textContent = message;
+
+            luckyNumberEmoji.classList.remove('lucky-spin');
+          }, 600);
+
+          // Reset after 3 seconds
+          setTimeout(() => {
+            luckyNumberEmoji.textContent = '🎲';
+            luckyNumberText.textContent = 'Roll it!';
+          }, 3500);
+        });
+      }
+
+      // 4. Breathing Exercise
+      const breathingBtn = document.getElementById('breathingBtn');
+      const breathingEmoji = document.getElementById('breathingEmoji');
+      const breathingText = document.getElementById('breathingText');
+      let breathingActive = false;
+      let breathingInterval;
+
+      if (breathingBtn && breathingEmoji && breathingText) {
+        breathingBtn.addEventListener('click', function () {
+          if (breathingActive) {
+            // Stop breathing exercise
+            breathingActive = false;
+            clearInterval(breathingInterval);
+            breathingEmoji.classList.remove('breathing');
+            breathingEmoji.textContent = '🌬️';
+            breathingText.textContent = 'Relax now';
+            this.style.borderColor = '';
+          } else {
+            // Start breathing exercise
+            breathingActive = true;
+            breathingEmoji.classList.add('breathing');
+            this.style.borderColor = '#818cf8';
+
+            let count = 0;
+            const cycle = ['Breathe in... 🌬️', 'Hold... 😌', 'Breathe out... 💨', 'Hold... 😊'];
+
+            breathingInterval = setInterval(() => {
+              breathingText.textContent = cycle[count % 4];
+              count++;
+
+              if (count >= 16) { // 4 cycles
+                breathingActive = false;
+                clearInterval(breathingInterval);
+                breathingEmoji.classList.remove('breathing');
+                breathingEmoji.textContent = '✨';
+                breathingText.textContent = 'Refreshed!';
+                breathingBtn.style.borderColor = '';
+
+                setTimeout(() => {
+                  breathingEmoji.textContent = '🌬️';
+                  breathingText.textContent = 'Relax now';
+                }, 2000);
+              }
+            }, 4000); // 4 seconds per phase
+          }
+        });
+      }
+    })();
+
+    // Motivational Quotes Carousel
+    (function () {
+      const quotes = [
+        {
+          text: "Success is the sum of small efforts, repeated day in and day out.",
+          author: "Robert Collier",
+          icon: "✨"
+        },
+        {
+          text: "The secret of getting ahead is getting started.",
+          author: "Mark Twain",
+          icon: "🚀"
+        },
+        {
+          text: "Don't watch the clock; do what it does. Keep going.",
+          author: "Sam Levenson",
+          icon: "⏰"
+        },
+        {
+          text: "Education is the most powerful weapon which you can use to change the world.",
+          author: "Nelson Mandela",
+          icon: "📚"
+        },
+        {
+          text: "The beautiful thing about learning is that no one can take it away from you.",
+          author: "B.B. King",
+          icon: "🌟"
+        },
+        {
+          text: "Take regular breaks. Follow the 25-5 rule: study for 25 minutes, rest for 5.",
+          author: "Study Tip",
+          icon: "⏱️"
+        },
+        {
+          text: "Stay hydrated! Keep water nearby and take regular hydration breaks.",
+          author: "Health Tip",
+          icon: "💧"
+        },
+        {
+          text: "Organize your study space. A clean environment promotes better focus.",
+          author: "Study Tip",
+          icon: "🗂️"
+        },
+        {
+          text: "Your limitation—it's only your imagination.",
+          author: "Motivation",
+          icon: "💪"
+        },
+        {
+          text: "Great things never come from comfort zones.",
+          author: "Motivation",
+          icon: "🎯"
+        },
+        {
+          text: "Dream it. Wish it. Do it.",
+          author: "Motivation",
+          icon: "✅"
+        },
+        {
+          text: "Choose seats away from high-traffic areas for better concentration.",
+          author: "Study Tip",
+          icon: "🔇"
+        },
+        {
+          text: "The expert in anything was once a beginner.",
+          author: "Helen Hayes",
+          icon: "🌱"
+        },
+        {
+          text: "You don't have to be great to start, but you have to start to be great.",
+          author: "Zig Ziglar",
+          icon: "🏁"
+        },
+        {
+          text: "Believe you can and you're halfway there.",
+          author: "Theodore Roosevelt",
+          icon: "🌈"
+        }
+      ];
+
+      let currentIndex = 0;
+      let rotationInterval = null;
+
+      const quoteDisplay = document.getElementById('quoteDisplay');
+      const quoteText = document.getElementById('quoteText');
+      const quoteIcon = document.getElementById('quoteIcon');
+      const dotsContainer = document.getElementById('quoteDots');
+
+      if (!quoteDisplay || !quoteText || !quoteIcon || !dotsContainer) {
+        console.warn('[Quotes] Elements not found');
+        return;
+      }
+
+      // Create navigation dots (smaller for compact design)
+      function createDots() {
+        dotsContainer.innerHTML = quotes.map((_, index) =>
+          `<button class="quote-dot w-1.5 h-1.5 rounded-full transition-all duration-300 cursor-pointer hover:bg-indigo-500 ${index === 0 ? 'bg-indigo-600 w-4' : 'bg-indigo-300'}" data-index="${index}" aria-label="Quote ${index + 1}"></button>`
+        ).join('');
+
+        // Add click handlers
+        dotsContainer.querySelectorAll('.quote-dot').forEach((dot, index) => {
+          dot.addEventListener('click', () => {
+            currentIndex = index;
+            showQuote(currentIndex);
+            resetRotation();
+          });
+        });
+      }
+
+      // Show a specific quote with fade transition
+      function showQuote(index) {
+        const quote = quotes[index];
+
+        // Fade out with scale
+        quoteDisplay.style.opacity = '0';
+        quoteDisplay.style.transform = 'scale(0.98)';
+        quoteIcon.style.opacity = '0';
+        quoteIcon.style.transform = 'scale(0.8)';
+
+        setTimeout(() => {
+          // Update content
+          quoteIcon.textContent = quote.icon;
+          quoteText.textContent = quote.text;
+
+          // Update dots
+          dotsContainer.querySelectorAll('.quote-dot').forEach((dot, i) => {
+            if (i === index) {
+              dot.classList.add('bg-indigo-600', 'w-4');
+              dot.classList.remove('bg-indigo-300');
+            } else {
+              dot.classList.remove('bg-indigo-600', 'w-4');
+              dot.classList.add('bg-indigo-300');
+            }
+          });
+
+          // Fade in with scale
+          quoteDisplay.style.opacity = '1';
+          quoteDisplay.style.transform = 'scale(1)';
+          quoteIcon.style.opacity = '1';
+          quoteIcon.style.transform = 'scale(1)';
+        }, 350);
+      }
+
+      // Go to next quote
+      function nextQuote() {
+        currentIndex = (currentIndex + 1) % quotes.length;
+        showQuote(currentIndex);
+      }
+
+      // Start automatic rotation
+      function startRotation() {
+        rotationInterval = setInterval(nextQuote, 5000); // Change every 5 seconds
+      }
+
+      // Reset rotation timer
+      function resetRotation() {
+        if (rotationInterval) {
+          clearInterval(rotationInterval);
+        }
+        startRotation();
+      }
+
+      // Initialize
+      createDots();
+      showQuote(0);
+      startRotation();
+
+      console.log('[Quotes] Carousel initialized with', quotes.length, 'quotes');
+    })();
+
+    // Nav Label Hover Functionality
+    (function () {
+      const navLabel = document.getElementById('navLabel');
+      const navItems = document.querySelectorAll('.sidebar-nav-item');
+
+      if (!navLabel || !navItems.length) return;
+
+      navItems.forEach(item => {
+        const label = item.getAttribute('data-label');
+        if (!label) return;
+
+        item.addEventListener('mouseenter', function () {
+          navLabel.textContent = label;
+          navLabel.classList.add('visible');
+        });
+
+        item.addEventListener('mouseleave', function () {
+          navLabel.classList.remove('visible');
+        });
+      });
+    })();
+
+    // Collapsible Header Toggle (Desktop Only)
+    (function () {
+      const trigger = document.getElementById('headerTrigger');
+      const headerNav = document.getElementById('headerNav');
+
+      if (!trigger || !headerNav) return;
+
+      let isExpanded = false;
+      let isInitialized = false;
+
+      function init() {
+        const isMobile = window.innerWidth <= 768;
+
+        if (isMobile) {
+          trigger.style.display = 'none';
+          headerNav.classList.remove('header-collapsed');
+          headerNav.classList.add('header-expanded');
+          trigger.classList.remove('trigger-collapsed', 'trigger-expanded');
+        } else {
+          trigger.style.display = 'flex';
+          if (!isInitialized) {
+            headerNav.classList.add('header-collapsed');
+            headerNav.classList.remove('header-expanded');
+            trigger.classList.add('trigger-collapsed');
+            trigger.classList.remove('trigger-expanded', 'header-expanded');
+            isExpanded = false;
+          }
+        }
+
+        isInitialized = true;
+      }
+
+      function toggleHeader(e) {
+        if (e) e.stopPropagation();
+
+        isExpanded = !isExpanded;
+
+        requestAnimationFrame(() => {
+          if (isExpanded) {
+            headerNav.classList.add('animating-in');
+            headerNav.classList.remove('header-collapsed');
+            headerNav.classList.add('header-expanded');
+            trigger.classList.remove('trigger-collapsed');
+            trigger.classList.add('trigger-expanded', 'header-expanded');
+
+            setTimeout(() => {
+              headerNav.classList.remove('animating-in');
+            }, 500);
+          } else {
+            headerNav.classList.add('animating-out');
+            headerNav.classList.add('header-collapsed');
+            headerNav.classList.remove('header-expanded');
+            trigger.classList.remove('trigger-expanded', 'header-expanded');
+            trigger.classList.add('trigger-collapsed');
+
+            setTimeout(() => {
+              headerNav.classList.remove('animating-out');
+            }, 500);
+          }
+        });
+      }
+
+      init();
+      trigger.addEventListener('click', toggleHeader);
+
+      let clickTimeout;
+      document.addEventListener('click', function (e) {
+        if (isExpanded &&
+          !headerNav.contains(e.target) &&
+          !trigger.contains(e.target)) {
+          clearTimeout(clickTimeout);
+          clickTimeout = setTimeout(() => {
+            if (isExpanded) toggleHeader();
+          }, 100);
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && isExpanded) {
+          toggleHeader();
+        }
+      });
+
+      let resizeTimeout;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          init();
+        }, 150);
+      });
     })();
 
     // Initialize Lucide icons

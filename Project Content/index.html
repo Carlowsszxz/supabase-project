@@ -94,32 +94,40 @@
   <div id="library-background" class="library-background" aria-hidden="true"></div>
   <div id="paper-background" class="paper-background" aria-hidden="true"></div>
 
-  <!-- Modern Top Navigation Bar -->
-  <nav class="modern-sidebar" data-fade data-blur="true" data-initial-opacity="0" data-duration="1000">
+  <!-- Header Trigger Button (Peek Arrow) -->
+  <button id="headerTrigger" class="header-trigger" aria-label="Toggle header navigation">
+    <svg class="header-trigger-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </button>
+
+  <!-- Hover Label (appears to left of nav) -->
+  <div id="navLabel" class="nav-label"></div>
+
+  <!-- Modern Top Navigation Bar (Collapsible) -->
+  <nav id="headerNav" class="modern-sidebar header-collapsed" data-fade data-blur="true" data-initial-opacity="0"
+    data-duration="1000">
     <!-- Brand/Logo -->
     <div class="sidebar-brand">
       <img src="UMak_Logo_Registered.png" alt="University of Makati Logo" />
     </div>
 
     <!-- Navigation Items -->
-    <a href="index.html" class="sidebar-nav-item active" aria-label="Home">
+    <a href="index.html" class="sidebar-nav-item active" data-label="Home">
       <i data-lucide="home" class="sidebar-icon"></i>
-      <div class="sidebar-tooltip" id="home-tooltip">Home</div>
     </a>
 
-    <a href="Frame_5.html" class="sidebar-nav-item" aria-label="Register">
+    <a href="Frame_5.html" class="sidebar-nav-item" data-label="Register">
       <i data-lucide="user-plus" class="sidebar-icon"></i>
-      <div class="sidebar-tooltip" id="register-tooltip">Register</div>
     </a>
 
-    <a href="how-to.html" class="sidebar-nav-item" aria-label="How To / Help">
+    <a href="how-to.html" class="sidebar-nav-item" data-label="How To / Help">
       <i data-lucide="help-circle" class="sidebar-icon"></i>
-      <div class="sidebar-tooltip" id="help-tooltip">How To / Help</div>
     </a>
 
-    <a href="Settings.html" class="sidebar-nav-item" aria-label="Settings">
+    <a href="Settings.html" class="sidebar-nav-item" data-label="Settings">
       <i data-lucide="settings" class="sidebar-icon"></i>
-      <div class="sidebar-tooltip" id="settings-tooltip">Settings</div>
     </a>
   </nav>
 
@@ -211,7 +219,7 @@
 
               <div class="flex items-center justify-between">
                 <label class="flex items-center gap-2 text-sm">
-                  <input type="checkbox" class="rounded" />
+                  <input id="remember-me-checkbox" type="checkbox" class="rounded" />
                   <span id="remember-me">Remember me</span>
                 </label>
                 <a href="Frame_14.html" id="forgot-password"

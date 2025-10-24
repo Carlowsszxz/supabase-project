@@ -9,9 +9,11 @@ let supabase = null;
 function initSupabase() {
   if (typeof window !== 'undefined') {
     // Check if Supabase is available (UMD may export as window.supabase or window.Supabase)
-    var Supa = window.supabase || window.Supabase || null;
-    if (Supa && typeof Supa.createClient === 'function') {
-      supabase = Supa.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    var SupabaseLib = window.supabase || window.Supabase || null;
+    if (SupabaseLib && typeof SupabaseLib.createClient === 'function') {
+      supabase = SupabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      // Export the initialized client to window.supabaseClient (not window.supabase to avoid conflict)
+      window.supabaseClient = supabase;
       console.log('Supabase initialized successfully');
       return true;
     } else {
@@ -31,9 +33,11 @@ function initSupabaseWithRetry() {
 
     const checkSupabase = () => {
       if (typeof window !== 'undefined') {
-        var Supa = window.supabase || window.Supabase || null;
-        if (Supa && typeof Supa.createClient === 'function') {
-          supabase = Supa.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        var SupabaseLib = window.supabase || window.Supabase || null;
+        if (SupabaseLib && typeof SupabaseLib.createClient === 'function') {
+          supabase = SupabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+          // Export the initialized client to window.supabaseClient
+          window.supabaseClient = supabase;
           console.log('Supabase initialized successfully');
           resolve(true);
           return;

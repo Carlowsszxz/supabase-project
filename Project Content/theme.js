@@ -1,4 +1,4 @@
-(function() {
+(function () {
   var storageKey = 'umak-theme';
   var root = document.documentElement;
 
@@ -21,7 +21,7 @@
 
   function initTheme() {
     var saved = undefined;
-    try { saved = localStorage.getItem(storageKey); } catch (_) {}
+    try { saved = localStorage.getItem(storageKey); } catch (_) { }
     var theme = saved === 'light' || saved === 'dark' ? saved : getSystemTheme();
     applyTheme(theme);
 
@@ -29,15 +29,15 @@
     if (!saved && window.matchMedia) {
       try {
         var mq = window.matchMedia('(prefers-color-scheme: dark)');
-        mq.addEventListener('change', function(e) { applyTheme(e.matches ? 'dark' : 'light'); });
-      } catch (_) {}
+        mq.addEventListener('change', function (e) { applyTheme(e.matches ? 'dark' : 'light'); });
+      } catch (_) { }
     }
   }
 
   function toggleTheme() {
     var current = root.getAttribute('data-theme') || getSystemTheme();
     var next = current === 'dark' ? 'light' : 'dark';
-    try { localStorage.setItem(storageKey, next); } catch (_) {}
+    try { localStorage.setItem(storageKey, next); } catch (_) { }
     applyTheme(next);
   }
 
@@ -45,18 +45,36 @@
   window.UmakTheme = { toggle: toggleTheme, apply: applyTheme };
 
   // Robust global logout helper available on all pages
-  window.logout = function logout() {
+  window.logout = async function logout() {
+    console.log('[Global Logout] Starting...');
     try {
-      var redirect = function(){ try { window.location.href = 'index.html?logout=1'; } catch(_) {} };
+      // Prevent multiple simultaneous logout attempts
+      if (window._loggingOut) {
+        console.log('[Global Logout] Already in progress, skipping...');
+        return;
+      }
+      window._loggingOut = true;
+
+      // Clear session storage
+      try { sessionStorage.clear(); } catch (_) { }
+
+      // Sign out from Supabase if available
       if (window.supabaseAuth && typeof window.supabaseAuth.signOut === 'function') {
         try {
-          Promise.resolve(window.supabaseAuth.signOut()).then(redirect).catch(redirect);
-        } catch(_) { redirect(); }
-      } else {
-        redirect();
+          console.log('[Global Logout] Calling Supabase signOut...');
+          await window.supabaseAuth.signOut();
+          console.log('[Global Logout] Supabase signOut completed');
+        } catch (err) {
+          console.error('[Global Logout] Supabase signOut error:', err);
+        }
       }
-    } catch(_) {
-      try { window.location.href = 'index.html?logout=1'; } catch(_) {}
+
+      // Redirect to login
+      console.log('[Global Logout] Redirecting to login...');
+      window.location.href = 'index.html?logout=1';
+    } catch (err) {
+      console.error('[Global Logout] Error:', err);
+      window.location.href = 'index.html?logout=1';
     }
   };
 

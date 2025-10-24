@@ -354,6 +354,61 @@
                 </div>
             </div>
 
+            <!-- Recent Taps with UID -->
+            <div class="mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="text-lg font-semibold">Recent Taps (from recent_taps view)</h2>
+                            <p class="text-sm text-slate-500 mt-1">Shows taps with associated UID for manual user
+                                assignment</p>
+                        </div>
+                        <button id="refreshRecentTaps"
+                            class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm">
+                            Refresh
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-slate-200">
+                                    <th class="text-left py-2 px-3 font-semibold text-slate-700">ID</th>
+                                    <th class="text-left py-2 px-3 font-semibold text-slate-700">UID</th>
+                                    <th class="text-left py-2 px-3 font-semibold text-slate-700">Name</th>
+                                    <th class="text-left py-2 px-3 font-semibold text-slate-700">Table</th>
+                                    <th class="text-left py-2 px-3 font-semibold text-slate-700">Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentTapsTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center py-8 text-slate-400">
+                                        <i data-lucide="loader" class="animate-spin inline-block w-5 h-5"></i>
+                                        <span class="ml-2">Loading taps...</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <h3 class="text-sm font-semibold text-blue-900 mb-2">💡 Suggested UIDs for Manual Assignment:
+                        </h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs text-blue-800">
+                            <div><code class="bg-blue-100 px-2 py-1 rounded">CR001</code> - Carlos Ryan</div>
+                            <div><code class="bg-blue-100 px-2 py-1 rounded">ST001</code> - Student 1</div>
+                            <div><code class="bg-blue-100 px-2 py-1 rounded">ST002</code> - Student 2</div>
+                            <div><code class="bg-blue-100 px-2 py-1 rounded">ST003</code> - Student 3</div>
+                            <div><code class="bg-blue-100 px-2 py-1 rounded">ST004</code> - Student 4</div>
+                            <div><code class="bg-blue-100 px-2 py-1 rounded">ST005</code> - Student 5</div>
+                            <div><code class="bg-blue-100 px-2 py-1 rounded">AD001</code> - Admin 1</div>
+                            <div><code class="bg-blue-100 px-2 py-1 rounded">AD002</code> - Admin 2</div>
+                            <div><code class="bg-blue-100 px-2 py-1 rounded">LIB001</code> - Librarian 1</div>
+                        </div>
+                        <p class="text-xs text-blue-700 mt-2">Use these UIDs when manually assigning to users in the
+                            database.</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Noise Thresholds -->
                 <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
@@ -934,11 +989,89 @@
                 }
             }
 
+            // Load Recent Taps from recent_taps view
+            async function loadRecentTaps() {
+                try {
+                    console.log('[Recent Taps] Loading from recent_taps view...');
+                    const { data: taps, error } = await supabase
+                        .from('recent_taps')
+                        .select('*')
+                        .order('created_at', { ascending: false })
+                        .limit(20);
+
+                    if (error) {
+                        console.error('[Recent Taps] Error loading taps:', error);
+                        const tbody = document.getElementById('recentTapsTableBody');
+                        if (tbody) {
+                            tbody.innerHTML = `
+                                <tr>
+                                    <td colspan="5" class="text-center py-8 text-red-500">
+                                        Error loading taps: ${error.message}
+                                    </td>
+                                </tr>
+                            `;
+                        }
+                        return;
+                    }
+
+                    console.log('[Recent Taps] Loaded', taps?.length || 0, 'taps');
+                    const tbody = document.getElementById('recentTapsTableBody');
+                    if (!tbody) return;
+
+                    if (!taps || taps.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="5" class="text-center py-8 text-slate-400">
+                                    No recent taps found
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+
+                    tbody.innerHTML = taps.map(tap => {
+                        const formattedDate = new Date(tap.created_at).toLocaleString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        });
+
+                        return `
+                            <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                                <td class="py-3 px-3 text-slate-700">${tap.id || 'N/A'}</td>
+                                <td class="py-3 px-3 font-mono text-sm">
+                                    <span class="px-2 py-1 bg-indigo-100 text-indigo-800 rounded">${tap.uid || 'N/A'}</span>
+                                </td>
+                                <td class="py-3 px-3 text-slate-700">${tap.name || 'Unknown'}</td>
+                                <td class="py-3 px-3 text-slate-700">${tap.table_name || 'N/A'}</td>
+                                <td class="py-3 px-3 text-slate-600 text-sm">${formattedDate}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                } catch (error) {
+                    console.error('[Recent Taps] Error in loadRecentTaps:', error);
+                    const tbody = document.getElementById('recentTapsTableBody');
+                    if (tbody) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="5" class="text-center py-8 text-red-500">
+                                    Error: ${error.message}
+                                </td>
+                            </tr>
+                        `;
+                    }
+                }
+            }
+
             // Wire IoT monitoring UI
             function wireIOTMonitoring() {
                 const refreshDevicesBtn = document.getElementById('refreshDevices');
                 const toggleAutoRefreshBtn = document.getElementById('toggleAutoRefresh');
                 const clearRfidLogBtn = document.getElementById('clearRfidLog');
+                const refreshRecentTapsBtn = document.getElementById('refreshRecentTaps');
 
                 if (refreshDevicesBtn) {
                     refreshDevicesBtn.addEventListener('click', loadDeviceStatus);
@@ -950,6 +1083,10 @@
 
                 if (clearRfidLogBtn) {
                     clearRfidLogBtn.addEventListener('click', clearRFIDLog);
+                }
+
+                if (refreshRecentTapsBtn) {
+                    refreshRecentTapsBtn.addEventListener('click', loadRecentTaps);
                 }
             }
 
@@ -966,6 +1103,7 @@
                 await loadDeviceStatus();
                 await loadNoiseMonitoring();
                 await loadRFIDActivity();
+                await loadRecentTaps();
 
                 // Start auto refresh
                 startAutoRefresh();

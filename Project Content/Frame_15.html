@@ -13,9 +13,10 @@
   <script src="supabase.js"></script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <style>
-    /* Unified fade-in animation (matched to Frame 18 for consistent UX) */
+    /* Ensure initial blur/opacity applies on first paint, even before JS */
     [data-fade] {
       opacity: 0;
+      /* Use CSS var so we can override with !important and per-element values */
       --fade-init: 14px;
       --fade-filter: none;
       filter: var(--fade-filter) !important;
@@ -25,6 +26,69 @@
 
     [data-fade]:not([data-blur="false"]) {
       --fade-filter: blur(var(--fade-init));
+    }
+
+    /* Smooth transitions */
+    * {
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Card hover effects */
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Button hover effects */
+    button {
+      transition: all 0.2s ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Table row hover */
+    tbody tr {
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    tbody tr:hover {
+      background-color: rgba(241, 245, 249, 0.8) !important;
+    }
+
+    /* Input focus effects */
+    input:focus,
+    select:focus,
+    textarea:focus {
+      transition: all 0.2s ease;
+    }
+
+    /* Modal animations */
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .modal-content {
+      animation: modalFadeIn 0.3s ease-out forwards;
     }
 
     /* Modern Top Navigation Bar */
@@ -145,103 +209,6 @@
       border-radius: 6px;
     }
 
-    .sidebar-brand-text {
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: #374151;
-    }
-
-    /* Mobile Responsive */
-    @media (max-width: 768px) {
-      .modern-sidebar {
-        min-width: 280px;
-        max-width: 90vw;
-        padding: 0.75rem 1rem;
-        gap: 0.75rem;
-      }
-
-      .sidebar-nav-item {
-        width: 40px;
-        height: 40px;
-      }
-
-      .sidebar-icon {
-        width: 20px;
-        height: 20px;
-      }
-
-      .sidebar-brand img {
-        width: 28px;
-        height: 28px;
-      }
-
-      .sidebar-brand-text {
-        font-size: 1rem;
-      }
-    }
-
-    /* Dark Mode Support */
-    @media (prefers-color-scheme: dark) {
-      .modern-sidebar {
-        background: rgba(15, 23, 42, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-top: none;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
-      }
-
-      .sidebar-nav-item {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #e5e7eb;
-      }
-
-      .sidebar-nav-item:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.2);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.4);
-      }
-
-      .sidebar-nav-item.active {
-        background: rgba(59, 130, 246, 0.3);
-        border-color: rgba(59, 130, 246, 0.5);
-        color: #60a5fa;
-      }
-
-      .sidebar-brand-text {
-        color: #e5e7eb;
-      }
-    }
-
-    /* Manual dark mode class support */
-    .dark .modern-sidebar {
-      background: rgba(15, 23, 42, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-top: none;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
-    }
-
-    .dark .sidebar-nav-item {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #e5e7eb;
-    }
-
-    .dark .sidebar-nav-item:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.4);
-    }
-
-    .dark .sidebar-nav-item.active {
-      background: rgba(59, 130, 246, 0.3);
-      border-color: rgba(59, 130, 246, 0.5);
-      color: #60a5fa;
-    }
-
-    .dark .sidebar-brand-text {
-      color: #e5e7eb;
-    }
-
     /* Adjust main content for top navigation */
     .main-with-sidebar {
       padding-top: 5rem;
@@ -304,252 +271,47 @@
         <p class="text-slate-600">Search users, view details, and manage admin access</p>
       </div>
 
-      <!-- Quick Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-1">
-          <div class="text-2xl font-bold text-indigo-600" id="total-seats">25</div>
-          <div class="text-sm text-slate-500">Total Seats</div>
-        </div>
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-2">
-          <div class="text-2xl font-bold text-green-600" id="available-seats">14</div>
-          <div class="text-sm text-slate-500">Available</div>
-        </div>
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-3">
-          <div class="text-2xl font-bold text-red-600" id="occupied-seats">11</div>
-          <div class="text-sm text-slate-500">Occupied</div>
-        </div>
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 card-hover fade-in-up stagger-4">
-          <div class="text-2xl font-bold text-slate-600" id="occupancy-rate">44%</div>
-          <div class="text-sm text-slate-500">Occupancy Rate</div>
-        </div>
-      </div>
-
-      <!-- Tables Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-
-        <!-- Table 1 -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 bounce-in stagger-1">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold">Table 1</h3>
-            <div class="flex gap-2">
-              <button onclick="clearAllSeats('table-1')"
-                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
-                All</button>
-              <button onclick="occupyAllSeats('table-1')"
-                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
-                All</button>
-            </div>
-          </div>
-          <div class="grid grid-cols-5 gap-2 mb-4">
-            <button data-table="table-1" data-seat="1"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-1" data-seat="2"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-1" data-seat="3"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-1" data-seat="4"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-1" data-seat="5"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-          </div>
-          <div class="text-sm text-slate-500">Occupancy: <span id="table-1-count">0</span>/5 seats</div>
-        </div>
-
-        <!-- Table 2 -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 bounce-in stagger-2">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold">Table 2</h3>
-            <div class="flex gap-2">
-              <button onclick="clearAllSeats('table-2')"
-                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
-                All</button>
-              <button onclick="occupyAllSeats('table-2')"
-                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
-                All</button>
-            </div>
-          </div>
-          <div class="grid grid-cols-5 gap-2 mb-4">
-            <button data-table="table-2" data-seat="1"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-2" data-seat="2"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-red-500 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-2" data-seat="3"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-2" data-seat="4"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-2" data-seat="5"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-          </div>
-          <div class="text-sm text-slate-500">Occupancy: <span id="table-2-count">1</span>/5 seats</div>
-        </div>
-
-        <!-- Table 3 -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 bounce-in stagger-3">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold">Table 3</h3>
-            <div class="flex gap-2">
-              <button onclick="clearAllSeats('table-3')"
-                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
-                All</button>
-              <button onclick="occupyAllSeats('table-3')"
-                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
-                All</button>
-            </div>
-          </div>
-          <div class="grid grid-cols-5 gap-2 mb-4">
-            <button data-table="table-3" data-seat="1"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-red-500 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-3" data-seat="2"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-red-500 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-3" data-seat="3"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-red-500 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-3" data-seat="4"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-red-500 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-3" data-seat="5"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-red-500 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-          </div>
-          <div class="text-sm text-slate-500">Occupancy: <span id="table-3-count">5</span>/5 seats</div>
-        </div>
-
-        <!-- Table 4 -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 bounce-in stagger-4">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold">Table 4</h3>
-            <div class="flex gap-2">
-              <button onclick="clearAllSeats('table-4')"
-                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
-                All</button>
-              <button onclick="occupyAllSeats('table-4')"
-                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
-                All</button>
-            </div>
-          </div>
-          <div class="grid grid-cols-5 gap-2 mb-4">
-            <button data-table="table-4" data-seat="1"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-4" data-seat="2"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-4" data-seat="3"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-4" data-seat="4"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-4" data-seat="5"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-green-300 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-          </div>
-          <div class="text-sm text-slate-500">Occupancy: <span id="table-4-count">0</span>/5 seats</div>
-        </div>
-
-        <!-- Table 5 -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 bounce-in stagger-5">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold">Table 5</h3>
-            <div class="flex gap-2">
-              <button onclick="clearAllSeats('table-5')"
-                class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">Clear
-                All</button>
-              <button onclick="occupyAllSeats('table-5')"
-                class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">Fill
-                All</button>
-            </div>
-          </div>
-          <div class="grid grid-cols-5 gap-2 mb-4">
-            <button data-table="table-5" data-seat="1"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-red-500 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-5" data-seat="2"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-red-500 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-5" data-seat="3"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-red-500 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-5" data-seat="4"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-red-500 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-            <button data-table="table-5" data-seat="5"
-              class="seat-btn w-10 h-10 rounded-full border-2 border-slate-300 bg-red-500 hover:scale-105 transition"
-              onclick="toggleSeat(this)"></button>
-          </div>
-          <div class="text-sm text-slate-500">Occupancy: <span id="table-5-count">5</span>/5 seats</div>
-        </div>
-
-        <!-- Global Actions -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <h3 class="text-lg font-semibold mb-4">Global Actions</h3>
-          <div class="space-y-3">
-            <button onclick="clearAllTables()"
-              class="w-full px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition font-medium">
-              Clear All Tables
-            </button>
-            <button onclick="occupyAllTables()"
-              class="w-full px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition font-medium">
-              Fill All Tables
-            </button>
-            <button onclick="saveCurrentState()"
-              class="w-full px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition font-medium">
-              Save Current State
-            </button>
-            <button onclick="resetToDefault()"
-              class="w-full px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition font-medium">
-              Reset to Default
-            </button>
-          </div>
-          <div class="mt-4 p-3 bg-slate-50 rounded-lg">
-            <div class="text-sm text-slate-600">
-              <strong>Instructions:</strong><br>
-              • Click individual seats to toggle occupancy<br>
-              • Use table buttons for quick actions<br>
-              • Global actions affect all tables
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Current Student Selection -->
-      <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <h3 class="text-lg font-semibold mb-2">Current Student Selection</h3>
-        <div class="text-sm text-slate-600">
-          <span id="current-selection">No active selection</span>
+      <!-- Search and Add User Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6 card-hover">
+        <div class="flex flex-col md:flex-row gap-4">
+          <input type="text" id="user-search-input" placeholder="Search by email, name, student ID"
+            class="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+          <button onclick="searchUsers()"
+            class="px-6 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">
+            Search
+          </button>
+          <button onclick="openAddUserModal()"
+            class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Add User
+          </button>
         </div>
       </div>
 
-      <!-- Legend -->
-      <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <h3 class="text-lg font-semibold mb-4">Legend</h3>
-        <div class="flex flex-wrap gap-6 text-sm">
-          <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded-full bg-green-300"></div>
-            <span>Available Seat</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded-full bg-red-500"></div>
-            <span>Occupied Seat</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded-full bg-slate-300"></div>
-            <span>Clickable Seat</span>
-          </div>
+      <!-- Users Table Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden card-hover">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Name</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Email</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Student ID</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Program</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Created</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Admin</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Action</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body" class="divide-y divide-slate-200">
+              <!-- Users will be populated here -->
+            </tbody>
+          </table>
         </div>
+        <div id="users-status" class="px-6 py-4 text-sm text-slate-600"></div>
       </div>
 
     </div>
@@ -557,12 +319,14 @@
 
   <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
     data-delay="150">© 2025 UMak Library · Noise Comfort Index</footer>
+
   <div id="toast" style="position:fixed;right:12px;bottom:48px;pointer-events:none"
     class="px-3 py-2 rounded-md text-sm bg-slate-800 text-white shadow hidden"></div>
 
   <!-- Confirm Modal -->
-  <div id="confirm-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-[90%] p-5">
+  <div id="confirm-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center hidden"
+    style="z-index: 9999;">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-[90%] p-5 modal-content">
       <h3 class="text-lg font-semibold mb-2">Please confirm</h3>
       <p id="confirm-modal-message" class="text-sm text-slate-600 mb-5"></p>
       <div class="flex justify-end gap-2">
@@ -575,8 +339,9 @@
   </div>
 
   <!-- Add User Modal -->
-  <div id="add-user-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-[90%] p-6">
+  <div id="add-user-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center hidden"
+    style="z-index: 9999;">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-[90%] p-6 modal-content">
       <h3 class="text-xl font-semibold mb-4">Add New User</h3>
       <form id="add-user-form" class="space-y-4">
         <div>
@@ -631,78 +396,67 @@
     </div>
   </div>
 
-  <!-- Supabase SDK -->
-
   <script>
-    // Mobile menu toggle (robust like other frames)
-    (function () {
-      try {
-        var mobileBtn = document.getElementById('mobile-menu-btn');
-        var mobileMenu = document.getElementById('mobile-menu');
-        var header = document.querySelector('header.site-header');
-        if (mobileBtn && mobileMenu && header) {
-          mobileBtn.addEventListener('click', function () {
-            var isHidden = mobileMenu.classList.contains('hidden');
-            if (isHidden) {
-              header.classList.add('menu-open');
-              mobileMenu.classList.remove('hidden');
-              mobileBtn.setAttribute('aria-expanded', 'true');
-            } else {
-              header.classList.remove('menu-open');
-              mobileMenu.classList.add('hidden');
-              mobileBtn.setAttribute('aria-expanded', 'false');
-            }
-          });
-        }
-      } catch (_) { }
-    })();
-
-    var TABLE_IDS = ['table-1', 'table-2', 'table-3', 'table-4', 'table-5'];
-    var SEATS_PER_TABLE = 5;
-    var occupancyState = {};
-    TABLE_IDS.forEach(function (id) { occupancyState[id] = { seats: {} }; });
-
-
-    // Admin access control
+    // Admin access control - STRICT
     async function checkAdminAccess() {
       try {
+        console.log('[Frame 15] Checking admin authorization...');
+
+        // Check if Supabase Auth exists
+        if (!window.supabaseAuth || typeof window.supabaseAuth.getCurrentUser !== 'function') {
+          console.error('[Frame 15] Supabase Auth not available - ACCESS DENIED');
+          showAccessDenied();
+          return false;
+        }
+
         // Check if user is authenticated
         const userResult = await window.supabaseAuth.getCurrentUser();
+        console.log('[Frame 15] User result:', userResult);
 
         if (userResult.error || !userResult.data || !userResult.data.user) {
-          console.log('User not authenticated, redirecting to login');
+          console.log('[Frame 15] User not authenticated, redirecting to login');
           window.location.href = 'index.html';
           return false;
         }
 
         const user = userResult.data.user;
+        console.log('[Frame 15] User authenticated:', user.email);
 
-        // Check for legacy admin credentials first
+        // Check for legacy admin credentials first (hardcoded admins)
         const email = user.email ? user.email.toLowerCase() : '';
-        if (email === 'adminlibrarian@umak.edu.ph' || email === 'admin@umak.edu.ph') {
-          console.log('Legacy admin user detected, granting access');
+        if (email === 'admin@umak.edu.ph' || email === 'adminlibrarian@umak.edu.ph') {
+          console.log('[Frame 15] ✅ Legacy admin detected:', email);
           return true;
         }
 
         // Check if user is admin in database
-        const adminResult = await window.supabaseDB.isAdmin(user.id);
-
-        if (adminResult.error) {
-          console.error('Error checking admin status:', adminResult.error);
-          // If there's an error checking admin status, allow access for now
-          console.log('Admin check failed, allowing access temporarily');
-          return true;
-        }
-
-        if (!adminResult.data) {
-          console.log('User is not an admin, redirecting to student dashboard');
-          window.location.href = 'Frame_4.html'; // Redirect to student dashboard
+        if (!window.supabaseDB || typeof window.supabaseDB.isAdmin !== 'function') {
+          console.error('[Frame 15] Supabase DB not available - ACCESS DENIED');
+          showAccessDenied();
           return false;
         }
 
+        const adminResult = await window.supabaseDB.isAdmin(user.id);
+        console.log('[Frame 15] Admin check result:', adminResult);
+
+        if (adminResult.error) {
+          console.error('[Frame 15] Error checking admin status:', adminResult.error);
+          console.log('[Frame 15] ❌ Admin check failed - ACCESS DENIED');
+          showAccessDenied();
+          return false;
+        }
+
+        if (!adminResult.data || adminResult.data === false) {
+          console.log('[Frame 15] ❌ User is NOT an admin - ACCESS DENIED');
+          showAccessDenied();
+          return false;
+        }
+
+        console.log('[Frame 15] ✅ User is admin - ACCESS GRANTED');
         return true;
       } catch (error) {
-        console.error('Error in admin access check:', error);
+        console.error('[Frame 15] Error in admin access check:', error);
+        console.log('[Frame 15] ❌ Error occurred - ACCESS DENIED');
         showAccessDenied();
         return false;
       }
@@ -720,12 +474,9 @@
             </div>
             <h1 class="text-2xl font-bold text-slate-900 mb-2">Access Denied</h1>
             <p class="text-slate-600 mb-6">You don't have permission to access the admin panel. Only administrators can view this page.</p>
-            <div class="space-y-3">
-              <a href="Frame_4.html" class="block w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+            <div>
+              <a href="Frame_11.html" class="block w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
                 Go to Student Dashboard
-              </a>
-              <a href="index.html" class="block w-full px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">
-                Back to Login
               </a>
             </div>
           </div>
@@ -735,233 +486,50 @@
 
     // Initialize Supabase
     var supabaseInitialized = false;
-    try {
-      if (initSupabase()) {
-        supabaseInitialized = true;
-        console.log('Supabase initialized successfully');
-      } else {
-        console.error('Supabase initialization failed');
-      }
-    } catch (e) {
-      console.error('Supabase init error:', e);
-    }
-
-    // Firebase paths removed - now using Supabase
-
-    function toggleSeat(button) {
-      var tableId = button.getAttribute('data-table');
-      var seatNum = parseInt(button.getAttribute('data-seat'));
-      var willOccupy = button.classList.contains('bg-green-300');
-
-      // Optimistic UI update
-      if (willOccupy) { button.classList.remove('bg-green-300'); button.classList.add('bg-red-500'); }
-      else { button.classList.remove('bg-red-500'); button.classList.add('bg-green-300'); }
-      try {
-        var seats = occupancyState[tableId] && occupancyState[tableId].seats || {};
-        seats[seatNum] = !!willOccupy;
-        occupancyState[tableId].seats = seats;
-        updateTableCount(tableId);
-        updateGlobalStats();
-      } catch (_) { }
-
-      // Persist to Supabase
-      if (supabaseInitialized) {
-        window.supabaseDB.updateSeatOccupancy(tableId, seatNum, !willOccupy, null).catch(function (err) {
-          console.error('toggleSeat failed', err);
-        });
-      }
-    }
-
-    function clearAllSeats(tableId) {
-      if (!supabaseInitialized) return;
-      for (var i = 1; i <= SEATS_PER_TABLE; i++) {
-        window.supabaseDB.updateSeatOccupancy(tableId, i, false, null).catch(function (err) {
-          console.error('clearAllSeats failed', err);
-        });
-      }
-    }
-
-    function occupyAllSeats(tableId) {
-      if (!supabaseInitialized) return;
-      for (var i = 1; i <= SEATS_PER_TABLE; i++) {
-        window.supabaseDB.updateSeatOccupancy(tableId, i, true, null).catch(function (err) {
-          console.error('occupyAllSeats failed', err);
-        });
-      }
-    }
-
-    function clearAllTables() { TABLE_IDS.forEach(function (t) { clearAllSeats(t); }); }
-
-    function occupyAllTables() { TABLE_IDS.forEach(function (t) { occupyAllSeats(t); }); }
-
-    function resetToDefault() { clearAllTables(); }
-
-    function updateTableCount(tableId) {
-      var seats = occupancyState[tableId] && occupancyState[tableId].seats || {};
-      var occ = Object.keys(seats).filter(function (k) { return !!seats[k]; }).length;
-      var el = document.getElementById(tableId + '-count');
-      if (el) el.textContent = occ;
-    }
-
-    function updateGlobalStats() {
-      var totalSeats = TABLE_IDS.length * SEATS_PER_TABLE;
-      var occupiedSeats = 0;
-      TABLE_IDS.forEach(function (t) { var seats = occupancyState[t].seats || {}; occupiedSeats += Object.keys(seats).filter(function (k) { return !!seats[k]; }).length; });
-      var availableSeats = totalSeats - occupiedSeats;
-      var occupancyRate = totalSeats ? Math.round((occupiedSeats / totalSeats) * 100) : 0;
-      var elTotalSeats = document.getElementById('total-seats');
-      if (elTotalSeats) elTotalSeats.textContent = totalSeats;
-      var elAvailableSeats = document.getElementById('available-seats');
-      if (elAvailableSeats) elAvailableSeats.textContent = availableSeats;
-      var elOccupiedSeats = document.getElementById('occupied-seats');
-      if (elOccupiedSeats) elOccupiedSeats.textContent = occupiedSeats;
-      var elOccupancyRate = document.getElementById('occupancy-rate');
-      if (elOccupancyRate) elOccupancyRate.textContent = occupancyRate + '%';
-    }
-
-    function ensureSeatSeed(tableId, remote) {
-      var seats = remote && remote.seats;
-      if (!seats || Object.keys(seats).length === 0) {
-        // Initialize empty seats in Supabase
-        if (supabaseInitialized) {
-          for (var i = 1; i <= SEATS_PER_TABLE; i++) {
-            window.supabaseDB.updateSeatOccupancy(tableId, i, false, null).catch(function (err) {
-              console.error('Failed to initialize seat:', err);
-            });
-          }
-        }
-      }
-    }
-
-    // Save a timestamped snapshot of the current state for records
-    function saveCurrentState() {
-      if (!supabaseInitialized) {
-        try { alert('System not initialized. Please try again.'); } catch (_) { }
-        return;
-      }
-
-      var totals = { totalSeats: 0, occupiedSeats: 0 };
-      TABLE_IDS.forEach(function (tableId) {
-        var seats = occupancyState[tableId] && occupancyState[tableId].seats || {};
-        var occupied = Object.keys(seats).filter(function (k) { return !!seats[k]; }).length;
-        totals.totalSeats += SEATS_PER_TABLE;
-        totals.occupiedSeats += occupied;
-      });
-
-      var snapshotPayload = {
-        created_at: new Date().toISOString(),
-        occupancy_data: Object.keys(occupancyState).reduce(function (acc, tableId) {
-          acc[tableId] = occupancyState[tableId].seats || {};
-          return acc;
-        }, {}),
-        totals: totals
-      };
-
-      // Save to Supabase (you may need to create a snapshots table)
-      window.supabaseDB.addActivityLog({
-        userId: null, // System action
-        userName: 'System',
-        type: 'snapshot_save',
-        title: 'Occupancy Snapshot',
-        description: 'Saved current occupancy state',
-        severity: 'info',
-        details: snapshotPayload
-      }).then(function (result) {
-        if (result.error) throw result.error;
-        try { alert('Snapshot saved successfully'); } catch (_) { }
-      }).catch(function (err) {
-        console.error('Failed to save snapshot', err);
-        try { alert('Failed to save: ' + (err.message || 'Unknown error')); } catch (_) { }
-      });
-    }
-
-    // Ensure inline onclick handlers can find these functions
-    window.toggleSeat = toggleSeat;
-    window.clearAllSeats = clearAllSeats;
-    window.occupyAllSeats = occupyAllSeats;
-    window.clearAllTables = clearAllTables;
-    window.occupyAllTables = occupyAllTables;
-    window.resetToDefault = resetToDefault;
-    window.saveCurrentState = saveCurrentState;
-
-    // Subscribe to Supabase for per-seat updates
-    if (supabaseInitialized) {
-      // Load initial data
-      window.supabaseDB.getOccupancyData().then(function (result) {
-        if (result.data) {
-          var data = {};
-          result.data.forEach(function (record) {
-            if (!data[record.table_id]) data[record.table_id] = { seats: {} };
-            data[record.table_id].seats[record.seat_number] = record.is_occupied;
-          });
-
-          TABLE_IDS.forEach(function (t) { ensureSeatSeed(t, data[t]); });
-          TABLE_IDS.forEach(function (tableId) {
-            var seatsObj = (data[tableId] && data[tableId].seats) || {};
-            occupancyState[tableId].seats = seatsObj;
-            var btns = document.querySelectorAll(`[data-table="${tableId}"]`);
-            btns.forEach(function (btn) {
-              var seatNum = parseInt(btn.getAttribute('data-seat'));
-              var occ = !!seatsObj[seatNum];
-              if (occ) { btn.classList.remove('bg-green-300'); btn.classList.add('bg-red-500'); }
-              else { btn.classList.remove('bg-red-500'); btn.classList.add('bg-green-300'); }
-            });
-            updateTableCount(tableId);
-          });
-          updateGlobalStats();
-        }
-      });
-
-      // Subscribe to real-time changes
-      window.supabaseDB.subscribeToOccupancy(function (payload) {
-        var record = payload.new || payload.old;
-        if (!record) return;
-
-        var tableId = record.table_id;
-        var seatNum = record.seat_number;
-        var isOccupied = record.is_occupied;
-
-        // Update local state
-        if (!occupancyState[tableId]) occupancyState[tableId] = { seats: {} };
-        occupancyState[tableId].seats[seatNum] = isOccupied;
-
-        // Update UI
-        var btn = document.querySelector(`[data-table="${tableId}"][data-seat="${seatNum}"]`);
-        if (btn) {
-          if (isOccupied) { btn.classList.remove('bg-green-300'); btn.classList.add('bg-red-500'); }
-          else { btn.classList.remove('bg-red-500'); btn.classList.add('bg-green-300'); }
-        }
-
-        updateTableCount(tableId);
-        updateGlobalStats();
-      });
-    }
-
-    // Show current student selection (placeholder for now)
-    var el = document.getElementById('current-selection');
-    if (el) {
-      el.textContent = 'No active selection';
-    }
 
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', async function () {
+      console.log('[Frame 15] Page loaded, initializing...');
+
       // Show loading state
       showLoadingState();
 
-      // Wait for Supabase to initialize if needed
-      if (!supabaseInitialized) {
-        await initSupabaseWithRetry();
-        if (initSupabase()) {
-          supabaseInitialized = true;
-          console.log('Supabase initialized successfully');
+      try {
+        // Wait for Supabase to initialize
+        console.log('[Frame 15] Waiting for Supabase...');
+        if (typeof initSupabaseWithRetry === 'function') {
+          await initSupabaseWithRetry();
         }
-      }
 
-      // Check admin access
-      const hasAccess = await checkAdminAccess();
-      if (hasAccess) {
+        if (typeof initSupabase === 'function' && initSupabase()) {
+          supabaseInitialized = true;
+          console.log('[Frame 15] Supabase initialized successfully');
+        } else {
+          console.error('[Frame 15] Supabase initialization failed');
+        }
+
+        // Check admin access
+        console.log('[Frame 15] Checking admin access...');
+        const hasAccess = await checkAdminAccess();
+
+        if (hasAccess) {
+          console.log('[Frame 15] Admin access granted, loading users page...');
+          hideLoadingState();
+
+          // Initialize Lucide icons
+          if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+            lucide.createIcons();
+            console.log('[Frame 15] Lucide icons initialized');
+          }
+
+          initUsersPage();
+        } else {
+          console.log('[Frame 15] Admin access denied');
+        }
+      } catch (error) {
+        console.error('[Frame 15] Initialization error:', error);
         hideLoadingState();
-        initUsersPage();
+        showAccessDenied();
       }
     });
 
@@ -993,7 +561,12 @@
       var msg = document.getElementById('confirm-modal-message');
       var btnYes = document.getElementById('confirm-yes');
       var btnCancel = document.getElementById('confirm-cancel');
-      if (!modal || !msg || !btnYes || !btnCancel) { try { if (confirm(message)) onYes && onYes(); } catch (_) { } return; }
+      if (!modal || !msg || !btnYes || !btnCancel) {
+        try {
+          if (confirm(message)) onYes && onYes();
+        } catch (_) { }
+        return;
+      }
       msg.textContent = message || 'Are you sure?';
       modal.classList.remove('hidden');
       var cleanup = function () {
@@ -1002,7 +575,13 @@
         modal.classList.add('hidden');
       };
       btnCancel.onclick = cleanup;
-      btnYes.onclick = function () { try { onYes && onYes(); } finally { cleanup(); } };
+      btnYes.onclick = function () {
+        try {
+          onYes && onYes();
+        } finally {
+          cleanup();
+        }
+      };
     }
 
     // Add User Modal functions
@@ -1135,278 +714,247 @@
     }
 
     function initUsersPage() {
-      var container = document.querySelector('main .max-w-7xl');
-      if (!container) return;
-      container.innerHTML = '\n      <div class="mb-8">\n        <h1 class="text-3xl font-bold mb-2">Users</h1>\n        <p class="text-slate-600">Search users, view details, and manage admin access</p>\n      </div>\n      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-6">\n        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">\n          <div class="flex items-center gap-2">\n            <input id="userSearch" placeholder="Search by email, name, student ID" class="px-3 py-2 rounded-lg border border-slate-300 w-72" />\n            <button id="searchBtn" class="px-3 py-2 rounded-lg btn-outline">Search</button>\n          </div>\n          <button id="addUserBtn" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium transition">+ Add User</button>\n          <div class="text-sm text-slate-500" id="usersStatus"></div>\n        </div>\n      </div>\n      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">\n        <div class="overflow-auto">\n          <table class="w-full text-sm">\n            <thead>\n              <tr class="text-left text-slate-500 border-b">\n                <th class="py-2 pr-3">Name</th>\n                <th class="py-2 pr-3">Email</th>\n                <th class="py-2 pr-3">Student ID</th>\n                <th class="py-2 pr-3">Program</th>\n                <th class="py-2 pr-3">Created</th>\n                <th class="py-2 pr-3">Admin</th>\n                <th class="py-2 pr-3">Action</th>\n              </tr>\n            </thead>\n            <tbody id="usersRows">\n              <tr><td colspan="7" class="py-6 text-center text-slate-400">Loading...</td></tr>\n            </tbody>\n          </table>\n        </div>\n      </div>\n      ';
-      // Wire events
-      var searchBtn = document.getElementById('searchBtn');
-      if (searchBtn) searchBtn.addEventListener('click', loadUsers);
-
-      // Add User button
-      var addUserBtn = document.getElementById('addUserBtn');
-      if (addUserBtn) addUserBtn.addEventListener('click', openAddUserModal);
-
-      // Add force refresh functionality
-      window.forceRefreshUsers = function () {
-        console.log('Force refreshing users...');
-        // Clear any cached data
-        if (window.supabaseDB && window.supabaseDB.clearCache) {
-          window.supabaseDB.clearCache();
-        }
-        // Force reload
-        loadUsers();
-      };
-
-      // Nuclear refresh - clear all caches and reload
-      window.nuclearRefresh = function () {
-        console.log('Nuclear refresh - clearing all caches...');
-        // Clear localStorage
-        localStorage.clear();
-        sessionStorage.clear();
-        // Force page reload
-        window.location.reload(true);
-      };
-      var rows = document.getElementById('usersRows');
-      if (rows) rows.addEventListener('click', function (e) {
-        var t = e.target; if (!t || !t.getAttribute) return; var id = t.getAttribute('data-id');
-        var action = t.getAttribute('data-action');
-        if (action === 'set-admin') {
-          openConfirm('Are you sure you want to grant Admin access to this user?', function () {
-            t.disabled = true;
-            // Use the existing authenticated Supabase client from supabase.js
-            window.supabaseDB.adminSetUserAdmin(id, true).then(function (result) {
-              if (result && result.success) {
-                showToast(result.message || 'Admin access granted', true);
-                loadUsers();
-              } else {
-                showToast(result.error || 'Failed to grant admin access', false);
-              }
-            }).catch(function (err) {
-              showToast('Error: ' + (err.message || 'Unknown error'), false);
-            }).finally(function () { t.disabled = false; });
-          });
-        }
-        if (action === 'unset-admin') {
-          // Only protect admin@umak.edu.ph (primary admin), allow adminlibrarian@umak.edu.ph to be managed
-          var row = t.closest('tr');
-          var emailCell = row ? row.cells[1] : null;
-          var email = emailCell ? emailCell.textContent.trim() : '';
-
-          if (email && email.toLowerCase() === 'admin@umak.edu.ph') {
-            showToast('Cannot remove admin status from primary admin account', false);
-            return;
-          }
-
-          openConfirm('Are you sure you want to remove Admin access from this user?', function () {
-            t.disabled = true;
-            // Use the existing authenticated Supabase client from supabase.js
-            window.supabaseDB.adminSetUserAdmin(id, false).then(function (result) {
-              if (result && result.success) {
-                showToast(result.message || 'Admin access removed', true);
-                loadUsers();
-              } else {
-                showToast(result.error || 'Failed to remove admin access', false);
-              }
-            }).catch(function (err) {
-              showToast('Error: ' + (err.message || 'Unknown error'), false);
-            }).finally(function () { t.disabled = false; });
-          });
-        }
-        if (action === 'remove-user') {
-          // Only protect admin@umak.edu.ph (primary admin), allow adminlibrarian@umak.edu.ph to be managed
-          var row = t.closest('tr');
-          var emailCell = row ? row.cells[1] : null;
-          var email = emailCell ? emailCell.textContent.trim() : '';
-
-          if (email && email.toLowerCase() === 'admin@umak.edu.ph') {
-            showToast('Cannot delete primary admin account', false);
-            return;
-          }
-
-          openConfirm('PERMANENT DELETION WARNING: This will COMPLETELY remove this user from the Database AND Authentication System. The user will NOT be able to log in again. This action CANNOT be undone. Are you absolutely sure?', function () {
-            t.disabled = true;
-            showToast('Deleting user from database and auth...', true);
-
-            window.supabaseDB.adminPurgeUser(id).then(function (res) {
-              console.log('Delete response:', res);
-
-              if (res && !res.error && res.data) {
-                if (res.data.success) {
-                  showToast('User deleted from entire system (DB + Auth)', true);
-                } else if (res.data.warning) {
-                  showToast(res.data.warning, true);
-                } else if (res.data.error) {
-                  showToast(res.data.error, false);
-                  t.disabled = false;
-                  return;
-                } else {
-                  showToast('User deleted successfully', true);
-                }
-              } else if (res && res.error) {
-                var msg = res.error.message || res.error.details || 'Failed to delete user';
-                showToast(msg, false);
-                t.disabled = false;
-                return;
-              } else {
-                showToast('Unexpected error during deletion', false);
-                t.disabled = false;
-                return;
-              }
-
-              // Reload users list after a short delay to ensure deletion is complete
-              setTimeout(function () {
-                loadUsers();
-                t.disabled = false;
-              }, 800);
-            }).catch(function (err) {
-              console.error('Delete error:', err);
-              var msg = (err && (err.message || err.details)) ? (err.message || err.details) : 'Failed to delete user';
-              showToast(msg, false);
-              t.disabled = false;
-            });
-          });
-        }
-      });
+      console.log('Initializing users page...');
       loadUsers();
-    }
 
-    function renderUsers(rows) {
-      var body = document.getElementById('usersRows');
-      if (!body) return;
-      if (!rows || rows.length === 0) {
-        body.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-400">No users found</td></tr>';
-        return;
-      }
-      body.innerHTML = '';
-      rows.forEach(function (u) {
-        var tr = document.createElement('tr');
-        tr.className = 'border-b last:border-0';
-        var name = ((u.first_name || '') + ' ' + (u.last_name || '')).trim();
-
-        // Check if user is admin (only use database flag, ignore email-based for adminlibrarian)
-        var isAdmin = u.is_admin === true;
-
-        // Special case: only admin@umak.edu.ph gets email-based admin status
-        if (u.email && u.email.toLowerCase() === 'admin@umak.edu.ph') {
-          isAdmin = true;
-        }
-
-        var actionHtml = '';
-        if (isAdmin) {
-          // Only protect admin@umak.edu.ph (primary admin), allow adminlibrarian@umak.edu.ph to be managed
-          if (u.email && u.email.toLowerCase() === 'admin@umak.edu.ph') {
-            actionHtml = '<span class="px-3 py-1 text-xs rounded bg-gray-200 text-gray-600">Primary Admin</span>';
-          } else {
-            actionHtml = '<button class="px-3 py-1 text-xs rounded bg-slate-200 hover:bg-slate-300 text-black" data-action="unset-admin" data-id="' + u.id + '">Remove Admin</button>';
+      // Wire up search input
+      var searchInput = document.getElementById('user-search-input');
+      if (searchInput) {
+        searchInput.addEventListener('keyup', function (e) {
+          if (e.key === 'Enter') {
+            searchUsers();
           }
-        } else {
-          actionHtml = '<div class="flex gap-2">\n            <button class="px-3 py-1 text-xs rounded bg-indigo-600 hover:bg-indigo-700 text-white" data-action="set-admin" data-id="' + u.id + '">Make Admin</button>\n            <button class="px-3 py-1 text-xs rounded bg-red-600 hover:bg-red-700 text-white" data-action="remove-user" data-id="' + u.id + '">Delete User</button>\n          </div>';
-        }
-        tr.innerHTML = '\n          <td class="py-2 pr-3">' + (name || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.email || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.student_id || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.program || '—') + '</td>\n          <td class="py-2 pr-3">' + (u.created_at ? new Date(u.created_at).toLocaleDateString() : '—') + '</td>\n          <td class="py-2 pr-3">' + (isAdmin ? '<span class="px-2 py-0.5 text-xs rounded bg-indigo-100 text-indigo-800">Admin</span>' : '') + '</td>\n          <td class="py-2 pr-3">' + actionHtml + '</td>';
-        body.appendChild(tr);
-      });
+        });
+      }
     }
 
-    function loadUsers() {
-      var q = (document.getElementById('userSearch') || {}).value || '';
-      var status = document.getElementById('usersStatus');
-      if (status) status.textContent = 'Loading...';
+    async function loadUsers(searchQuery = '') {
+      var tbody = document.getElementById('users-table-body');
+      var statusDiv = document.getElementById('users-status');
 
-      // Create fresh Supabase client to bypass any caching
-      var supabaseClient = window.supabase.createClient(
-        'https://lvjfjyboqlcofzqrwqiy.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2amZqeWJvcWxjb2Z6cXJ3cWl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc3NzU4MTEsImV4cCI6MjA3MzM1MTgxMX0.XHLeP0xxmSWLC8MpqCpHWOVL3GK2TTJrKOBdbmME2OE'
-      );
+      if (!tbody) return;
 
-      // Query users table directly with admin status
-      var query = supabaseClient
-        .from('users')
-        .select(`
-          id,
-          email,
-          first_name,
-          last_name,
-          student_id,
-          program,
-          is_admin,
-          created_at
-        `)
-        .order('created_at', { ascending: false })
-        .limit(200);
+      // Show loading
+      tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Loading users...</td></tr>';
+      if (statusDiv) statusDiv.textContent = 'Loading...';
 
-      // Add search filter if provided
-      if (q && q.trim()) {
-        query = query.or(`email.ilike.%${q}%,first_name.ilike.%${q}%,last_name.ilike.%${q}%,student_id.ilike.%${q}%`);
-      }
+      try {
+        // Query users table directly
+        var query = window.supabaseClient
+          .from('users')
+          .select(`
+            id,
+            email,
+            first_name,
+            last_name,
+            student_id,
+            program,
+            is_admin,
+            created_at
+          `)
+          .order('created_at', { ascending: false })
+          .limit(200);
 
-      query.then(function (res) {
-        if (status) status.textContent = '';
-        if (res.error) {
-          console.error('Direct query error:', res.error);
-          status.textContent = 'Failed to load users';
+        // Add search filter if provided
+        if (searchQuery && searchQuery.trim()) {
+          var q = searchQuery.trim();
+          query = query.or(`email.ilike.%${q}%,first_name.ilike.%${q}%,last_name.ilike.%${q}%,student_id.ilike.%${q}%`);
+        }
+
+        var { data: users, error } = await query;
+
+        if (error) {
+          throw error;
+        }
+
+        // Clear table
+        tbody.innerHTML = '';
+        if (statusDiv) statusDiv.textContent = '';
+
+        if (!users || users.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">No users found</td></tr>';
           return;
         }
 
-        // Process the data to match expected format
-        var processedData = (res.data || []).map(function (user) {
-          return {
-            id: user.id,
-            email: user.email,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            student_id: user.student_id,
-            program: user.program,
-            is_admin: user.is_admin,
-            created_at: user.created_at
-          };
+        console.log('Loaded users:', users);
+
+        // Populate table
+        users.forEach(function (user) {
+          var row = document.createElement('tr');
+          row.className = 'hover:bg-slate-50 border-b last:border-0';
+
+          var fullName = ((user.first_name || '') + ' ' + (user.last_name || '')).trim();
+          if (!fullName) fullName = '—';
+
+          var createdDate = user.created_at ? new Date(user.created_at).toLocaleDateString() : '—';
+
+          // Check if user is admin (only use database flag, unless primary admin)
+          var isAdmin = user.is_admin === true;
+          if (user.email && user.email.toLowerCase() === 'admin@umak.edu.ph') {
+            isAdmin = true;
+          }
+
+          var isPrimaryAdmin = user.email && user.email.toLowerCase() === 'admin@umak.edu.ph';
+
+          var actionHtml = '';
+          if (isAdmin) {
+            if (isPrimaryAdmin) {
+              actionHtml = '<span class="px-3 py-1 text-xs rounded bg-gray-200 text-gray-600">Primary Admin</span>';
+            } else {
+              actionHtml = `<button onclick="removeAdmin('${user.id}', '${user.email}')" class="px-3 py-1 text-xs rounded bg-slate-200 hover:bg-slate-300 text-black">Remove Admin</button>`;
+            }
+          } else {
+            actionHtml = `
+              <div class="flex gap-2">
+                <button onclick="makeAdmin('${user.id}', '${user.email}')" class="px-3 py-1 text-xs rounded bg-indigo-600 hover:bg-indigo-700 text-white">Make Admin</button>
+                <button onclick="deleteUser('${user.id}', '${user.email}')" class="px-3 py-1 text-xs rounded bg-red-600 hover:bg-red-700 text-white">Delete User</button>
+              </div>
+            `;
+          }
+
+          row.innerHTML = `
+            <td class="px-6 py-4 text-sm">${fullName}</td>
+            <td class="px-6 py-4 text-sm">${user.email || '—'}</td>
+            <td class="px-6 py-4 text-sm">${user.student_id || '—'}</td>
+            <td class="px-6 py-4 text-sm">${user.program || '—'}</td>
+            <td class="px-6 py-4 text-sm">${createdDate}</td>
+            <td class="px-6 py-4 text-sm">
+              ${isAdmin ? '<span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs">Admin</span>' : ''}
+            </td>
+            <td class="px-6 py-4 text-sm">${actionHtml}</td>
+          `;
+
+          tbody.appendChild(row);
         });
 
-        console.log('Loaded users directly from database:', processedData);
+      } catch (error) {
+        console.error('Error loading users:', error);
+        tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-red-500">Error loading users: ' + (error.message || 'Unknown error') + '</td></tr>';
+        if (statusDiv) statusDiv.textContent = '';
+      }
+    }
 
-        // Log admin status for each user
-        processedData.forEach(function (user, index) {
-          console.log(`User ${index}: ${user.email} - is_admin: ${user.is_admin}`);
-        });
+    function searchUsers() {
+      var searchInput = document.getElementById('user-search-input');
+      if (searchInput) {
+        loadUsers(searchInput.value.trim());
+      }
+    }
 
-        renderUsers(processedData);
-      }).catch(function (err) {
-        if (status) status.textContent = 'Failed to load users';
-        console.error('Direct query error:', err);
+    async function makeAdmin(userId, userEmail) {
+      openConfirm(`Are you sure you want to grant Admin access to ${userEmail}?`, async function () {
+        try {
+          var result = await window.supabaseDB.adminSetUserAdmin(userId, true);
+
+          if (result.error) {
+            throw result.error;
+          }
+
+          if (result.success) {
+            showToast(result.message || '✓ Admin access granted', true);
+          } else {
+            showToast('✓ User promoted to admin successfully!', true);
+          }
+
+          loadUsers();
+
+        } catch (error) {
+          console.error('Error making admin:', error);
+          showToast('✗ Failed to make admin: ' + (error.message || 'Unknown error'), false);
+        }
       });
     }
 
-    // Logout helper
+    async function removeAdmin(userId, userEmail) {
+      // Protect primary admin
+      if (userEmail && userEmail.toLowerCase() === 'admin@umak.edu.ph') {
+        showToast('Cannot remove admin status from primary admin account', false);
+        return;
+      }
+
+      openConfirm(`Are you sure you want to remove Admin access from ${userEmail}?`, async function () {
+        try {
+          var result = await window.supabaseDB.adminSetUserAdmin(userId, false);
+
+          if (result.error) {
+            throw result.error;
+          }
+
+          if (result.success) {
+            showToast(result.message || '✓ Admin access removed', true);
+          } else {
+            showToast('✓ Admin access removed successfully!', true);
+          }
+
+          loadUsers();
+
+        } catch (error) {
+          console.error('Error removing admin:', error);
+          showToast('✗ Failed to remove admin: ' + (error.message || 'Unknown error'), false);
+        }
+      });
+    }
+
+    async function deleteUser(userId, userEmail) {
+      openConfirm(`Are you sure you want to delete ${userEmail}? This action cannot be undone.`, async function () {
+        try {
+          var result = await window.supabaseDB.adminPurgeUser(userId);
+
+          if (result.error) {
+            throw result.error;
+          }
+
+          showToast('✓ User deleted successfully!', true);
+          loadUsers();
+
+        } catch (error) {
+          console.error('Error deleting user:', error);
+          showToast('✗ Failed to delete user: ' + (error.message || 'Unknown error'), false);
+        }
+      });
+    }
+
+    function showToast(message, isSuccess) {
+      var toast = document.getElementById('toast');
+      if (!toast) return;
+
+      toast.textContent = message;
+      toast.className = 'px-4 py-3 rounded-lg text-sm shadow-lg transition-opacity duration-300 ' +
+        (isSuccess ? 'bg-green-600 text-white' : 'bg-red-600 text-white');
+      toast.classList.remove('hidden');
+
+      setTimeout(function () {
+        toast.classList.add('hidden');
+      }, 3000);
+    }
+
     function logout() {
-      try {
-        if (supabaseInitialized) {
+      openConfirm('Are you sure you want to logout?', function () {
+        if (window.supabaseAuth && window.supabaseAuth.signOut) {
           window.supabaseAuth.signOut().then(function () {
             window.location.href = 'index.html';
-          }).catch(function (err) {
-            try { alert(err.message); } catch (_) { }
+          }).catch(function (error) {
+            console.error('Logout error:', error);
+            window.location.href = 'index.html';
           });
         } else {
           window.location.href = 'index.html';
         }
-      } catch (_) {
-        window.location.href = 'index.html';
-      }
+      });
     }
+
+    // Make functions globally available
+    window.searchUsers = searchUsers;
+    window.openAddUserModal = openAddUserModal;
+    window.makeAdmin = makeAdmin;
+    window.removeAdmin = removeAdmin;
+    window.deleteUser = deleteUser;
     window.logout = logout;
 
-    // Simple toast
-    function showToast(message, ok) {
-      var el = document.getElementById('toast');
-      if (!el) return;
-      el.textContent = message || '';
-      el.classList.remove('hidden');
-      el.style.backgroundColor = ok ? '#065f46' : '#7f1d1d';
-      el.style.color = 'white';
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(function () { el.classList.add('hidden'); }, 2500);
-    }
   </script>
+
   <script>
-    // Unified fade-on-scroll transitions (same timing/easing as Frame 18)
+    // Fade-on-scroll transitions (copied from Frame 6)
     (function () {
       var fadeElements = Array.from(document.querySelectorAll('[data-fade]'));
       if (fadeElements.length === 0) return;
@@ -1415,8 +963,11 @@
         var initialOpacity = parseFloat(el.getAttribute('data-initial-opacity') || '0');
         var duration = parseInt(el.getAttribute('data-duration') || '1000', 10);
         var easing = el.getAttribute('data-easing') || 'ease-out';
+        var blurAttr = el.getAttribute('data-blur');
+        var blurEnabled = (blurAttr !== 'false');
         var blurPxAttr = el.getAttribute('data-blur-px');
         var blurPx = parseInt(blurPxAttr || '14', 10);
+        // Set CSS variables to ensure !important styles apply from CSS
         el.style.opacity = String(initialOpacity);
         el.style.setProperty('--fade-init', blurPx + 'px');
         el.style.setProperty('--fade-transition', 'opacity ' + duration + 'ms ' + easing + ', filter ' + duration + 'ms ' + easing);
@@ -1429,10 +980,13 @@
             var delay = parseInt(el.getAttribute('data-delay') || '0', 10);
             var blurAttr = el.getAttribute('data-blur');
             var blurEnabled = (blurAttr !== 'false');
+            var blurPxAttr = el.getAttribute('data-blur-px');
+            var blurPx = parseInt(blurPxAttr || '14', 10);
             observer.unobserve(el);
             setTimeout(function () {
               el.style.opacity = '1';
               if (blurEnabled) {
+                // Remove blur by setting CSS var target
                 el.style.setProperty('--fade-init', '0px');
               }
             }, delay);
@@ -1442,11 +996,6 @@
 
       fadeElements.forEach(function (el) { observer.observe(el); });
     })();
-
-    // Initialize Lucide icons
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
-    }
   </script>
 </body>
 
