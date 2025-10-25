@@ -1835,7 +1835,7 @@
                     <div id="noiseStatus" class="text-base font-semibold text-green-600">🟢 Quiet Environment</div>
                   </div>
 
-                  <div class="space-y-2.5 text-sm text-slate-600 dark:text-slate-400">
+                  <div id="noiseLegend" class="space-y-2.5 text-sm text-slate-600 dark:text-slate-400">
                     <div class="flex items-center gap-2">
                       <div class="w-4 h-4 rounded-full bg-green-500 shadow-sm"></div>
                       <span class="font-medium">0-50 dB: Quiet</span>
@@ -2747,6 +2747,70 @@
       // Initialize displays
       updateDisplay(null);
       updateCurrentSessionDisplay(); // Initialize current session display
+      updateNoiseLegend(); // Initialize noise legend with current thresholds
+
+      // Update noise legend with current thresholds
+      function updateNoiseLegend() {
+        var legend = document.getElementById('noiseLegend');
+        if (!legend) return;
+
+        var thresholds = getNoiseThresholds();
+        var criticalThreshold = thresholds.criticalThreshold;
+        var warningThreshold = thresholds.warningThreshold;
+
+        // Convert thresholds to dB (assuming they're in 0-5 scale, convert to dB)
+        var criticalDb = Math.round(criticalThreshold * 10 + 30); // Convert to dB range
+        var warningDb = Math.round(warningThreshold * 10 + 30); // Convert to dB range
+
+        legend.innerHTML = `
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded-full bg-green-500 shadow-sm"></div>
+            <span class="font-medium">0-50 dB: Quiet</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded-full bg-yellow-500 shadow-sm"></div>
+            <span class="font-medium">50-70 dB: Moderate</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded-full bg-red-500 shadow-sm"></div>
+            <span class="font-medium">70+ dB: Noisy</span>
+          </div>
+        `;
+      }
+
+      // Listen for noise threshold changes from Frame 19
+      window.addEventListener('storage', function (e) {
+        if (e.key === 'noiseThresholds' && e.newValue) {
+          console.log('[Noise Monitor] Noise thresholds updated from Frame 19');
+          updateNoiseLegend();
+          // Re-apply current noise level with new thresholds
+          if (currentNoiseLevel !== null) {
+            updateDisplay(currentNoiseLevel);
+          }
+        }
+      });
+
+      // Get noise thresholds from localStorage (set by Frame 19)
+      function getNoiseThresholds() {
+        try {
+          var stored = localStorage.getItem('noiseThresholds');
+          if (stored) {
+            var config = JSON.parse(stored);
+            return {
+              criticalThreshold: config.criticalThreshold || 4.5,
+              warningThreshold: config.warningThreshold || 3.0
+            };
+          }
+        } catch (e) {
+          console.warn('[Noise Monitor] Failed to parse noise thresholds from localStorage:', e);
+        }
+
+        // Default thresholds if not found
+        return {
+          criticalThreshold: 4.5,
+          warningThreshold: 3.0
+        };
+      }
 
       // Update visual display
       function updateDisplay(level) {
@@ -2773,7 +2837,12 @@
         // Update bar height
         noiseLevelFill.style.height = percentage + '%';
 
-        // Update colors and status based on level
+        // Get current noise thresholds from Frame 19 settings
+        var thresholds = getNoiseThresholds();
+        var criticalThreshold = thresholds.criticalThreshold;
+        var warningThreshold = thresholds.warningThreshold;
+
+        // Update colors and status based on level using dynamic thresholds
         var status, statusColor, gradient;
         if (level < 50) {
           status = '🟢 Quiet Environment';

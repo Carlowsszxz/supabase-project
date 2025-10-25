@@ -247,6 +247,44 @@
     .main-with-sidebar {
       padding-top: 5rem;
     }
+
+    /* Table row hover styling for better readability */
+    tbody tr {
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    tbody tr:hover {
+      background-color: rgba(241, 245, 249, 0.8) !important;
+    }
+
+    tbody tr:hover td {
+      color: #000000 !important;
+    }
+
+    /* Ensure Reporter column text turns black on hover */
+    tbody tr:hover td .text-slate-700 {
+      color: #000000 !important;
+    }
+
+    tbody tr:hover button {
+      color: inherit !important;
+    }
+
+    /* Preserve specific button colors on hover */
+    tbody tr:hover button.bg-red-600,
+    tbody tr:hover button.bg-red-500 {
+      color: white !important;
+    }
+
+    tbody tr:hover button.bg-green-600,
+    tbody tr:hover button.bg-green-500 {
+      color: white !important;
+    }
+
+    tbody tr:hover button.bg-blue-600,
+    tbody tr:hover button.bg-blue-500 {
+      color: white !important;
+    }
   </style>
 </head>
 
@@ -267,11 +305,6 @@
     <a href="Frame_7.html" class="sidebar-nav-item" aria-label="Log">
       <i data-lucide="file-text" class="sidebar-icon"></i>
       <div class="sidebar-tooltip">Log</div>
-    </a>
-
-    <a href="Frame_9.html" class="sidebar-nav-item" aria-label="Alerts">
-      <i data-lucide="bell" class="sidebar-icon"></i>
-      <div class="sidebar-tooltip">Alerts</div>
     </a>
 
     <a href="Frame_18.html" class="sidebar-nav-item active" aria-label="Reports">

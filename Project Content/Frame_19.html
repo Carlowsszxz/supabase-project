@@ -268,11 +268,6 @@
             <div class="sidebar-tooltip">Log</div>
         </a>
 
-        <a href="Frame_9.html" class="sidebar-nav-item" aria-label="Alerts">
-            <i data-lucide="bell" class="sidebar-icon"></i>
-            <div class="sidebar-tooltip">Alerts</div>
-        </a>
-
         <a href="Frame_18.html" class="sidebar-nav-item" aria-label="Reports">
             <i data-lucide="bar-chart-3" class="sidebar-icon"></i>
             <div class="sidebar-tooltip">Reports</div>
@@ -688,6 +683,16 @@
                     var res = await window.supabaseDB.getAdminLayout();
                     var cfg = (res && res.data) || {};
                     writeForm(cfg);
+
+                    // Initialize localStorage with current noise thresholds
+                    var noiseConfig = {
+                        criticalThreshold: cfg.noiseThreshold || 4.5,
+                        warningThreshold: cfg.warningThreshold || 3.0,
+                        lastUpdated: Date.now()
+                    };
+                    localStorage.setItem('noiseThresholds', JSON.stringify(noiseConfig));
+                    console.log('Noise thresholds initialized in localStorage:', noiseConfig);
+
                     console.log('Loaded settings');
                 } catch (e) {
                     console.error('Failed to load settings', e);
@@ -700,6 +705,18 @@
                     var existing = (await window.supabaseDB.getAdminLayout()).data || {};
                     var merged = Object.assign({}, existing, partial);
                     var out = await window.supabaseDB.updateAdminLayout(merged);
+
+                    // Store noise thresholds in localStorage for Frame 11 to access
+                    if (partial.noiseThreshold !== undefined || partial.warningThreshold !== undefined) {
+                        var noiseConfig = {
+                            criticalThreshold: partial.noiseThreshold || existing.noiseThreshold || 4.5,
+                            warningThreshold: partial.warningThreshold || existing.warningThreshold || 3.0,
+                            lastUpdated: Date.now()
+                        };
+                        localStorage.setItem('noiseThresholds', JSON.stringify(noiseConfig));
+                        console.log('Noise thresholds saved to localStorage:', noiseConfig);
+                    }
+
                     console.log('Saved');
                     return out;
                 } catch (e) {

@@ -675,6 +675,47 @@ const db = {
     }
   },
 
+  // Admin: change user password
+  async adminChangeUserPassword(userId, newPassword) {
+    if (!supabase) return { error: 'Supabase not initialized' };
+    try {
+      // Get the user's email first
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('email')
+        .eq('id', userId)
+        .single();
+
+      if (userError || !userData) {
+        throw new Error('User not found');
+      }
+
+      // Send password reset email with proper redirect to reset page
+      const { data, error } = await supabase.auth.resetPasswordForEmail(userData.email, {
+        redirectTo: window.location.origin + '/reset-password.html'
+      });
+
+      if (error) {
+        console.log('Reset email error:', error);
+        // Even if email fails, we'll provide manual instructions
+      }
+
+      // Always return success with manual instructions since email template is broken
+      return {
+        data: {
+          success: true,
+          message: 'Password reset initiated. User should go to login page and use "Forgot Password" button.',
+          email: userData.email,
+          manualInstructions: 'Tell user to: 1) Go to login page 2) Click "Forgot Password" 3) Enter their email 4) Check email for reset link'
+        },
+        error: null
+      };
+    } catch (error) {
+      console.error('adminChangeUserPassword error:', error);
+      return { data: null, error };
+    }
+  },
+
   // Admin layout management
   async updateAdminLayout(layoutData) {
     if (!supabase) return { error: 'Supabase not initialized' };

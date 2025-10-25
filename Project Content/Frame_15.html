@@ -49,12 +49,10 @@
     }
 
     button:hover:not(:disabled) {
-      transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     button:active:not(:disabled) {
-      transform: translateY(0);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
@@ -65,6 +63,18 @@
 
     tbody tr:hover {
       background-color: rgba(241, 245, 249, 0.8) !important;
+    }
+
+    tbody tr:hover td {
+      color: #000000 !important;
+    }
+
+    tbody tr:hover button {
+      color: #ffffff !important;
+    }
+
+    tbody tr:hover button[onclick*="togglePasswordVisibility"] {
+      color: #6b7280 !important;
     }
 
     /* Input focus effects */
@@ -152,11 +162,18 @@
       color: #3b82f6;
     }
 
+    .sidebar-nav-item.active .sidebar-icon {
+      color: #3b82f6;
+      stroke: #3b82f6;
+    }
+
     /* Sidebar Icons */
     .sidebar-icon {
       width: 24px;
       height: 24px;
       stroke-width: 1.5;
+      color: #000000;
+      stroke: #000000;
     }
 
     /* Tooltips */
@@ -233,11 +250,6 @@
     <a href="Frame_7.html" class="sidebar-nav-item" aria-label="Log">
       <i data-lucide="file-text" class="sidebar-icon"></i>
       <div class="sidebar-tooltip">Log</div>
-    </a>
-
-    <a href="Frame_9.html" class="sidebar-nav-item" aria-label="Alerts">
-      <i data-lucide="bell" class="sidebar-icon"></i>
-      <div class="sidebar-tooltip">Alerts</div>
     </a>
 
     <a href="Frame_18.html" class="sidebar-nav-item" aria-label="Reports">
@@ -516,11 +528,7 @@
           console.log('[Frame 15] Admin access granted, loading users page...');
           hideLoadingState();
 
-          // Initialize Lucide icons
-          if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
-            lucide.createIcons();
-            console.log('[Frame 15] Lucide icons initialized');
-          }
+          // Icons already initialized on page load
 
           initUsersPage();
         } else {
@@ -806,6 +814,7 @@
           } else {
             actionHtml = `
               <div class="flex gap-2">
+                <button onclick="changePassword('${user.id}', '${user.email}')" class="px-3 py-1 text-xs rounded bg-green-600 hover:bg-green-700 text-white">Change Password</button>
                 <button onclick="makeAdmin('${user.id}', '${user.email}')" class="px-3 py-1 text-xs rounded bg-indigo-600 hover:bg-indigo-700 text-white">Make Admin</button>
                 <button onclick="deleteUser('${user.id}', '${user.email}')" class="px-3 py-1 text-xs rounded bg-red-600 hover:bg-red-700 text-white">Delete User</button>
               </div>
@@ -914,6 +923,24 @@
       });
     }
 
+    async function changePassword(userId, userEmail) {
+      try {
+        // Call the change password function directly
+        const result = await window.supabaseDB.adminChangeUserPassword(userId, 'dummy_password');
+
+        if (result.error) {
+          throw result.error;
+        }
+
+        showToast('✓ Password reset email sent! User should check their email for the reset link.', true);
+
+      } catch (error) {
+        console.error('Error changing password:', error);
+        showToast('✗ Failed to change password: ' + (error.message || 'Unknown error'), false);
+      }
+    }
+
+
     function showToast(message, isSuccess) {
       var toast = document.getElementById('toast');
       if (!toast) return;
@@ -996,6 +1023,45 @@
 
       fadeElements.forEach(function (el) { observer.observe(el); });
     })();
+
+    // Initialize Lucide icons with multiple fallbacks
+    function initializeLucideIcons() {
+      console.log('[Frame 15] Attempting to initialize Lucide icons...');
+      console.log('[Frame 15] lucide object:', typeof lucide);
+      console.log('[Frame 15] createIcons function:', typeof lucide?.createIcons);
+
+      if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+        console.log('[Frame 15] Lucide icons initialized successfully');
+        return true;
+      } else {
+        console.warn('[Frame 15] Lucide not available or createIcons not found');
+        return false;
+      }
+    }
+
+    // Try immediately
+    if (!initializeLucideIcons()) {
+      // Try on DOM ready
+      document.addEventListener('DOMContentLoaded', function () {
+        initializeLucideIcons();
+      });
+
+      // Try after a short delay as fallback
+      setTimeout(function () {
+        initializeLucideIcons();
+      }, 100);
+    }
+
+    // Force sidebar to be visible (in case fade animation isn't working)
+    setTimeout(function () {
+      var sidebar = document.querySelector('.modern-sidebar');
+      if (sidebar) {
+        sidebar.style.opacity = '1';
+        sidebar.style.filter = 'none';
+        console.log('[Frame 15] Forced sidebar visibility');
+      }
+    }, 500);
   </script>
 </body>
 
