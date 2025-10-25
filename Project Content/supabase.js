@@ -380,7 +380,7 @@ const db = {
   },
 
   // Noise logs
-  async addNoiseLog(userId, tableId, noiseLevel, activityType, notes = '') {
+  async addNoiseLog(userId, tableId, noiseLevel, activityType, notes = '', reporterEmail = null) {
     if (!supabase) return { error: 'Supabase not initialized' };
 
     try {
@@ -391,7 +391,8 @@ const db = {
           table_id: tableId,
           noise_level: noiseLevel,
           activity_type: activityType,
-          notes: notes
+          notes: notes,
+          reporter_email: reporterEmail
         }]);
 
       if (error) throw error;

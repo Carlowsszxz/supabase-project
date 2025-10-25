@@ -242,6 +242,110 @@
       color: #e5e7eb;
     }
 
+    /* Dark mode table styling */
+    .dark .bg-white {
+      background-color: #1e293b;
+      border-color: #334155;
+    }
+
+    .dark .border-slate-200 {
+      border-color: #475569;
+    }
+
+    .dark .border-slate-100 {
+      border-color: #475569;
+    }
+
+    .dark .text-slate-700 {
+      color: #e2e8f0;
+    }
+
+    .dark .text-slate-600 {
+      color: #cbd5e1;
+    }
+
+    .dark .text-slate-500 {
+      color: #94a3b8;
+    }
+
+    .dark .text-slate-400 {
+      color: #64748b;
+    }
+
+    .dark .hover\:bg-slate-50:hover {
+      background-color: #334155;
+    }
+
+    .dark .border-slate-300 {
+      border-color: #64748b;
+    }
+
+    .dark .focus\:border-indigo-500:focus {
+      border-color: #6366f1;
+    }
+
+    .dark .bg-slate-50 {
+      background-color: #334155;
+    }
+
+    /* Dark mode table specific styling */
+    .dark table {
+      border-collapse: collapse;
+    }
+
+    .dark table th,
+    .dark table td {
+      border-color: #475569;
+    }
+
+    .dark table thead th {
+      border-bottom-color: #475569;
+      background-color: #1e293b;
+    }
+
+    .dark table tbody tr {
+      border-bottom-color: #475569;
+    }
+
+    /* Remove hover effects in dark mode for Data View */
+    .dark .hover\:bg-slate-50:hover {
+      background-color: transparent !important;
+    }
+
+    .dark table tbody tr:hover {
+      background-color: transparent !important;
+    }
+
+    /* Specifically target Data View table hover effects */
+    .dark #dataViewTableBody tr:hover {
+      background-color: transparent !important;
+    }
+
+    .dark #dataViewTableBody tr:hover td {
+      color: inherit !important;
+    }
+
+    .dark #dataViewTableBody tr:hover input {
+      background-color: #1e293b !important;
+      color: #e2e8f0 !important;
+    }
+
+    /* Dark mode input styling */
+    .dark input[type="text"] {
+      background-color: #1e293b;
+      border-color: #64748b;
+      color: #e2e8f0;
+    }
+
+    .dark input[type="text"]:focus {
+      border-color: #6366f1;
+      background-color: #1e293b;
+    }
+
+    .dark input[type="text"]::placeholder {
+      color: #94a3b8;
+    }
+
     /* Adjust main content for top navigation */
     .main-with-sidebar {
       padding-top: 5rem;
@@ -507,6 +611,61 @@
         </div>
       </div>
 
+      <!-- Data View with Dropdown -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 mt-8" data-fade data-blur="true"
+        data-initial-opacity="0" data-delay="250">
+        <div class="p-6 md:p-8 border-b border-slate-200">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div>
+                <h3 class="text-xl font-semibold text-slate-900">Data View</h3>
+                <p class="text-sm text-slate-500 mt-1">View recent taps or user information</p>
+              </div>
+              <div>
+                <select id="dataViewSelect" onchange="switchDataView()"
+                  class="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
+                  <option value="recent_taps">Recent Taps</option>
+                  <option value="users">Users</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="refreshDataView()"
+                class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm">
+                Refresh
+              </button>
+              <button onclick="cleanupNoiseData()"
+                class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition text-sm">
+                Cleanup Sound Data
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="p-6 md:p-8">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead id="dataViewTableHead">
+                <tr class="border-b border-slate-200">
+                  <th class="text-left py-2 px-3 font-semibold text-slate-700">ID</th>
+                  <th class="text-left py-2 px-3 font-semibold text-slate-700">UID</th>
+                  <th class="text-left py-2 px-3 font-semibold text-slate-700">Name</th>
+                  <th class="text-left py-2 px-3 font-semibold text-slate-700">Table</th>
+                  <th class="text-left py-2 px-3 font-semibold text-slate-700">Timestamp</th>
+                </tr>
+              </thead>
+              <tbody id="dataViewTableBody">
+                <tr>
+                  <td colspan="5" class="text-center py-8 text-slate-400">
+                    <i data-lucide="loader" class="animate-spin inline-block w-5 h-5"></i>
+                    <span class="ml-2">Loading data...</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
   <footer class="text-center text-xs text-slate-500 py-3" data-fade data-blur="true" data-initial-opacity="0"
@@ -713,28 +872,53 @@
       }
 
       function exportLog() {
+        console.log('[Export] Exporting', filteredActivities.length, 'activities');
+
+        if (filteredActivities.length === 0) {
+          alert('No activities to export. Please adjust your filters or wait for data to load.');
+          return;
+        }
+
         var csv = 'Timestamp,Type,Title,Description,User,Severity\n';
         filteredActivities.forEach(function (activity) {
           var timestamp = new Date(activity.timestamp).toISOString();
-          csv += `"${timestamp}","${activity.type}","${activity.title}","${activity.description}","${activity.user}","${activity.severity}"\n`;
+          var description = (activity.description || '').replace(/"/g, '""'); // Escape quotes
+          csv += `"${timestamp}","${activity.type}","${activity.title}","${description}","${activity.user}","${activity.severity}"\n`;
         });
 
-        var blob = new Blob([csv], { type: 'text/csv' });
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         var url = window.URL.createObjectURL(blob);
         var a = document.createElement('a');
         a.href = url;
         a.download = 'activity_log_' + new Date().toISOString().split('T')[0] + '.csv';
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
+
+        console.log('[Export] CSV download initiated successfully');
       }
 
       async function fetchActivityLogs() {
         try {
-          if (!window.initSupabaseWithRetry || !window.supabaseDB) return;
-          if (!supabaseInitialized) {
-            try { supabaseInitialized = await window.initSupabaseWithRetry(); } catch (_) { supabaseInitialized = false; }
+          console.log('[Activity Logs] Starting fetch...');
+
+          if (!window.initSupabaseWithRetry || !window.supabaseDB) {
+            console.warn('[Activity Logs] Supabase not available');
+            return;
           }
+
+          if (!supabaseInitialized) {
+            try {
+              supabaseInitialized = await window.initSupabaseWithRetry();
+            } catch (_) {
+              supabaseInitialized = false;
+            }
+          }
+
           const res = await window.supabaseDB.getActivityLogs(200);
+          console.log('[Activity Logs] Fetch result:', res);
+
           if (res && res.data) {
             activities = res.data.map(function (row) {
               return {
@@ -747,17 +931,39 @@
                 user: row.user_name || row.user_id || 'System'
               };
             });
+
+            console.log('[Activity Logs] Loaded', activities.length, 'activities');
             filteredActivities = activities;
             applyFilters();
             updateStats();
+          } else if (res && res.error) {
+            console.error('[Activity Logs] Error:', res.error);
+            // Show user-friendly error message
+            var container = document.getElementById('activityTimeline');
+            if (container) {
+              container.innerHTML = '<div class="text-center py-12 text-red-500">Error loading activities: ' + (res.error.message || 'Unknown error') + '</div>';
+            }
           }
         } catch (e) {
-          console.error('Failed to fetch activity logs', e);
+          console.error('[Activity Logs] Failed to fetch activity logs', e);
+          var container = document.getElementById('activityTimeline');
+          if (container) {
+            container.innerHTML = '<div class="text-center py-12 text-red-500">Failed to load activities. Please refresh the page.</div>';
+          }
         }
       }
 
-      function refreshLog() {
-        fetchActivityLogs();
+      async function refreshLog() {
+        console.log('[Activity Logs] Manual refresh triggered');
+
+        // Show loading state
+        var container = document.getElementById('activityTimeline');
+        if (container) {
+          container.innerHTML = '<div class="text-center py-12 text-slate-500"><div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div><div class="mt-4">Refreshing activities...</div></div>';
+        }
+
+        // Fetch new data
+        await fetchActivityLogs();
       }
 
       async function showLoggedInUser() {
@@ -788,10 +994,432 @@
         } catch (_) { window.location.href = 'index.html'; }
       }
 
+      // Switch data view
+      function switchDataView() {
+        const select = document.getElementById('dataViewSelect');
+        const viewType = select.value;
+
+        // Update table headers based on view type
+        const tableHead = document.getElementById('dataViewTableHead');
+        if (viewType === 'recent_taps') {
+          tableHead.innerHTML = `
+            <tr class="border-b border-slate-200">
+              <th class="text-left py-2 px-3 font-semibold text-slate-700">ID</th>
+              <th class="text-left py-2 px-3 font-semibold text-slate-700">UID</th>
+              <th class="text-left py-2 px-3 font-semibold text-slate-700">Name</th>
+              <th class="text-left py-2 px-3 font-semibold text-slate-700">Table</th>
+              <th class="text-left py-2 px-3 font-semibold text-slate-700">Timestamp</th>
+            </tr>
+          `;
+        } else if (viewType === 'users') {
+          tableHead.innerHTML = `
+            <tr class="border-b border-slate-200">
+              <th class="text-left py-2 px-3 font-semibold text-slate-700">ID</th>
+              <th class="text-left py-2 px-3 font-semibold text-slate-700">UID</th>
+              <th class="text-left py-2 px-3 font-semibold text-slate-700">Name</th>
+              <th class="text-left py-2 px-3 font-semibold text-slate-700">Email</th>
+              <th class="text-left py-2 px-3 font-semibold text-slate-700">Student ID</th>
+            </tr>
+          `;
+        }
+
+        // Load data for the selected view
+        loadDataView();
+      }
+
+      // Load data based on current view selection
+      async function loadDataView() {
+        const select = document.getElementById('dataViewSelect');
+        const viewType = select.value;
+
+        if (viewType === 'recent_taps') {
+          await loadRecentTaps();
+        } else if (viewType === 'users') {
+          await loadUsers();
+        }
+      }
+
+      // Load Recent Taps from recent_taps view
+      async function loadRecentTaps() {
+        try {
+          console.log('[Recent Taps] Loading from recent_taps view...');
+
+          if (!window.supabaseClient) {
+            console.warn('[Recent Taps] Supabase not available');
+            const tbody = document.getElementById('dataViewTableBody');
+            if (tbody) {
+              tbody.innerHTML = `
+                <tr>
+                  <td colspan="5" class="text-center py-8 text-red-500">
+                    Supabase not available
+                  </td>
+                </tr>
+              `;
+            }
+            return;
+          }
+
+          const { data: taps, error } = await window.supabaseClient
+            .from('recent_taps')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(20);
+
+          if (error) {
+            console.error('[Recent Taps] Error loading taps:', error);
+            const tbody = document.getElementById('dataViewTableBody');
+            if (tbody) {
+              tbody.innerHTML = `
+                <tr>
+                  <td colspan="5" class="text-center py-8 text-red-500">
+                    Error loading taps: ${error.message}
+                  </td>
+                </tr>
+              `;
+            }
+            return;
+          }
+
+          console.log('[Recent Taps] Loaded', taps?.length || 0, 'taps');
+          const tbody = document.getElementById('dataViewTableBody');
+          if (!tbody) return;
+
+          if (!taps || taps.length === 0) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="5" class="text-center py-8 text-slate-400">
+                  No recent taps found
+                </td>
+              </tr>
+            `;
+            return;
+          }
+
+          tbody.innerHTML = taps.map(tap => {
+            const formattedDate = new Date(tap.created_at).toLocaleString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit'
+            });
+
+            return `
+              <tr class="border-b border-slate-100 transition">
+                <td class="py-3 px-3 text-slate-700">${tap.id || 'N/A'}</td>
+                <td class="py-3 px-3 font-mono text-sm">
+                  <span class="px-2 py-1 bg-indigo-100 text-indigo-800 rounded">${tap.uid || 'N/A'}</span>
+                </td>
+                <td class="py-3 px-3 text-slate-700">${tap.name || 'Unknown'}</td>
+                <td class="py-3 px-3 text-slate-700">${tap.table_name || 'N/A'}</td>
+                <td class="py-3 px-3 text-slate-600 text-sm">${formattedDate}</td>
+              </tr>
+            `;
+          }).join('');
+
+
+        } catch (error) {
+          console.error('[Recent Taps] Failed to load recent taps:', error);
+          const tbody = document.getElementById('dataViewTableBody');
+          if (tbody) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="5" class="text-center py-8 text-red-500">
+                  Failed to load recent taps
+                </td>
+              </tr>
+            `;
+          }
+        }
+      }
+
+
+      // Load Users from users table
+      async function loadUsers() {
+        try {
+          console.log('[Users] Loading from users table...');
+
+          if (!window.supabaseClient) {
+            console.warn('[Users] Supabase not available');
+            const tbody = document.getElementById('dataViewTableBody');
+            if (tbody) {
+              tbody.innerHTML = `
+                <tr>
+                  <td colspan="5" class="text-center py-8 text-red-500">
+                    Supabase not available
+                  </td>
+                </tr>
+              `;
+            }
+            return;
+          }
+
+          const { data: users, error } = await window.supabaseClient
+            .from('users')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(20);
+
+          if (error) {
+            console.error('[Users] Error loading users:', error);
+            const tbody = document.getElementById('dataViewTableBody');
+            if (tbody) {
+              tbody.innerHTML = `
+                <tr>
+                  <td colspan="5" class="text-center py-8 text-red-500">
+                    Error loading users: ${error.message}
+                  </td>
+                </tr>
+              `;
+            }
+            return;
+          }
+
+          console.log('[Users] Loaded', users?.length || 0, 'users');
+          const tbody = document.getElementById('dataViewTableBody');
+          if (!tbody) return;
+
+          if (!users || users.length === 0) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="5" class="text-center py-8 text-slate-400">
+                  No users found
+                </td>
+              </tr>
+            `;
+            return;
+          }
+
+          tbody.innerHTML = users.map(user => {
+            const hasUid = user.uid && user.uid !== 'N/A';
+            return `
+              <tr class="border-b border-slate-100 transition">
+                <td class="py-3 px-3 text-slate-700">${user.id || 'N/A'}</td>
+                <td class="py-3 px-3 font-mono text-sm">
+                  <div class="flex items-center gap-2">
+                    <input 
+                      type="text" 
+                      value="${user.uid || ''}" 
+                      placeholder="Enter UID..."
+                      class="px-2 py-1 border border-slate-300 rounded text-sm font-mono w-32 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      onchange="updateUserUid('${user.id}', this.value)"
+                    />
+                    <div class="flex gap-1">
+                      ${hasUid ? `
+                        <button onclick="clearUserUid('${user.id}')" class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs hover:bg-red-200 transition">
+                          Clear
+                        </button>
+                      ` : `
+                        <button onclick="setUidEditable('${user.id}')" class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs hover:bg-green-200 transition">
+                          Edit
+                        </button>
+                      `}
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-3 text-slate-700">${user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : 'Unknown'}</td>
+                <td class="py-3 px-3 text-slate-700">${user.email || 'N/A'}</td>
+                <td class="py-3 px-3 text-slate-700">${user.student_id || 'N/A'}</td>
+              </tr>
+            `;
+          }).join('');
+
+
+        } catch (error) {
+          console.error('[Users] Failed to load users:', error);
+          const tbody = document.getElementById('dataViewTableBody');
+          if (tbody) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="5" class="text-center py-8 text-red-500">
+                  Failed to load users
+                </td>
+              </tr>
+            `;
+          }
+        }
+      }
+
+      // Refresh data view
+      async function refreshDataView() {
+        console.log('[Data View] Manual refresh triggered');
+
+        // Show loading state
+        const tbody = document.getElementById('dataViewTableBody');
+        if (tbody) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="text-center py-8 text-slate-400">
+                <i data-lucide="loader" class="animate-spin inline-block w-5 h-5"></i>
+                <span class="ml-2">Refreshing data...</span>
+              </td>
+            </tr>
+          `;
+        }
+
+        // Load new data
+        await loadDataView();
+      }
+
+      // Set UID field to editable
+      function setUidEditable(userId) {
+        const input = document.querySelector(`input[onchange*="${userId}"]`);
+        if (input) {
+          input.readOnly = false;
+          input.focus();
+          input.select();
+        }
+      }
+
+      // Update user UID
+      async function updateUserUid(userId, newUid) {
+        try {
+          console.log('[Users] Updating UID for user:', userId, 'to:', newUid);
+
+          if (!window.supabaseClient) {
+            alert('Supabase not available');
+            return;
+          }
+
+          // Allow empty UID (to clear it)
+          const uidValue = newUid ? newUid.trim() : null;
+
+          // Update the UID in the database
+          const { data, error } = await window.supabaseClient
+            .from('users')
+            .update({ uid: uidValue })
+            .eq('id', userId);
+
+          if (error) {
+            console.error('[Users] Error updating UID:', error);
+            alert('Error updating UID: ' + error.message);
+            return;
+          }
+
+          console.log('[Users] UID updated successfully');
+
+          // Show success message
+          const input = document.querySelector(`input[onchange*="${userId}"]`);
+          if (input) {
+            input.classList.add('bg-green-50', 'border-green-300');
+            setTimeout(() => {
+              input.classList.remove('bg-green-50', 'border-green-300');
+            }, 2000);
+          }
+
+          // Refresh the data view to show updated information
+          await loadDataView();
+
+        } catch (error) {
+          console.error('[Users] Failed to update UID:', error);
+          alert('Failed to update UID. Please try again.');
+        }
+      }
+
+      // Clear user UID
+      async function clearUserUid(userId) {
+        try {
+          console.log('[Users] Clearing UID for user:', userId);
+
+          if (!window.supabaseClient) {
+            alert('Supabase not available');
+            return;
+          }
+
+          // Clear the UID in the database
+          const { data, error } = await window.supabaseClient
+            .from('users')
+            .update({ uid: null })
+            .eq('id', userId);
+
+          if (error) {
+            console.error('[Users] Error clearing UID:', error);
+            alert('Error clearing UID: ' + error.message);
+            return;
+          }
+
+          console.log('[Users] UID cleared successfully');
+
+          // Show success message
+          const input = document.querySelector(`input[onchange*="${userId}"]`);
+          if (input) {
+            input.value = '';
+            input.classList.add('bg-red-50', 'border-red-300');
+            setTimeout(() => {
+              input.classList.remove('bg-red-50', 'border-red-300');
+            }, 2000);
+          }
+
+          // Refresh the data view to show updated information
+          await loadDataView();
+
+        } catch (error) {
+          console.error('[Users] Failed to clear UID:', error);
+          alert('Failed to clear UID. Please try again.');
+        }
+      }
+
+      // Cleanup noise data to maintain rolling buffer
+      async function cleanupNoiseData() {
+        try {
+          console.log('[Cleanup] Starting noise data cleanup...');
+
+          if (!window.supabaseClient) {
+            alert('Supabase not available');
+            return;
+          }
+
+          // Show loading state
+          const button = document.querySelector('button[onclick="cleanupNoiseData()"]');
+          if (button) {
+            button.textContent = 'Cleaning...';
+            button.disabled = true;
+          }
+
+          // Call the cleanup function
+          const { data, error } = await window.supabaseClient
+            .rpc('manual_cleanup_noise_data');
+
+          if (error) {
+            console.error('[Cleanup] Error:', error);
+            alert('Error during cleanup: ' + error.message);
+            return;
+          }
+
+          console.log('[Cleanup] Cleanup completed:', data);
+
+          // Show success message
+          if (data && data.total_deleted > 0) {
+            alert(`Cleanup completed! Deleted ${data.total_deleted} old sound records.`);
+          } else {
+            alert('Cleanup completed! No old records needed to be deleted.');
+          }
+
+        } catch (error) {
+          console.error('[Cleanup] Failed to cleanup noise data:', error);
+          alert('Failed to cleanup noise data. Please try again.');
+        } finally {
+          // Reset button state
+          const button = document.querySelector('button[onclick="cleanupNoiseData()"]');
+          if (button) {
+            button.textContent = 'Cleanup Sound Data';
+            button.disabled = false;
+          }
+        }
+      }
+
       // Expose functions globally
       window.exportLog = exportLog;
       window.refreshLog = refreshLog;
       window.logout = logout;
+      window.loadDataView = loadDataView;
+      window.refreshDataView = refreshDataView;
+      window.switchDataView = switchDataView;
+      window.setUidEditable = setUidEditable;
+      window.updateUserUid = updateUserUid;
+      window.clearUserUid = clearUserUid;
+      window.cleanupNoiseData = cleanupNoiseData;
 
       // Event listeners
       document.getElementById('dateRange').addEventListener('change', applyFilters);
@@ -911,6 +1539,7 @@
           // Show logged in user in header
           showLoggedInUser();
           fetchActivityLogs();
+          loadDataView();
         }
       }
 

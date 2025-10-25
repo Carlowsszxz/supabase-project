@@ -32,7 +32,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
         height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
         background 0.35s ease,
         box-shadow 0.35s ease,
@@ -104,35 +104,13 @@
       animation: none;
     }
 
-    /* Arrow follows header */
+    /* Arrow follows header - Smooth CSS transitions (matching index.html) */
     .header-trigger.trigger-collapsed {
       transform: translateX(-50%) translateY(0);
-      animation: arrowSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
 
     .header-trigger.trigger-expanded {
       transform: translateX(-50%) translateY(75px);
-      animation: arrowSlideDown 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
-
-    @keyframes arrowSlideDown {
-      0% {
-        transform: translateX(-50%) translateY(0);
-      }
-
-      100% {
-        transform: translateX(-50%) translateY(75px);
-      }
-    }
-
-    @keyframes arrowSlideUp {
-      0% {
-        transform: translateX(-50%) translateY(75px);
-      }
-
-      100% {
-        transform: translateX(-50%) translateY(0);
-      }
     }
 
     /* Nav Label (appears to left of nav container) */
@@ -1805,6 +1783,15 @@
                   <h2 id="noise-level-title" class="card-title">Table Noise Level</h2>
                   <div class="text-sm text-slate-500 mt-1" id="noiseTableLabel">No table selected</div>
                 </div>
+                <button id="refreshNoiseBtn"
+                  class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Refresh
+                </button>
               </div>
 
               <!-- Enhanced Vertical Noise Bar -->
@@ -2960,18 +2947,28 @@
         }
       }
 
-      // Set up polling interval (4 seconds - middle of 3-5 range)
-      var pollingInterval = 4000; // 4 seconds
+      // Set up polling interval (3 seconds for more responsive updates)
+      var pollingInterval = 3000; // 3 seconds
       var intervalId = null;
+      var retryCount = 0;
+      var maxRetries = 3;
 
       function startPolling() {
         // Initial fetch
         fetchLatestNoiseLevel();
         updateCurrentSessionDisplay();
 
-        // Set up interval
+        // Set up interval with better error handling
         intervalId = setInterval(function () {
-          fetchLatestNoiseLevel();
+          fetchLatestNoiseLevel().catch(function (err) {
+            console.warn('[Noise Monitor] Polling error:', err);
+            retryCount++;
+            if (retryCount >= maxRetries) {
+              console.error('[Noise Monitor] Max retries reached, stopping polling');
+              clearInterval(intervalId);
+              updateDisplay(null);
+            }
+          });
           updateCurrentSessionDisplay();
         }, pollingInterval);
 
@@ -2983,6 +2980,25 @@
         updateTimestamp();
         updateCurrentSessionDisplay();
       }, 1000);
+
+      // Add refresh button functionality
+      var refreshNoiseBtn = document.getElementById('refreshNoiseBtn');
+      if (refreshNoiseBtn) {
+        refreshNoiseBtn.addEventListener('click', function () {
+          console.log('[Noise Monitor] Manual refresh triggered');
+          fetchLatestNoiseLevel();
+          updateCurrentSessionDisplay();
+
+          // Show loading state briefly
+          refreshNoiseBtn.disabled = true;
+          refreshNoiseBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg> Refreshing...';
+
+          setTimeout(function () {
+            refreshNoiseBtn.disabled = false;
+            refreshNoiseBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg> Refresh';
+          }, 1000);
+        });
+      }
 
       // Wait for Supabase to be initialized before starting polling
       setTimeout(function () {

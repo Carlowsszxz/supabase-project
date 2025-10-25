@@ -332,6 +332,7 @@
             <thead>
               <tr class="text-left text-slate-500 border-b">
                 <th class="py-2 pr-3">When</th>
+                <th class="py-2 pr-3">Reporter</th>
                 <th class="py-2 pr-3">Details</th>
                 <th class="py-2 pr-3">Notes</th>
                 <th class="py-2 pr-3">Action</th>
@@ -339,11 +340,33 @@
             </thead>
             <tbody id="reportRows">
               <tr>
-                <td colspan="4" class="py-6 text-center text-slate-400">Loading...</td>
+                <td colspan="5" class="py-6 text-center text-slate-400">Loading...</td>
               </tr>
             </tbody>
           </table>
         </div>
+      </div>
+
+      <!-- Admin Reply Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 mb-8 card-hover" data-fade
+        data-blur="true" data-initial-opacity="0" data-delay="100">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold text-slate-900">Admin Replies</h2>
+          <button id="refreshAdminReplies"
+            class="px-3 py-1 rounded bg-slate-200 hover:bg-slate-300 text-sm">Refresh</button>
+        </div>
+        <!-- Admin Post Form -->
+        <form id="adminReplyForm" class="mb-6 flex flex-col md:flex-row gap-3 items-start md:items-end">
+          <input type="text" id="adminReplyLocation"
+            class="border border-slate-300 rounded-lg px-3 py-2 w-full md:w-48 focus:ring-2 focus:ring-indigo-500"
+            placeholder="Location (optional)">
+          <input type="text" id="adminReplyNotes"
+            class="border border-slate-300 rounded-lg px-3 py-2 flex-1 focus:ring-2 focus:ring-indigo-500"
+            placeholder="Admin Reply Message" required>
+          <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Post as
+            Admin</button>
+        </form>
+        <div id="adminRepliesList" class="space-y-3"></div>
       </div>
     </div>
   </main>
@@ -400,6 +423,11 @@
           var isAdmin = r.notes && r.notes.toLowerCase().includes('posted by admin');
           tr.innerHTML = `
             <td class="py-2 pr-3">${fmtTime(r.created_at)}</td>
+            <td class="py-2 pr-3">
+              <div class="text-sm text-slate-700">
+                ${r.reporter_email || 'Anonymous'}
+              </div>
+            </td>
             <td class="py-2 pr-3">
               <div class="flex items-center gap-2">
                 <span class="text-base">${icon}</span>
@@ -473,6 +501,50 @@
         }
       }
 
+      // Admin Reply Functions
+      function loadAdminReplies() {
+        var list = document.getElementById('adminRepliesList');
+        if (!list) return;
+        if (!window.supabaseDB || !window.supabaseDB.publicListReports) {
+          list.innerHTML = '<div class="text-center text-red-600 py-6 text-sm">Supabase is not initialized</div>';
+          return;
+        }
+        list.innerHTML = '<div class="text-center text-slate-500 py-6 text-sm">Loading…</div>';
+        window.supabaseDB.publicListReports(50).then(function (result) {
+          var rows = Array.isArray(result.data) ? result.data : [];
+          if (result.error) {
+            list.innerHTML = '<div class="text-center text-red-600 py-6 text-sm">Error: ' + (result.error.message || result.error) + '</div>';
+            return;
+          }
+          if (rows.length === 0) {
+            list.innerHTML = '<div class="text-center text-slate-500 py-8"><p>No admin replies yet</p><p class="text-sm">Admin replies will appear here</p></div>';
+            return;
+          }
+          list.innerHTML = '';
+          rows.forEach(function (r) {
+            var isAdmin = r.notes && r.notes.toLowerCase().includes('posted by admin');
+            if (!isAdmin) return; // Only show admin posts
+
+            var el = document.createElement('div');
+            el.className = 'p-3 rounded-lg border border-slate-200 bg-indigo-50 border-indigo-400';
+            el.innerHTML = '<div class="flex items-start justify-between">' +
+              '<div>' +
+              '<div class="flex items-center gap-2">' +
+              '<span class="px-2 py-0.5 text-xs rounded bg-indigo-600 text-white font-semibold">Admin</span>' +
+              '<span class="text-sm text-slate-600">' + (r.location || r.table_id || '—') + '</span>' +
+              '</div>' +
+              '<div class="text-xs text-slate-500 mt-1">' + new Date(r.created_at).toLocaleString() + '</div>' +
+              '<div class="text-sm text-slate-700 mt-1">' + (r.notes || '') + '</div>' +
+              '</div>' +
+              '<div class="text-xs text-slate-500">' + (r.status || '') + '</div>' +
+              '</div>';
+            list.appendChild(el);
+          });
+        }).catch(function (err) {
+          list.innerHTML = '<div class="text-center text-red-600 py-6 text-sm">Failed to load admin replies.<br>' + (err && err.message ? err.message : err) + '</div>';
+        });
+      }
+
       function wireEvents() {
         if (filterSel) filterSel.addEventListener('change', fetchReports);
         if (refreshBtn) refreshBtn.addEventListener('click', fetchReports);
@@ -490,6 +562,31 @@
             deleteReport(delId);
           }
         });
+
+        // Admin reply events
+        var refreshAdminBtn = document.getElementById('refreshAdminReplies');
+        if (refreshAdminBtn) refreshAdminBtn.addEventListener('click', loadAdminReplies);
+
+        var adminForm = document.getElementById('adminReplyForm');
+        if (adminForm) {
+          adminForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            var loc = document.getElementById('adminReplyLocation').value.trim();
+            var notes = document.getElementById('adminReplyNotes').value.trim();
+            if (!notes) return;
+            var userResult = await window.supabaseAuth.getCurrentUser();
+            var user = userResult && userResult.data ? userResult.data.user : null;
+            if (!user) { alert('Not logged in'); return; }
+            var fullNotes = notes + ' (Posted by Admin)';
+            var res = await window.supabaseDB.addNoiseLog(user.id, loc, null, 'report', fullNotes);
+            if (res && res.error) {
+              alert('Failed to post: ' + (res.error.message || res.error));
+            } else {
+              adminForm.reset();
+              loadAdminReplies();
+            }
+          });
+        }
       }
 
       async function checkAdminAccess() {
@@ -527,8 +624,10 @@
           if (!allowed) { window.location.replace('index.html?from=reports'); return; }
           wireEvents();
           fetchReports();
+          loadAdminReplies();
           // Poll every 5 seconds
           setInterval(fetchReports, 5000);
+          setInterval(loadAdminReplies, 5000);
         } catch (e) {
           console.error(e);
           console.error('Initialization error');

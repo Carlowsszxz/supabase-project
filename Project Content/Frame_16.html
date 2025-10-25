@@ -33,7 +33,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
         height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
         background 0.35s ease,
         box-shadow 0.35s ease,
@@ -105,35 +105,13 @@
       animation: none;
     }
 
-    /* Arrow follows header */
+    /* Arrow follows header - Smooth CSS transitions (matching index.html) */
     .header-trigger.trigger-collapsed {
       transform: translateX(-50%) translateY(0);
-      animation: arrowSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
 
     .header-trigger.trigger-expanded {
       transform: translateX(-50%) translateY(75px);
-      animation: arrowSlideDown 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
-
-    @keyframes arrowSlideDown {
-      0% {
-        transform: translateX(-50%) translateY(0);
-      }
-
-      100% {
-        transform: translateX(-50%) translateY(75px);
-      }
-    }
-
-    @keyframes arrowSlideUp {
-      0% {
-        transform: translateX(-50%) translateY(75px);
-      }
-
-      100% {
-        transform: translateX(-50%) translateY(0);
-      }
     }
 
     /* Nav Label (appears to left of nav container) */
@@ -2480,8 +2458,9 @@
             var tableId = location.indexOf('table-') === 0 ? location : null;
             var notes = '[Types] ' + noiseTypes.join(', ') + ' | [Duration] ' + duration + ' | [Urgency] ' + urgency.value + (description ? (' | [Notes] ' + description) : '');
 
-            // Persist report in noise_logs for admin visibility (ANONYMOUS - no user.id)
-            var addRes = await window.supabaseDB.addNoiseLog(null, tableId || location, parseFloat(noiseLevel.value), 'report', notes);
+            // Persist report in noise_logs for admin visibility
+            // Store user email for admin view, but keep user_id null for anonymity
+            var addRes = await window.supabaseDB.addNoiseLog(null, tableId || location, parseFloat(noiseLevel.value), 'report', notes, user.email);
             if (addRes && addRes.error) throw addRes.error;
 
             // Notify admins via alerts table (ANONYMOUS - no user.id)
